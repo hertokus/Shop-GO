@@ -61,7 +61,7 @@ SmartShopGo/
 
 ## 📅 Hedef
 
-Bu proje, **16 Mayıs** tarihinde gerçekleştirilecek yarışmada sunulmak üzere geliştirilmektedir.
+Bu proje, bitirme tezi amacında gelişitirilmektedir.
 
 ---
 
