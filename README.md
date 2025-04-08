@@ -34,17 +34,6 @@ Günlük hayatı kolaylaştırmak adına geliştirilen bu proje, alışveriş ya
 | Versiyon   | Git, GitHub Desktop |
 | IDE        | PyCharm (Ahmet), VSCode (Hasan) |
 
----
-
-## 📁 Klasör Yapısı
-SmartShopGo/
-├── backend/ 
-│ └── app.py # Flask API (Ahmet) 
-├── frontend/ 
-│ ├── index.html # Ana web arayüzü (Hasan) 
-│ └── script.js # JavaScript kodları 
-├── README.md # Proje tanıtımı 
-└── .gitignore # Gereksiz dosyalar dışlanır
 
 ---
 
