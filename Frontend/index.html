@@ -85,4 +85,86 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<<<<<<< Updated upstream
   
+=======
+  <!-- JS Kodları -->
+  <script>
+    let shoppingList = [];
+
+    function addToList() {
+      const name = document.getElementById("productName").value.trim();
+      const quantity = document.getElementById("productQuantity").value.trim();
+      const list = document.getElementById("shoppingList");
+
+      if (name === "" || quantity === "") return;
+
+      shoppingList.push({ name, quantity: parseInt(quantity) });
+
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      li.innerHTML = `
+        ${name} - ${quantity} adet
+        <button class="btn btn-sm btn-danger" onclick="removeItem(this)">
+          <i class="fa fa-trash"></i>
+        </button>
+      `;
+
+      list.appendChild(li);
+
+      document.getElementById("productName").value = "";
+      document.getElementById("productQuantity").value = "";
+    }
+
+    function removeItem(button) {
+      const index = Array.from(button.parentElement.parentElement.children).indexOf(button.parentElement);
+      shoppingList.splice(index, 1);
+      button.parentElement.remove();
+    }
+
+    function findMarkets() {
+      const resultDiv = document.getElementById("result");
+      const loader = document.getElementById("loader");
+
+      resultDiv.textContent = "";
+      loader.style.display = "block";
+
+      const productNames = shoppingList.map(item => item.name);
+
+      fetch(`http://127.0.0.1:5000/api/markets?products=${JSON.stringify(productNames)}`)
+        .then(response => response.json())
+        .then(data => {
+          displayMarketData(data);
+          loader.style.display = "none";
+        })
+        .catch(error => {
+          resultDiv.textContent = "Veri çekme hatası: " + error;
+          loader.style.display = "none";
+        });
+    }
+
+    function displayMarketData(data) {
+      const resultDiv = document.getElementById("result");
+      if (data.length === 0) {
+        resultDiv.textContent = "Bu ürünler için market bulunamadı.";
+        return;
+      }
+
+      data.forEach(market => {
+        const marketDiv = document.createElement('div');
+        marketDiv.innerHTML = `
+          <h3>${market.market}</h3>
+          <p>Adres: ${market.adres}</p>
+          <ul>
+            ${Object.entries(market.urunler).map(([urun, fiyat]) => `
+              <li>${urun}: ${fiyat}₺</li>
+            `).join('')}
+          </ul>
+        `;
+        resultDiv.appendChild(marketDiv);
+      });
+    }
+  </script>
+</body>
+</html>
+>>>>>>> Stashed changes

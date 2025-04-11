@@ -1,0 +1,22 @@
+[
+    {
+      "market": "A101",
+      "adres": "X Mahallesi, Y Caddesi",
+      "urunler": {
+        "ekmek": 7,
+        "süt": 15,
+        "yumurta": 30
+      }
+    },
+    {
+      "market": "BIM",
+      "adres": "Z Mahallesi, K Sokak",
+      "urunler": {
+        "ekmek": 6,
+        "süt": 16,
+        "yumurta": 28
+      }
+    }
+  ]
+  
+  
