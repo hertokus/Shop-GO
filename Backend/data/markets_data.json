@@ -1,0 +1,104 @@
+[
+  {
+    "market": "A101",
+    "adres": "AKKAPI MAH",
+    "urunler": {
+      "Elma": {
+        "fiyat": 5.0,
+        "birim": "kg"
+      },
+      "Portakal": {
+        "fiyat": 4.5,
+        "birim": "kg"
+      },
+      "Patates": {
+        "fiyat": 3.0,
+        "birim": "kg"
+      },
+      "Domates": {
+        "fiyat": 6.0,
+        "birim": "kg"
+      },
+      "Şampuan": {
+        "fiyat": 25.0,
+        "birim": "adet"
+      },
+      "Diş Macunu": {
+        "fiyat": 15.0,
+        "birim": "adet"
+      },
+      "Sabun": {
+        "fiyat": 5.5,
+        "birim": "adet"
+      }
+    }
+  },
+  {
+    "market": "BIM",
+    "adres": "HADIRLI MAH",
+    "urunler": {
+      "Elma": {
+        "fiyat": 4.8,
+        "birim": "kg"
+      },
+      "Portakal": {
+        "fiyat": 4.0,
+        "birim": "kg"
+      },
+      "Patates": {
+        "fiyat": 3.2,
+        "birim": "kg"
+      },
+      "Domates": {
+        "fiyat": 5.8,
+        "birim": "kg"
+      },
+      "Şampuan": {
+        "fiyat": 22.0,
+        "birim": "adet"
+      },
+      "Diş Macunu": {
+        "fiyat": 14.5,
+        "birim": "adet"
+      },
+      "Sabun": {
+        "fiyat": 4.75,
+        "birim": "adet"
+      }
+    }
+  },
+  {
+    "market": "ŞOK",
+    "adres": "YEŞİLOBA MAH",
+    "urunler": {
+      "Elma": {
+        "fiyat": 5.1,
+        "birim": "kg"
+      },
+      "Armut": {
+        "fiyat": 4.4,
+        "birim": "kg"
+      },
+      "Patates": {
+        "fiyat": 3.1,
+        "birim": "kg"
+      },
+      "Salatalık": {
+        "fiyat": 6.2,
+        "birim": "kg"
+      },
+      "Şampuan": {
+        "fiyat": 24.0,
+        "birim": "adet"
+      },
+      "Diş Macunu": {
+        "fiyat": 13.9,
+        "birim": "adet"
+      },
+      "Sabun": {
+        "fiyat": 5.0,
+        "birim": "adet"
+      }
+    }
+  }
+]

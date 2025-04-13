@@ -4,14 +4,8 @@
   <meta charset="UTF-8">
   <title>SmartShopGo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome (ikonlar için) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
 
   <style>
@@ -33,6 +27,18 @@
     #loader {
       display: none;
     }
+
+    .market-card {
+      background-color: #f8f9fa;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 5px solid #28a745;
+    }
+
+    .product-info {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -47,7 +53,7 @@
           <input type="text" class="form-control" id="productName" placeholder="Ürün Adı">
         </div>
         <div class="col-6 col-md-3">
-          <input type="number" class="form-control" id="productQuantity" placeholder="Adet">
+          <input type="number" class="form-control" id="productQuantity" placeholder="Adet veya Kg">
         </div>
         <div class="col-6 col-md-3">
           <button class="btn btn-primary w-100" onclick="addToList()">
@@ -78,7 +84,7 @@
     <!-- Sonuç Gösterimi -->
     <div class="mt-4">
       <h4>📍 Önerilen Marketler</h4>
-      <div id="result" class="alert alert-secondary" style="white-space: pre-wrap;"></div>
+      <div id="result"></div>
     </div>
   </div>
 
@@ -96,12 +102,12 @@
 
       if (name === "" || quantity === "") return;
 
-      shoppingList.push({ name, quantity: parseInt(quantity) });
+      shoppingList.push({ name, quantity });
 
       const li = document.createElement("li");
       li.className = "list-group-item d-flex justify-content-between align-items-center";
       li.innerHTML = `
-        ${name} - ${quantity} adet
+        ${name} - ${quantity} 
         <button class="btn btn-sm btn-danger" onclick="removeItem(this)">
           <i class="fa fa-trash"></i>
         </button>
@@ -123,42 +129,60 @@
       const resultDiv = document.getElementById("result");
       const loader = document.getElementById("loader");
 
-      resultDiv.textContent = "";
+      resultDiv.innerHTML = "";
       loader.style.display = "block";
 
       const productNames = shoppingList.map(item => item.name);
 
-      fetch(`http://127.0.0.1:5000/api/markets?products=${JSON.stringify(productNames)}`)
+      // API'ye ürün isimlerini gönderiyoruz
+      fetch(`http://localhost:5000/api/markets/filter?product=${productNames.join('&product=')}`)
         .then(response => response.json())
         .then(data => {
-          displayMarketData(data);
           loader.style.display = "none";
+
+          if (!data || data.length === 0) {
+            resultDiv.innerHTML = `<div class="alert alert-warning">Bu ürünler için uygun market bulunamadı.</div>`;
+            return;
+          }
+
+          displayMarketData(data);
         })
         .catch(error => {
-          resultDiv.textContent = "Veri çekme hatası: " + error;
           loader.style.display = "none";
+          resultDiv.innerHTML = `<div class="alert alert-danger">Veri çekme hatası: ${error}</div>`;
+          console.error("API hatası:", error);
         });
     }
 
     function displayMarketData(data) {
       const resultDiv = document.getElementById("result");
-      if (data.length === 0) {
-        resultDiv.textContent = "Bu ürünler için market bulunamadı.";
-        return;
-      }
 
       data.forEach(market => {
-        const marketDiv = document.createElement('div');
-        marketDiv.innerHTML = `
-          <h3>${market.market}</h3>
-          <p>Adres: ${market.adres}</p>
-          <ul>
-            ${Object.entries(market.urunler).map(([urun, fiyat]) => `
-              <li>${urun}: ${fiyat}₺</li>
-            `).join('')}
-          </ul>
+        const marketCard = document.createElement('div');
+        marketCard.className = 'market-card';
+
+        let productDetails = "";
+
+        // Ürünleri ve fiyat bilgilerini listele
+        for (const [urun, fiyatBilgisi] of Object.entries(market.urunler)) {
+          if (fiyatBilgisi) {
+            productDetails += `
+              <li class="product-info">${urun}: <strong>${fiyatBilgisi}</strong></li>
+            `;
+          } else {
+            productDetails += `
+              <li class="product-info">${urun}: <strong>Stokta yok</strong></li>
+            `;
+          }
+        }
+
+        marketCard.innerHTML = `
+          <h5>${market.market}</h5>
+          <p><strong>Adres:</strong> ${market.adres}</p>
+          <ul>${productDetails}</ul>
         `;
-        resultDiv.appendChild(marketDiv);
+
+        resultDiv.appendChild(marketCard);
       });
     }
   </script>

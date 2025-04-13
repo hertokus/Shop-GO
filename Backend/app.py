@@ -1,79 +1,88 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import json  # Güvenli JSON ayrıştırma
+import psycopg2
 
 app = Flask(__name__)
-CORS(app)  # CORS'u etkinleştir
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Örnek market verisi
-markets_data = [
-    {
-        "market": "A101",
-        "adres": "AKKAPI MAH",
-        "urunler": {
-            "Elma": "5.00",
-            "Armut": "4.50"
-        }
-    },
-    {
-        "market": "BIM",
-        "adres": "HADIRLI MAH",
-        "urunler": {
-            "Elma": "4.80",
-            "Armut": "4.00"
-        }
-    }
-]
+# PostgreSQL bağlantı ayarları
+conn = psycopg2.connect(
+    dbname="smartshopgo_db",
+    user="postgres",
+    password="123",  # Şifreni buraya yaz
+    host="localhost",
+    port="5432"
+)
+cursor = conn.cursor()
 
-# Tüm marketleri döndürür veya ürünlere göre filtreleme yapar
+# 🔹 Tüm marketleri ve ürünleri çek
 @app.route('/api/markets', methods=['GET'])
-def get_markets():
-    requested_products = request.args.get('products')
+def get_all_market_data():
+    query = """
+        SELECT m.name, m.address, p.name, p.unit, mp.price
+        FROM markets m
+        JOIN market_products mp ON m.id = mp.market_id
+        JOIN products p ON p.id = mp.product_id;
+    """
+    cursor.execute(query)
+    rows = cursor.fetchall()
 
-    if requested_products:
-        try:
-            requested_products = json.loads(requested_products)  # Güvenli JSON ayrıştırma
-        except Exception:
-            return jsonify({"error": "Geçersiz ürün formatı"}), 400
-
-        requested_products = [p.lower() for p in requested_products]
-
-        filtered_markets = []
-        for market in markets_data:
-            filtered_urunler = {
-                urun: fiyat
-                for urun, fiyat in market["urunler"].items()
-                if urun.lower() in requested_products
+    # Verileri yapılandır
+    market_dict = {}
+    for market_name, address, product_name, unit, price in rows:
+        if market_name not in market_dict:
+            market_dict[market_name] = {
+                "adres": address,
+                "urunler": {}
             }
-            if filtered_urunler:
-                filtered_markets.append({
-                    "market": market["market"],
-                    "adres": market["adres"],
-                    "urunler": filtered_urunler
-                })
-        return jsonify(filtered_markets)
+        market_dict[market_name]["urunler"][product_name] = f"{price} ₺ / {unit}"
 
-    return jsonify(markets_data)
+    # Sözlükleri listeye çevir
+    response = []
+    for market, data in market_dict.items():
+        response.append({
+            "market": market,
+            "adres": data["adres"],
+            "urunler": data["urunler"]
+        })
 
-# Belirli bir ürünün tüm marketlerdeki fiyatlarını döndürür
-@app.route('/api/markets/urun', methods=['GET'])
-def get_product_price():
-    urun_adi = request.args.get('isim')  # Örnek: /api/markets/urun?isim=Elma
+    return jsonify(response)
 
-    if not urun_adi:
-        return jsonify({"error": "Ürün adı (isim) parametresi gerekli"}), 400
+# 🔹 Belirli bir ürüne göre filtrele
+@app.route('/api/markets/filter', methods=['GET'])
+def filter_by_product():
+    requested_products = request.args.getlist('product')  # ?product=elma&product=armut
 
-    filtered = []
-    for market in markets_data:
-        if urun_adi in market['urunler']:
-            filtered.append({
-                "market": market["market"],
-                "adres": market["adres"],
-                "urun": urun_adi,
-                "fiyat": market["urunler"][urun_adi]
-            })
+    query = """
+        SELECT m.name, m.address, p.name, p.unit, mp.price
+        FROM markets m
+        JOIN market_products mp ON m.id = mp.market_id
+        JOIN products p ON p.id = mp.product_id
+        WHERE LOWER(p.name) = ANY(%s);
+    """
+    lowercase_products = [p.lower() for p in requested_products]
+    cursor.execute(query, (lowercase_products,))
+    rows = cursor.fetchall()
 
-    return jsonify(filtered)
+    # Aynı yapıda dönüştür
+    market_dict = {}
+    for market_name, address, product_name, unit, price in rows:
+        if market_name not in market_dict:
+            market_dict[market_name] = {
+                "adres": address,
+                "urunler": {}
+            }
+        market_dict[market_name]["urunler"][product_name] = f"{price} ₺ / {unit}"
+
+    response = []
+    for market, data in market_dict.items():
+        response.append({
+            "market": market,
+            "adres": data["adres"],
+            "urunler": data["urunler"]
+        })
+
+    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True)
