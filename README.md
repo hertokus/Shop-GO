@@ -29,10 +29,10 @@ Günlük hayatı kolaylaştırmak adına geliştirilen bu proje, alışveriş ya
 
 | Katman     | Teknoloji         |
 |------------|-------------------|
-| Frontend   | HTML, CSS (Bootstrap), JavaScript |
+| Frontend   | HTML, CSS (Bootstrap), JavaScript, React.js |
 | Backend    | Python, Flask      |
 | Versiyon   | Git, GitHub Desktop |
-| IDE        | PyCharm (Ahmet), VSCode (Hasan) |
+| IDE        | PyCharm , VSCode |
 
 
 ---
