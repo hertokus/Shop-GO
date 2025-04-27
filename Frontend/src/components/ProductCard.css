@@ -59,7 +59,7 @@
 }
 
 .add-to-cart-button {
-  background-color: #efe807; /* Mavi arka plan rengi */
+  background-color: #037a31f8; /* Yeşil arka plan rengi */
   color: white;
   border: none;
   border-radius: 8px; /* TopBar'daki arama kutusuyla benzerlik için */
@@ -71,5 +71,6 @@
 }
 
 .add-to-cart-button:hover {
-  background-color: #efe807; /* Biraz daha koyu mavi hover rengi */
+  background-color: #efe807; /* Sarı hover rengi */
+  color: #333; /* Hover olduğunda yazı rengi */
 }

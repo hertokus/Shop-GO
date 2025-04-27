@@ -4,8 +4,8 @@ import './ProductList.css';
 
 const productsData = {
   'Atıştırmalık': [
-    { id: 1, name: 'Haribo Cips', price: 40.25, image: '/images/haribo-cips.jpg', description: 'Haribo Cips - Atıştırmalık kategorisinde kaliteli ürün.' },
-    { id: 2, name: 'Doritos Kraker', price: 8.50, image: '/images/doritos-kraker.jpg', description: 'Doritos Kraker - Atıştırmalık keyfinize keyif katın.' },
+    { id: 1, name: 'Haribo', price: 40.25, image: 'haribo.jpg', description: 'Haribo - Atıştırmalık kategorisinde kaliteli ürün.' },
+    { id: 2, name: 'Doritos Taco', price: 8.50, image: 'doritos.webp', description: 'Doritos Kraker - Atıştırmalık keyfinize keyif katın.' },
     { id: 3, name: 'Çikolata Bar', price: 12.99, image: '/images/cikolata-bar.jpg', description: 'Sütlü çikolata bar - Tatlı ihtiyacınızı giderin.' },
     { id: 4, name: 'Gofret', price: 5.75, image: '/images/gofret.jpg', description: 'İncecik gofret yaprakları arasında krema dolgusu.' },
   ],

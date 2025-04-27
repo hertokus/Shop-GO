@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import './TopBar.css';
 import { FaShoppingCart } from 'react-icons/fa';
-
+import logo from '../assets/CHART.png'; // VEYA './assets/CHART.png' (dosyanın konumuna göre)
 
 function TopBar({ cartCount, onCartClick, setCartIconPosition }) {
   const cartIconRef = useRef(null);
@@ -18,7 +18,10 @@ function TopBar({ cartCount, onCartClick, setCartIconPosition }) {
 
   return (
     <div className="top-bar">
-      <div className="logo">Shop&GO</div>
+      <div className="logo-container"> {/* Yeni bir container div */}
+        <img src={logo} alt="Logo" className="logo" />
+        <span className="app-name">Shop&GO</span> {/* span etiketiyle yazı */}
+      </div>
       <div className="search-bar">
         <input type="text" placeholder="Ürün ara..." />
       </div>
