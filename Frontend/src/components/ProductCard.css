@@ -1,0 +1,75 @@
+.product-card {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  overflow: hidden; /* İçeriğin taşımasını engeller */
+}
+
+.product-image-container {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-bottom: 1px solid #eee;
+  background-color: #f9f9f9; /* Görsel yüklenirken dolgu rengi */
+}
+
+.product-image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.product-info {
+  padding: 15px;
+}
+
+.product-name {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+.product-description {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 10px;
+  line-height: 1.3;
+  height: 40px; /* Sabit yükseklik veya satır sayısına göre ayarlanabilir */
+  overflow: hidden;
+}
+
+.product-price-add {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-price {
+  font-weight: bold;
+  color: #28a745;
+  font-size: 1rem;
+}
+
+.add-to-cart-button {
+  background-color: #efe807; /* Mavi arka plan rengi */
+  color: white;
+  border: none;
+  border-radius: 8px; /* TopBar'daki arama kutusuyla benzerlik için */
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease; /* Hover efekti için geçiş */
+}
+
+.add-to-cart-button:hover {
+  background-color: #efe807; /* Biraz daha koyu mavi hover rengi */
+}

@@ -1,0 +1,71 @@
+.app-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f8; /* Açık gri arka plan */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-wrapper {
+  padding: 20px;
+  flex-grow: 1;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* Sepet Modal Stilleri */
+.cart-modal-overlay {
+  position: fixed; /* Sabit konumlandırma ile tüm ekranı kaplar */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Yarı saydam siyah arka plan */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Diğer elementlerin üzerinde görünmesini sağlar */
+}
+
+.cart-modal-overlay .shopping-cart {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 80%; /* İstenilen genişlik */
+  max-width: 500px; /* Maksimum genişlik */
+  position: relative; /* Kapat butonunu konumlandırmak için */
+  padding-top: 50px; /* Kapat butonu için üstten boşluk bırak */
+}
+
+.cart-modal-overlay .close-button {
+  position: absolute; /* Sepet içeriğine göre konumlanır */
+  top: 10px; /* Yukarıdan boşluk */
+  right: 10px; /* Sağdan boşluk */
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px;
+  cursor: pointer;
+  z-index: 1001; /* Sepet içeriğinin üzerinde görünmesini sağlar */
+}
+
+.cart-modal-overlay .close-button:hover {
+  background-color: #c82333;
+}
+
+.fly-to-cart {
+  position: fixed;
+  z-index: 1000;
+  background-color: rgba(0, 123, 255, 0.8); /* Örnek bir renk */
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}

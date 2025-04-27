@@ -1,0 +1,42 @@
+.top-bar {
+    background-color: #efe807; 
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .search-bar {
+    flex-grow: 1;
+    margin: 0 20px;
+    max-width: 250px; /* Daha da küçültülmüş maksimum genişlik */
+  }
+  
+  .search-bar input[type="text"] {
+    width: 100%;
+    padding: 8px; /* Biraz daha küçük padding */
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9rem; /* Biraz daha küçük yazı boyutu */
+    color: #333;
+  }
+  
+  .cart {
+    display: flex;
+    align-items: center;
+  }
+  
+  .cart-count {
+    background-color: white;
+    color: #efe807; /* Mavi sepet sayacı rengi */
+    border-radius: 50%;
+    padding: 5px 8px;
+    font-size: 0.8rem; /* Biraz daha küçük sepet sayacı yazı boyutu */
+    margin-left: 5px;
+  }
