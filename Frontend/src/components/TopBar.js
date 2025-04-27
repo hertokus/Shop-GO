@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import './TopBar.css';
 import { FaShoppingCart } from 'react-icons/fa';
 
+
 function TopBar({ cartCount, onCartClick, setCartIconPosition }) {
   const cartIconRef = useRef(null);
 
