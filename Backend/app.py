@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, JWTManager, get_jwt_identity
+from unidecode import unidecode
 
 # --- Uygulama ve Eklenti Başlatma ---
 app = Flask(__name__)
@@ -171,15 +172,21 @@ def get_markets():
         return jsonify({"message": "Marketler getirilirken hata oluştu"}), 500
 
 
-@app.route('/api/products/<category>', methods=['GET'])
+
+
+@app.route('/api/products/<path:category>', methods=['GET'])
 def get_products_by_category(category):
     try:
-        # Kategori ismini büyük/küçük harf duyarsız hale getirmek iyi olabilir
-        products = Product.query.filter(db.func.lower(Product.category) == category.lower()).all()
-        return jsonify([product.to_dict() for product in products])
+        all_products = Product.query.all()
+        filtered = [
+            p for p in all_products
+            if unidecode(p.category.lower()) == unidecode(category.lower())
+        ]
+        return jsonify([p.to_dict() for p in filtered])
     except Exception as e:
         print(f"Get Products by Category Error: {e}")
         return jsonify({"message": "Ürünler getirilirken hata oluştu"}), 500
+
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
