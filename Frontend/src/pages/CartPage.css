@@ -1,0 +1,350 @@
+/* src/pages/CartPage.css - Market Bulma Bölümü Eklendi */
+
+.cart-page-container {
+    padding: 25px; 
+    max-width: 1100px; 
+    margin: 30px auto; 
+    background-color: #fff; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+  }
+  
+  .cart-page-container h1 {
+    margin-bottom: 25px;
+    text-align: center;
+    color: #333;
+    font-size: 1.8rem; 
+    font-weight: 600;
+  }
+  
+  /* Sepet İçeriği (İki Sütunlu Yapı) */
+  .cart-page-content {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 30px; 
+    margin-bottom: 40px; /* Market bulma bölümü için altta boşluk */
+  }
+  
+  /* Sol Sütun (Ürün Listesi) */
+  .cart-items-column {
+    flex: 2; 
+    min-width: 300px; 
+  }
+  
+  .cart-page-item-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .cart-page-item {
+    display: flex;
+    align-items: center;
+    padding: 18px 10px; 
+    border-bottom: 1px solid #f0f0f0; 
+    gap: 15px; 
+  }
+  .cart-page-item:last-child {
+    border-bottom: none;
+  }
+  
+  .cart-page-item-details {
+    flex-grow: 1; 
+  }
+  .cart-page-item-details .item-name {
+    font-weight: 600; 
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.95rem; 
+    color: #444;
+  }
+  .cart-page-item-details .item-unit-price {
+    color: #666; 
+    font-size: 0.85rem;
+  }
+  
+  .cart-page-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px; 
+  }
+  
+  .item-quantity-adjuster { 
+    display: flex;
+    align-items: center;
+    background-color: #fff; 
+    border: 1px solid #e0e0e0; 
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
+    height: 32px; 
+  }
+  .item-quantity-adjuster button { 
+    background-color: transparent;
+    border: none;
+    color: #5d3ebc; 
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 0 10px; 
+    cursor: pointer;
+    height: 100%; 
+    display: flex;
+    align-items: center;
+  }
+  .item-quantity-adjuster button:hover {
+    background-color: #f8f0ff; 
+  }
+  .item-quantity-adjuster button:disabled { 
+    color: #ccc;
+    cursor: not-allowed;
+  }
+  .item-quantity-adjuster .item-quantity { 
+    padding: 0 10px; 
+    font-size: 0.9rem;
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+    background-color: #5d3ebc; /* Mor */
+    color: #fff; /* Beyaz */
+    height: 100%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .remove-item-btn { 
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    color: #999; 
+    font-size: 1rem; 
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+  }
+  .remove-item-btn:hover {
+    color: #dc3545; 
+  }
+  
+  .cart-page-item-line-total {
+    font-weight: 600; 
+    min-width: 70px; 
+    text-align: right;
+    font-size: 0.95rem; 
+    color: #333;
+  }
+  
+  /* Sağ Sütun (Sipariş Özeti) */
+  .cart-summary-column {
+    flex: 1; 
+    min-width: 250px; 
+  }
+  
+  .cart-summary {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 25px;
+    background-color: #fdfdfd; 
+    position: sticky; 
+    top: 80px; 
+  }
+  .cart-summary h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.2rem; 
+    font-weight: 600;
+    color: #333;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.9rem; 
+    color: #555;
+  }
+  .summary-row.total-row {
+    font-weight: bold;
+    font-size: 1.05rem; 
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    color: #333;
+  }
+  
+  .checkout-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #efe807; /* Sarı renk */
+    color: #333; /* Koyu yazı */
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem; 
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+  }
+  .checkout-button:hover {
+    background-color: #d4cc06; /* Koyu Sarı */
+    transform: scale(1.02); 
+  }
+  
+  
+  /* Market Öneri Bölümü Stilleri */
+  .market-suggestion-section {
+    width: 100%; /* Tam genişlik kaplasın */
+    margin-top: 40px; /* Üstteki bölümle boşluk */
+    padding-top: 30px;
+    border-top: 1px dashed #ccc; /* Ayırıcı çizgi */
+    text-align: center; /* İçeriği ortala */
+  }
+  
+  .find-market-button { 
+    background-color: #5d3ebc; /* Mor buton (Getir rengi) */
+    color: white;
+    border: none;
+    border-radius: 8px; 
+    padding: 12px 30px; /* Daha geniş padding */
+    font-size: 1rem; 
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease;
+    margin-bottom: 25px; /* Alt boşluk */
+    display: inline-block; /* Ortalamak için inline-block */
+    min-width: 220px;
+  }
+  .find-market-button:hover {
+    background-color: #4a309a; /* Koyu mor */
+  }
+  .find-market-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .market-suggestions {
+    margin-top: 15px; /* Butonla arası */
+  }
+  
+  .market-suggestions h3 {
+    margin-top: 0;
+    margin-bottom: 15px; 
+    color: #333;
+    font-size: 1.1rem; 
+    font-weight: 600;
+    text-align: center; 
+  }
+  
+  .market-suggestions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto; /* Ortala */
+    max-width: 700px; /* Genişliği biraz artır */
+    border: 1px solid #eee;
+    border-radius: 5px;
+    text-align: left; 
+  }
+  
+  .market-suggestions li {
+    padding: 12px 15px; 
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; 
+    gap: 10px; /* İç elemanlar arası boşluk */
+  }
+  
+  .market-suggestions li:last-child {
+    border-bottom: none;
+  }
+  .market-suggestions li strong { /* Market adı */
+    margin-right: 5px; 
+    flex-shrink: 0; /* Küçülmesin */
+  }
+  .market-suggestions li div:first-of-type { /* Market adı ve adres grubu */
+      flex-grow: 1; /* Genişlesin */
+  }
+  .market-suggestions li div:last-of-type { /* Fiyat ve eksik ürün grubu */
+      text-align: right;
+      flex-shrink: 0; /* Küçülmesin */
+  }
+  .market-suggestions li span { /* Fiyat kısmı */
+    font-weight: bold;
+    color: #28a745; /* Yeşil fiyat */
+    margin-left: auto; 
+    padding-left: 10px;
+  }
+  .market-suggestions li small { /* Eksik ürün uyarısı */
+      font-size: 0.75rem;
+      display: inline-block; /* Fiyatla yan yana */
+      margin-left: 5px;
+  }
+  .market-suggestions li small.address { /* Adres için */
+      color: #666;
+      font-style: italic;
+      margin-left: 5px;
+  }
+  
+  
+  .market-error {
+      color: #dc3545;
+      text-align: center;
+      margin-top: 15px;
+      font-weight: 500;
+  }
+  
+  /* Sepet Boş Mesajı */
+  .empty-cart-message {
+      text-align: center;
+      padding: 50px 20px; 
+      color: #777;
+  }
+  .empty-cart-message p {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+  .empty-cart-message a {
+      display: inline-block;
+      padding: 10px 25px;
+      background-color: #efe807; /* Sarı */
+      color: #333; /* Koyu */
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+  }
+  .empty-cart-message a:hover {
+      background-color: #d4cc06; /* Koyu Sarı */
+  }
+  
+  /* Responsive (Küçük Ekranlar) */
+  @media (max-width: 768px) {
+    .cart-page-content {
+      flex-direction: column; /* Sütunları alt alta getir */
+    }
+    .cart-summary-column {
+       margin-top: 20px; 
+    }
+    .cart-summary {
+      position: static; /* Sticky özelliği kalksın */
+    }
+     .market-suggestion-section{
+       margin-top: 30px;
+    }
+    .market-suggestions li {
+      flex-direction: column; /* Küçük ekranda market öneri elemanları alt alta */
+      align-items: flex-start;
+    }
+     .market-suggestions li div:last-of-type { 
+      text-align: left; /* Fiyat sola gelsin */
+      margin-top: 5px;
+    }
+     .market-suggestions li span {
+      margin-left: 0;
+      padding-left: 0;
+    }
+  }
+  

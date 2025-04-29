@@ -1,76 +1,104 @@
-import React, { useState } from 'react';
-import './ShoppingCart.css';
-import { AiOutlineClose } from 'react-icons/ai'; // Çarpı ikonu import edin
+import React from 'react'; // useState'e gerek kalmadı
+import './ShoppingCart.css'; // Güncellenmiş CSS dosyasını import ediyoruz
+import { AiOutlineClose } from 'react-icons/ai'; 
+// İkonları ekleyelim (react-icons kütüphanesini kurduğunuzu varsayıyorum: npm install react-icons)
+import { FaTrashAlt, FaPlus, FaMinus } from 'react-icons/fa'; 
+import { useNavigate } from 'react-router-dom'; // Sepete git butonu için
 
-function ShoppingCart({ cartItems, onRemoveFromCart, onIncreaseQuantity, onDecreaseQuantity, onCloseCart }) {
-  const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
-  const [marketSuggestions, setMarketSuggestions] = useState([]);
+// isOpen ve totalAmount prop'larını ekledik
+function ShoppingCart({ 
+    cartItems, 
+    onRemoveFromCart, 
+    onIncreaseQuantity, 
+    onDecreaseQuantity, 
+    onCloseCart,
+    isOpen,        // Sepetin açık/kapalı durumunu kontrol eder
+    totalAmount    // Toplam tutarı App.js'ten alacağız
+}) {
+  
+  const navigate = useNavigate(); // Yönlendirme hook'u
 
-  const handleFindNearestMarket = () => {
-    // Backend olmadan örnek market verileri oluşturalım
-    const sampleMarkets = [
-      { name: 'Yerel Market A', distance: '1.5 km', totalPrice: (parseFloat(totalAmount) * 1.05).toFixed(2) }, // Örnek fiyat artışı
-      { name: 'Süpermarket B', distance: '2.1 km', totalPrice: totalAmount },
-      { name: 'Ekonomik Market C', distance: '0.8 km', totalPrice: (parseFloat(totalAmount) * 0.98).toFixed(2) }, // Örnek fiyat düşüşü
-    ];
-    setMarketSuggestions(sampleMarkets);
+  // Market önerileri state'i ve fonksiyonu kaldırıldı
+  // const [marketSuggestions, setMarketSuggestions] = useState([]);
+  // const handleFindNearestMarket = () => { ... };
+
+  const handleGoToCart = () => {
+      onCloseCart(); // Sepet dropdown'ını kapat
+      navigate('/cart'); // Tam sepet sayfasına yönlendir (bu route'u oluşturmanız gerekebilir)
   };
 
   return (
-    <div className="shopping-cart">
-      <div className="cart-header">
-        <h2>Sepetim</h2>
-        <button className="close-button-cart" onClick={onCloseCart}>
-          <AiOutlineClose size={20} />
-        </button>
-      </div>
-      {cartItems.length === 0 ? (
-        <div className="empty-cart">
-          <p>Sepetiniz boş.</p>
+    // Ana kapsayıcıya dropdown ve open/close sınıflarını ekle
+    <div className={`shopping-cart-dropdown ${isOpen ? 'open' : ''}`}> 
+      {/* İçerik için sarmalayıcı */}
+      <div className="cart-content"> 
+        <div className="cart-header">
+          <h2>Sepetim</h2>
+          <button className="close-button-cart" onClick={onCloseCart}>
+            <AiOutlineClose size={20} />
+          </button>
         </div>
-      ) : (
-        <ul>
-          {cartItems.map((item) => (
-            <li key={item.id}>
-              <div className="item-info">
-                <span>{item.name}</span>
-                <span>{item.price} ₺</span>
-              </div>
-              <div className="quantity-controls">
-                <button onClick={() => onDecreaseQuantity(item.id)}>-</button>
-                <span>{item.quantity}</span>
-                <button onClick={() => onIncreaseQuantity(item.id)}>+</button>
-              </div>
-              <button className="remove-button" onClick={() => onRemoveFromCart(item.id)}>Sil</button>
-            </li>
-          ))}
-        </ul>
-      )}
-      {cartItems.length > 0 && (
-        <div className="total">
-          <span>Toplam:</span>
-          <span>{totalAmount} ₺</span>
-        </div>
-      )}
 
-      {cartItems.length > 0 && (
-        <div className="market-suggestion-section">
-          <button className="find-market-button" onClick={handleFindNearestMarket}>En Uygun Marketi Bul</button>
+        {cartItems.length === 0 ? (
+          // Sepet boş mesajı için yeni sınıf adı
+          <div className="empty-cart-message"> 
+            <p>Sepetiniz şu an boş.</p>
+          </div>
+        ) : (
+          <> {/* Fragment kullanarak listeyi ve butonu grupla */}
+            {/* Ürün listesi için yeni sınıf adı */}
+            <ul className="cart-item-list"> 
+              {cartItems.map((item) => (
+                // Liste elemanı için yeni sınıf adı ve yapı
+                <li key={item.id} className="cart-item"> 
+                  {/* Sol taraf: İsim ve Fiyat */}
+                  <div className="item-details">
+                    <span className="item-name">{item.name}</span>
+                    <span className="item-price">{item.price.toFixed(2)} ₺</span> 
+                  </div>
+                  {/* Sağ taraf: Kontroller */}
+                  <div className="item-controls">
+                     {/* Silme Butonu (İkon) */}
+                     <button 
+                        className="remove-item-btn" 
+                        onClick={() => onRemoveFromCart(item.id)}
+                        aria-label={`${item.name} ürününü sil`} // Erişilebilirlik için
+                     >
+                        <FaTrashAlt />
+                     </button>
+                     {/* Adet Ayarlayıcı */}
+                     <div className="item-quantity-adjuster">
+                        <button 
+                           onClick={() => onDecreaseQuantity(item.id)} 
+                           disabled={item.quantity <= 1} // Adet 1 ise eksi butonu pasif
+                           aria-label={`${item.name} adetini azalt`}
+                        >
+                           <FaMinus size={10}/> {/* Daha küçük ikon */}
+                        </button>
+                        <span className="item-quantity">{item.quantity}</span>
+                        <button 
+                           onClick={() => onIncreaseQuantity(item.id)}
+                           aria-label={`${item.name} adetini artır`}
+                        >
+                            <FaPlus size={10}/> {/* Daha küçük ikon */}
+                        </button>
+                     </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            
+            {/* Sepete Git Butonu */}
+            <button className="go-to-cart-button" onClick={handleGoToCart}>
+                <span>Sepete Git</span>
+                <span className="total-price">{totalAmount} ₺</span>
+            </button>
+          </>
+        )}
 
-          {marketSuggestions.length > 0 && (
-            <div className="market-suggestions">
-              <h3>Market Önerileri:</h3>
-              <ul>
-                {marketSuggestions.map((market, index) => (
-                  <li key={index}>
-                    <strong>{market.name}</strong> - Mesafe: {market.distance} - Tahmini Toplam: {market.totalPrice} ₺
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+        {/* Market Önerileri Bölümü KALDIRILDI */}
+        
+      </div> 
     </div>
   );
 }

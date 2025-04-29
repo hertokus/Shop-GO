@@ -1,166 +1,194 @@
-.shopping-cart {
-    background-color: #fff; /* Beyaz arka plan */
-    padding: 20px;
-    border-radius: 12px; /* Daha yuvarlak köşeler */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hafif gölge */
-    margin-top: 20px;
-    font-family: 'Arial', sans-serif; /* Daha modern font */
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .cart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .shopping-cart h2 {
-    margin-top: 0;
-    margin-bottom: 0; /* Başlık için alttan boşluğu kaldır */
-    color: #333;
-  }
-  
-  .close-button-cart {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #666;
-    font-size: 1.2rem;
-  }
-  
-  .close-button-cart:hover {
-    color: #333;
-  }
-  
-  .shopping-cart ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .shopping-cart li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0; /* Daha fazla dikey boşluk */
-    border-bottom: 1px solid #f0f0f0;
-  }
-  
-  .shopping-cart li:last-child {
-    border-bottom: none;
-  }
-  
-  .item-info span {
-    margin-right: 15px; /* Daha fazla boşluk */
-    font-size: 1.1rem; /* Daha büyük font */
-  }
-  
-  .quantity-controls {
-    display: flex;
-    align-items: center;
-  }
-  
-  .quantity-controls button {
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 8px; /* Daha yuvarlak butonlar */
-    padding: 8px 12px;
-    margin: 0 8px; /* Daha fazla boşluk */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .quantity-controls button:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .remove-button {
-    background-color: #b1323f;
-    color: white;
-    border: none;
-    border-radius: 8px; /* Daha yuvarlak buton */
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .remove-button:hover {
-    background-color: #912732;
-  }
-  
-  .total {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 20px; /* Daha fazla boşluk */
-    font-weight: bold;
-    font-size: 1.2rem; /* Daha büyük font */
-    margin-bottom: 20px; /* Market butonu için alttan boşluk */
-  }
-  
-  .market-suggestion-section {
-    margin-top: 30px; /* Daha fazla boşluk */
-    padding-top: 20px;
-    border-top: 2px solid #eee; /* Daha belirgin çizgi */
-    display: flex;
-    flex-direction: column; /* Öğeleri alt alta sırala */
-    align-items: center; /* Yatayda ortala (isteğe bağlı) */
-  }
-  
-  .find-market-button {
-    background-color: #ff6200;
-    color: white;
-    border: none;
-    border-radius: 10px; /* Daha yuvarlak buton */
-    padding: 12px 20px;
-    font-size: 1.1rem; /* Daha büyük font */
-    cursor: pointer;
-    outline: none;
-    transition: background-color 0.3s ease;
-    margin-bottom: 20px; /* Market önerileri için alttan boşluk */
-    width: 80%; /* Butonun genişliği (isteğe bağlı) */
-    max-width: 300px; /* Butonun maksimum genişliği (isteğe bağlı) */
-  }
-  
-  .find-market-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .market-suggestions h3 {
-    margin-top: 0;
-    margin-bottom: 15px; /* Daha fazla boşluk */
-    color: #333;
-    font-size: 1.2rem; /* Daha büyük font */
-    text-align: center; /* Başlığı ortala (isteğe bağlı) */
-  }
-  
-  .market-suggestions ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%; /* Listeyi genişlet */
-  }
-  
-  .market-suggestions li {
-    padding: 12px 0; /* Daha fazla dikey boşluk */
-    border-bottom: 1px solid #f0f0f0;
-    text-align: center; /* Öğeleri ortala (isteğe bağlı) */
-  }
-  
-  .market-suggestions li:last-child {
-    border-bottom: none;
-  }
-  
-  /* Sepet boşken stil */
-  .empty-cart {
-    padding: 20px;
-    text-align: center; /* Metni ortala */
-  }
-  
-  .empty-cart p {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #777;
-  }
+/* ShoppingCart.css - Getir Stiline Yakınlaştırılmış */
+
+/* Genel Sepet Kutusu Stili ve Konumlandırma */
+.shopping-cart-dropdown { /* Yeni bir kapsayıcı sınıf eklemek iyi olabilir */
+  position: absolute; /* Sayfadaki akıştan çıkar, pozisyonlandırılabilir */
+  top: 60px; /* TopBar yüksekliğine göre ayarlayın */
+  right: 20px; /* Sağ kenara olan uzaklık (TopBar'daki ikona göre ayarlayın) */
+  width: 350px; /* Sabit veya maksimum genişlik */
+  max-width: 90%;
+  background-color: #fff;
+  border-radius: 8px; /* Köşe yuvarlaklığı */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); /* Daha belirgin gölge */
+  z-index: 101; /* TopBar'ın üzerinde kalması için */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Sistem fontu */
+  border: 1px solid #eee;
+  /* Açılıp kapanma animasyonu için (isteğe bağlı) */
+  /* opacity: 0; */
+  /* transform: translateY(-10px); */
+  /* transition: opacity 0.2s ease, transform 0.2s ease; */
+  /* visibility: hidden; */
+}
+
+/* Sepet açıkken görünüürlük için */
+.shopping-cart-dropdown.open {
+  /* opacity: 1; */
+  /* transform: translateY(0); */
+  /* visibility: visible; */
+  display: block; /* Veya display:flex; eğer flex yapısı varsa */
+}
+
+/* Başlangıçta gizli */
+.shopping-cart-dropdown:not(.open) {
+  display: none;
+}
+
+
+/* İç Padding */
+.cart-content { /* İçerik için ekstra div gerekebilir */
+  padding: 15px;
+}
+
+
+/* Ürün Listesi */
+.cart-item-list { /* ul etiketi için yeni sınıf */
+  list-style: none;
+  padding: 0;
+  margin: 0 0 15px 0; /* Alt boşluk */
+  max-height: 300px; /* Maksimum yükseklik ve scroll */
+  overflow-y: auto; /* Dikey scroll */
+}
+
+/* Tek bir Sepet Öğesi */
+.cart-item { /* li etiketi için yeni sınıf */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+/* Ürün Bilgisi (İsim ve Fiyat) */
+.item-details {
+  display: flex;
+  flex-direction: column; /* İsim ve fiyat alt alta */
+  flex-grow: 1; /* Genişleyebilen alan */
+  margin-right: 10px; /* Kontrollerle arası */
+}
+
+.item-details .item-name {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 4px; /* Fiyatla arası */
+  line-height: 1.3;
+}
+
+.item-details .item-price {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #12461f; /* Getir moru veya istediğiniz ana renk */
+}
+
+/* Sağdaki Kontrol Grubu */
+.item-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Kontroller arası boşluk */
+}
+
+/* Silme Butonu (Çöp Kutusu İkonu) */
+.item-controls .remove-item-btn {
+  background: none;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  color: #888;
+  font-size: 1.1rem; /* İkon boyutu */
+  line-height: 1;
+}
+.item-controls .remove-item-btn:hover {
+  color: #dc3545; /* Kırmızı hover */
+}
+
+/* Adet Kontrolleri Kutusu */
+.item-quantity-adjuster {
+  display: flex;
+  align-items: center;
+  background-color: #fff; /* Veya hafif gri #f8f8f8 */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Eksi/Artı Butonları */
+.item-quantity-adjuster button {
+  background-color: transparent; /* Şeffaf */
+  border: none;
+  color: #ffe643; /* Buton ikon rengi */
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 5px 8px;
+  cursor: pointer;
+  line-height: 1;
+}
+.item-quantity-adjuster button:hover {
+  background-color: #f0f0f0;
+}
+.item-quantity-adjuster button:disabled { /* Miktar 1 iken eksi butonu pasif olabilir */
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Adet Göstergesi */
+.item-quantity-adjuster .item-quantity {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  min-width: 30px; /* Minimum genişlik */
+  text-align: center;
+  background-color: #fff; /* Arka planı beyaz yaptık */
+  color: #ffe643; /* Yazı rengini istediğiniz sarı yaptık */
+  /* Kenarlıklar, butonlarla hizalamak için opsiyonel */
+  /* border-top: 1px solid #ddd; */
+  /* border-bottom: 1px solid #ddd; */
+}
+
+
+/* Sepete Git Butonu */
+.go-to-cart-button {
+  display: flex;
+  justify-content: space-between; /* Yazı sola, fiyat sağa */
+  align-items: center;
+  width: 100%;
+  background-color: #12461f; /* Ana buton rengi */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 10px; /* Üstteki elemanla boşluk */
+}
+
+.go-to-cart-button:hover {
+  background-color: #ffe643; /* Hover rengi */
+}
+
+.go-to-cart-button .total-price {
+  background-color: rgba(255, 255, 255, 0.2); /* Fiyat için hafif vurgu */
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+/* Sepet boşken stil */
+.empty-cart-message { /* Yeni sınıf adı */
+  padding: 30px 15px;
+  text-align: center;
+  color: #777;
+  font-size: 0.95rem;
+}
+
+/* Eski, kullanılmayan stilleri kaldırın (.total, .market-suggestion-section vb.) */
+.total,
+.market-suggestion-section,
+.find-market-button,
+.market-suggestions {
+  display: none;
+}

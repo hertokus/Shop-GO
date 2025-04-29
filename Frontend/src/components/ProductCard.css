@@ -54,12 +54,12 @@
 
 .product-price {
   font-weight: bold;
-  color: #28a745;
+  color:#12461f;
   font-size: 1rem;
 }
 
 .add-to-cart-button {
-  background-color: #037a31f8; /* Yeşil arka plan rengi */
+  background-color: #12461f; /* Yeşil arka plan rengi */
   color: white;
   border: none;
   border-radius: 8px; /* TopBar'daki arama kutusuyla benzerlik için */
@@ -71,6 +71,6 @@
 }
 
 .add-to-cart-button:hover {
-  background-color: #efe807; /* Sarı hover rengi */
+  background-color: #ffe643; /* Sarı hover rengi */
   color: #333; /* Hover olduğunda yazı rengi */
 }
