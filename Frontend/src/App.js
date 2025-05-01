@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 // Component importları
 import HomePage from './pages/homepage';
+import ProductList from './components/ProductList';
 import ShoppingCart from './components/ShoppingCart'; // Bu import artık gerekmeyebilir, çünkü App.js'de render edilmiyor.
 import NearestMarket from './components/NearestMarket'; // Bu component kullanılıyor mu?
 import TopBar from './components/TopBar';
@@ -74,7 +75,7 @@ function App() {
         <div className="app-container">
           {/* TopBar'a Sepet Dropdown'ı için Gerekli Tüm Propları Gönder */}
           <TopBar 
-            cartCount={cartItems.length} 
+            cartCount={cartItems.length} // Sepetteki ürün sayısı
             onCartClick={toggleCart} // İkona tıklanınca sepeti aç/kapat
             setCartIconPosition={setCartIconPosition} 
             // --- ShoppingCart (dropdown içindeki) için proplar ---
@@ -86,6 +87,7 @@ function App() {
             onDecreaseQuantity={handleDecreaseQuantity} 
             onCloseCart={toggleCart} // Dropdown içindeki kapatma butonu için
           />
+          <ProductList onAddToCart={handleAddToCart} />
           <div className="content-wrapper">
             <Routes>
               {/* Giriş/Kayıt Sayfası */}

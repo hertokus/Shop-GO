@@ -1,12 +1,37 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './ProductCard.css';
+import AddToCartFeedback from './AddToCartFeedback';
 
 function ProductCard({ product, onAddToCart, getCartPosition }) {
     const cardRef = useRef(null);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [feedback, setFeedback] = useState(null);
+    const feedbackTimeoutRef = useRef(null);
+
+    useEffect(() => {
+        if (feedback) {
+            if (feedbackTimeoutRef.current) {
+                clearTimeout(feedbackTimeoutRef.current);
+            }
+
+            feedbackTimeoutRef.current = setTimeout(() => {
+                setFeedback(null);
+                feedbackTimeoutRef.current = null;
+            }, 1000);
+        }
+    }, [feedback]);
 
     const handleAddToCartClick = () => {
         onAddToCart(product);
+
+        // Her tıklamada yeni id üret ve quantity'yi artır
+        setFeedback(prev => ({
+            id: Date.now(), // her seferinde farklı olsun ki useEffect çalışsın
+            quantity: prev && prev.productName === product.name ? prev.quantity + 1 : 1,
+            productName: product.name
+        }));
+
+        // Animasyon
         if (cardRef.current && getCartPosition) {
             const cardRect = cardRef.current.getBoundingClientRect();
             const cartPosition = getCartPosition();
@@ -30,8 +55,16 @@ function ProductCard({ product, onAddToCart, getCartPosition }) {
                         document.body.removeChild(animatable);
                     }
                     setIsAnimating(false);
-                }, 500); // Animasyon süresi
+                }, 500);
             }
+        }
+    };
+
+    const handleFeedbackClose = () => {
+        setFeedback(null);
+        if (feedbackTimeoutRef.current) {
+            clearTimeout(feedbackTimeoutRef.current);
+            feedbackTimeoutRef.current = null;
         }
     };
 
@@ -49,6 +82,15 @@ function ProductCard({ product, onAddToCart, getCartPosition }) {
                         Ekle
                     </button>
                 </div>
+
+                {feedback && (
+                    <AddToCartFeedback
+                        key={feedback.id}
+                        productName={feedback.productName}
+                        quantity={feedback.quantity}
+                        onClose={handleFeedbackClose}
+                    />
+                )}
             </div>
         </div>
     );

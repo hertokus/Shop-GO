@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, JWTManager, get_jwt_identity
 from unidecode import unidecode
+from math import radians, cos, sin, asin, sqrt 
 
 # --- Uygulama ve Eklenti Başlatma ---
 app = Flask(__name__)
@@ -27,6 +28,20 @@ app.config['JWT_SECRET_KEY'] = 'cok-guclu-bir-jwt-secret-key-olmalı-bunu-da-deg
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
+
+def haversine(lon1, lat1, lon2, lat2):
+    """
+    İki nokta arasındaki uzaklığı hesaplar (km cinsinden). 📏
+    """
+    R = 6371  # Dünya'nın yarıçapı (km) 🌍
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    return R * c
+
 
 
 # --- Veritabanı Modelleri ---
@@ -68,10 +83,16 @@ class Market(db.Model):
    id = db.Column(db.Integer, primary_key=True)
    name = db.Column(db.String(255), nullable=False)
    address = db.Column(db.String(255))
-   # ... diğer market alanları ...
+   city = db.Column(db.String(50))
+   district = db.Column(db.String(50))
+   latitude = db.Column(db.Float)  # Enlem
+   longitude = db.Column(db.Float) # Boylam
 
    def to_dict(self):
-       return {'id': self.id, 'name': self.name, 'address': self.address}
+       return {'id': self.id, 'name': self.name, 'address': self.address , 'city': self.city,
+            'district': self.district,
+            'latitude': self.latitude,
+            'longitude': self.longitude}
 
 # Market-Ürün İlişki Modeli (Mevcut Kodunuzdan)
 class MarketProduct(db.Model):
@@ -228,6 +249,37 @@ def get_markets_with_products():
         print(f"Markets with Products Error: {e}")
         return jsonify({"message": "Market ve ürünler getirilirken hata oluştu"}), 500
 
+@app.route('/api/nearest-markets', methods=['GET'])
+def get_nearest_markets():
+    user_lat = request.args.get('latitude', type=float)
+    user_lon = request.args.get('longitude', type=float)
+
+    markets = Market.query.all()
+    nearest_markets = []
+
+    for market in markets:
+        market_info = market.to_dict()
+
+        # Eğer koordinatlar varsa mesafe hesapla
+        if user_lat is not None and user_lon is not None and market.latitude and market.longitude:
+            distance = haversine(user_lon, user_lat, market.longitude, market.latitude)
+            nearest_markets.append({
+                'market': market_info,
+                'distance': round(distance, 2)
+            })
+        else:
+            # Mesafe yoksa sadece market bilgisi döndür
+            nearest_markets.append({
+                'market': market_info,
+                'distance': None  # ya da 'Bilinmiyor'
+            })
+
+    # Varsa sıralama yap
+    if user_lat is not None and user_lon is not None:
+        nearest_markets.sort(key=lambda x: x['distance'])
+
+    return jsonify(nearest_markets[:5])
+
 
 @app.route('/api/markets-with-products/filter', methods=['GET'])
 def filter_markets_with_products():
@@ -274,3 +326,5 @@ if __name__ == '__main__':
     with app.app_context():
          db.create_all() 
     app.run(debug=True) # debug=True geliştirme aşamasında kullanışlıdır, production'da False olmalı
+
+    
