@@ -9,7 +9,7 @@ function AddToCartFeedback({ productName, quantity, onClose }) {
     const timer = setTimeout(() => {
       setIsVisible(false);
       onClose(); // Ana bileşene kaybolma bilgisini ver
-    }, 3000); // 3 saniye sonra kaybol
+    }, 2000); // 3 saniye sonra kaybol
 
     return () => clearTimeout(timer); // Bileşen unmount olursa timer'ı temizle
   }, []);

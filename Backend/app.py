@@ -7,6 +7,7 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, JWTManager, get_jwt_identity
 from unidecode import unidecode
 from math import radians, cos, sin, asin, sqrt 
+import requests
 
 # --- Uygulama ve Eklenti Başlatma ---
 app = Flask(__name__)
@@ -251,34 +252,43 @@ def get_markets_with_products():
 
 @app.route('/api/nearest-markets', methods=['GET'])
 def get_nearest_markets():
-    user_lat = request.args.get('latitude', type=float)
-    user_lon = request.args.get('longitude', type=float)
+    # Enlem ve boylam parametrelerini al
+    try:
+        user_lat = float(request.args.get('latitude'))
+        user_lon = float(request.args.get('longitude'))
+        print("✅ Kullanıcı konumu:", user_lat, user_lon)
+    except (TypeError, ValueError):
+        return jsonify({"message": "Geçerli enlem ve boylam bilgisi gereklidir."}), 400
 
-    markets = Market.query.all()
-    nearest_markets = []
+    try:
+        markets = Market.query.all()
+        nearest_markets = []
 
-    for market in markets:
-        market_info = market.to_dict()
+        for market in markets:
+            market_info = market.to_dict()
 
-        # Eğer koordinatlar varsa mesafe hesapla
-        if user_lat is not None and user_lon is not None and market.latitude and market.longitude:
-            distance = haversine(user_lon, user_lat, market.longitude, market.latitude)
-            nearest_markets.append({
-                'market': market_info,
-                'distance': round(distance, 2)
-            })
-        else:
-            # Mesafe yoksa sadece market bilgisi döndür
-            nearest_markets.append({
-                'market': market_info,
-                'distance': None  # ya da 'Bilinmiyor'
-            })
+            if market.latitude is not None and market.longitude is not None:
+                distance = haversine(user_lon, user_lat, market.longitude, market.latitude)
+                nearest_markets.append({
+                    'market': market_info,
+                    'distance': round(distance, 2)
+                })
+            else:
+                nearest_markets.append({
+                    'market': market_info,
+                    'distance': None
+                })
 
-    # Varsa sıralama yap
-    if user_lat is not None and user_lon is not None:
+        # Uzaklık bilgisine göre sırala
+        nearest_markets = [m for m in nearest_markets if m['distance'] is not None]
         nearest_markets.sort(key=lambda x: x['distance'])
 
-    return jsonify(nearest_markets[:5])
+        return jsonify(nearest_markets[:5])
+
+    except Exception as e:
+        print("❌ Nearest market hesaplama hatası:", str(e))
+        return jsonify({"message": "Market verileri alınırken bir hata oluştu."}), 500
+
 
 
 @app.route('/api/markets-with-products/filter', methods=['GET'])
