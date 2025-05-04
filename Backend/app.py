@@ -8,9 +8,12 @@ from flask_jwt_extended import create_access_token, jwt_required, JWTManager, ge
 from unidecode import unidecode
 from math import radians, cos, sin, asin, sqrt 
 import requests
+from geopy.distance import geodesic
+
 
 # --- Uygulama ve Eklenti Başlatma ---
 app = Flask(__name__)
+
 
 # CORS Yapılandırması (Geliştirme için *, production'da daha kısıtlı)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -148,6 +151,7 @@ def register():
         print(f"Register Error: {e}") # Hata loglama
         return jsonify({"message": "Kayıt sırasında bir hata oluştu"}), 500
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -257,6 +261,7 @@ def get_nearest_markets():
         user_lat = float(request.args.get('latitude'))
         user_lon = float(request.args.get('longitude'))
         print("✅ Kullanıcı konumu:", user_lat, user_lon)
+        
     except (TypeError, ValueError):
         return jsonify({"message": "Geçerli enlem ve boylam bilgisi gereklidir."}), 400
 
@@ -284,10 +289,10 @@ def get_nearest_markets():
         nearest_markets.sort(key=lambda x: x['distance'])
 
         return jsonify(nearest_markets[:5])
-
     except Exception as e:
         print("❌ Nearest market hesaplama hatası:", str(e))
         return jsonify({"message": "Market verileri alınırken bir hata oluştu."}), 500
+    
 
 
 

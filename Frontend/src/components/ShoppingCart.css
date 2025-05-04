@@ -192,3 +192,30 @@
 .market-suggestions {
   display: none;
 }
+
+/* ShoppingCart.css */
+.nearest-market-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px;
+  margin-top: 10px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+}
+
+.nearest-markets-container {
+  margin-top: 10px;
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.nearest-markets-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.nearest-markets-list li {
+  margin: 5px 0;
+}
