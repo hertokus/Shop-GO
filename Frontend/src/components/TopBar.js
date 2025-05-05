@@ -1,11 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-import './TopBar.css'; // TopBar için CSS dosyası
+import './TopBar.css';
 import { FaShoppingCart } from 'react-icons/fa';
-import logo from '../assets/CHART.png'; // Logo importu (yolu doğrulayın)
+import logo from '../assets/CHART.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // AuthContext hook'u
-import ShoppingCart from './ShoppingCart'; // ShoppingCart bileşenini import et
+import { useAuth } from '../context/AuthContext';
+import ShoppingCart from './ShoppingCart';
 
+// Arama için searchTerm ve onSearchChange props'ları eklendi
 function TopBar({
     cartCount,
     onCartClick,
@@ -16,19 +17,19 @@ function TopBar({
     onRemoveFromCart,
     onIncreaseQuantity,
     onDecreaseQuantity,
-    onCloseCart
+    onCloseCart,
+    searchTerm,       // Yeni prop
+    onSearchChange    // Yeni prop
 }) {
   const cartIconRef = useRef(null);
   const navigate = useNavigate();
-
   const { isAuthenticated, user, logout } = useAuth();
 
-  // ----> SORUNU ANLAMAK İÇİN BU LOG ÇOK ÖNEMLİ <----
-  // Tarayıcı konsolunda bu çıktıyı kontrol et!
+  // Bu log, isAuthenticated'in TopBar'a nasıl geldiğini görmek için önemli
   console.log('TopBar - isAuthenticated değeri:', isAuthenticated);
-  // ----> LOG SONU <----
 
   useEffect(() => {
+    // Sepet ikonu pozisyonu için kod (değişmedi)
     if (cartIconRef.current && setCartIconPosition) {
       const rect = cartIconRef.current.getBoundingClientRect();
       setCartIconPosition({
@@ -53,15 +54,21 @@ function TopBar({
         </div>
       </Link>
 
-      {/* Orta Kısım - Arama Çubuğu (Sadece isAuthenticated true ise gösterilir) */}
-      {isAuthenticated && (
+      {/* Orta Kısım - Arama Çubuğu */}
+      {isAuthenticated && ( // Sadece giriş yapıldıysa göster
         <div className="search-bar">
-          <input type="text" placeholder="Ürün ara..." />
+          <input
+            type="text"
+            placeholder="Ürün ara..."
+            value={searchTerm}        // Değeri state'e bağla
+            onChange={onSearchChange}   // Değişikliği App.js'e ilet
+          />
         </div>
       )}
 
       {/* Sağ Taraf - Kullanıcı & Sepet */}
       <div className="top-bar-right">
+        {/* Kullanıcı Bilgisi veya Giriş Linkleri */}
         <div className="user-auth-section">
           {isAuthenticated && user ? (
             <>
@@ -69,29 +76,20 @@ function TopBar({
               <button onClick={handleLogout} className="logout-button">Çıkış Yap</button>
             </>
           ) : (
-            <>
-              <Link to="/auth" className="auth-link">Giriş Yap / Kayıt Ol</Link>
-            </>
+            <Link to="/auth" className="auth-link">Giriş Yap / Kayıt Ol</Link>
           )}
         </div>
 
-        {/* Sepet İkonu Alanı (isAuthenticated kontrolü eklendi) */}
-        {isAuthenticated && (
-          <div
-            id="cart-icon"
-            className="cart"
-            onClick={onCartClick}
-            ref={cartIconRef}
-          >
+        {/* Sepet İkonu Alanı */}
+        {isAuthenticated && ( // Sadece giriş yapıldıysa göster
+          <div id="cart-icon" className="cart" onClick={onCartClick} ref={cartIconRef}>
             <FaShoppingCart size={24} />
-            {cartCount > 0 && (
-               <span className="cart-count">{cartCount}</span>
-            )}
+            {cartCount > 0 && (<span className="cart-count">{cartCount}</span>)}
           </div>
         )}
 
-        {/* Sepetin Gösterildiği Yer (isAuthenticated kontrolü eklendi) */}
-        {isAuthenticated && (
+        {/* Sepetin Gösterildiği Yer (Dropdown) */}
+        {isAuthenticated && ( // Sadece giriş yapıldıysa göster
             <ShoppingCart
               isOpen={isCartOpen}
               cartItems={cartItems}
@@ -102,7 +100,6 @@ function TopBar({
               onCloseCart={onCloseCart}
             />
         )}
-
       </div>
     </div>
   );

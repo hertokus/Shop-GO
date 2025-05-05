@@ -8,49 +8,48 @@ const AuthContext = createContext(null);
 // 2. Provider Component'i oluştur (Uygulamayı saracak)
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  // ----> DÜZELTME: Token state'ini başlangıçta null yap <----
+  // Token state'ini başlangıçta null yap (Düzeltme burada)
   const [token, setToken] = useState(null);
-  // ----> DÜZELTME SONU <----
 
-  // Bu useEffect, bileşen yüklendiğinde localStorage'ı kontrol eder.
+  // Bileşen yüklendiğinde localStorage'ı kontrol et
   useEffect(() => {
     const storedToken = localStorage.getItem('accessToken');
     const storedUsername = localStorage.getItem('username');
-    // Eğer localStorage'da hem token hem username varsa, state'leri güncelle.
     if (storedToken && storedUsername) {
-      setToken(storedToken); // Token state'ini güncelle
-      setUser({ username: storedUsername }); // User state'ini güncelle
+      setToken(storedToken);
+      setUser({ username: storedUsername });
       console.log("AuthContext (useEffect): localStorage'dan oturum bilgisi bulundu.", { username: storedUsername });
     } else {
-      // Eğer localStorage boşsa veya eksikse, state'lerin null olduğundan emin ol.
       setToken(null);
       setUser(null);
     }
-  }, []); // [] -> Bu effect sadece component ilk yüklendiğinde çalışır.
+  }, []); // Sadece component ilk yüklendiğinde çalışır.
 
+  // Login fonksiyonu
   const login = (userData) => {
     if (userData.access_token && userData.username) {
       localStorage.setItem('accessToken', userData.access_token);
       localStorage.setItem('username', userData.username);
-      setToken(userData.access_token); // State'i güncelle
-      setUser({ username: userData.username }); // State'i güncelle
+      setToken(userData.access_token);
+      setUser({ username: userData.username });
       console.log("AuthContext: Kullanıcı giriş yaptı ve state güncellendi.", { username: userData.username });
     } else {
         console.error("AuthContext: Login fonksiyonuna eksik veri geldi.", userData);
     }
   };
 
+  // Logout fonksiyonu
   const logout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('username');
-    setToken(null); // State'i güncelle
-    setUser(null); // State'i güncelle
+    setToken(null);
+    setUser(null);
     console.log("AuthContext: Kullanıcı çıkış yaptı.");
   };
 
-  // isAuthenticated'in hesaplanması (!!token)
+  // Context değeri
   const value = {
-    isAuthenticated: !!token,
+    isAuthenticated: !!token, // Token varsa true, yoksa false
     user,
     token,
     login,
@@ -60,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// 3. Context'i kullanmak için özel bir hook
+// 3. Context'i kullanmak için özel hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

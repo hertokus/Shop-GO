@@ -1,26 +1,28 @@
 import React, { useState } from 'react';
 // Component importları
 import HomePage from './pages/homepage';
-import ProductList from './components/ProductList';
-import ShoppingCart from './components/ShoppingCart'; // Bu import artık gerekmeyebilir, çünkü App.js'de render edilmiyor.
-import NearestMarket from './components/NearestMarket'; // Bu component kullanılıyor mu?
+import ProductList from './components/ProductList'; // Eğer HomePage içinde kullanılmıyorsa
+// import ShoppingCart from './components/ShoppingCart'; // TopBar içinde kullanılıyor
+// import NearestMarket from './components/NearestMarket'; // Kullanılıyorsa import kalsın
 import TopBar from './components/TopBar';
-import AuthPage from './pages/AuthPage'; 
-import CartPage from './pages/CartPage'; // Yeni eklenen sepet sayfası importu
+import AuthPage from './pages/AuthPage';
+import CartPage from './pages/CartPage'; // Sepet sayfası importu
 // Rotalama importları
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; 
-// Context importu - AuthContext.js dosyasının yolunu doğrulayın!
-import { AuthProvider } from './context/AuthContext'; 
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+// Context importu
+import { AuthProvider } from './context/AuthContext';
 // CSS importu
 import './App.css';
 
 function App() {
   // --- State Tanımlamaları ---
   const [cartItems, setCartItems] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false); // Sepet dropdown'ının açık/kapalı durumu
-  const [activeCategory, setActiveCategory] = useState('Atıştırmalık'); // Aktif kategori
-  const [cartIconPosition, setCartIconPosition] = useState(null); // Sepet ikonu pozisyonu (gerekliyse)
-  
+  const [isCartOpen, setIsCartOpen] = useState(false); // Sepet dropdown'ı için
+  const [activeCategory, setActiveCategory] = useState('Atıştırmalık');
+  const [cartIconPosition, setCartIconPosition] = useState(null);
+  // Arama terimi state'i
+  const [searchTerm, setSearchTerm] = useState('');
+
   // --- Sepet Fonksiyonları ---
   const handleAddToCart = (product) => {
     const existingItem = cartItems.find((item) => item.id === product.id);
@@ -55,14 +57,18 @@ function App() {
     setActiveCategory(category);
   };
 
-  // Sepet dropdown'ını açıp kapatan fonksiyon
-  const toggleCart = () => { 
+  const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
   };
 
-  // Bu fonksiyonun kullanımını kontrol edin, belki artık gerekli değildir
+  // Bu fonksiyonun kullanımı devam ediyorsa kalabilir
   const getCartPosition = () => {
     return cartIconPosition;
+  };
+
+  // Arama terimini güncelleyen fonksiyon
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
   };
 
   // --- Toplam Tutar ---
@@ -70,61 +76,67 @@ function App() {
 
   return (
     // AuthProvider ile uygulamayı sarmala
-    <AuthProvider> 
+    <AuthProvider>
       <Router>
         <div className="app-container">
-          {/* TopBar'a Sepet Dropdown'ı için Gerekli Tüm Propları Gönder */}
-          <TopBar 
-            cartCount={cartItems.length} // Sepetteki ürün sayısı
-            onCartClick={toggleCart} // İkona tıklanınca sepeti aç/kapat
-            setCartIconPosition={setCartIconPosition} 
-            // --- ShoppingCart (dropdown içindeki) için proplar ---
-            isCartOpen={isCartOpen} 
-            cartItems={cartItems} 
-            totalAmount={totalAmount} 
-            onRemoveFromCart={handleRemoveFromCart} 
-            onIncreaseQuantity={handleIncreaseQuantity} 
-            onDecreaseQuantity={handleDecreaseQuantity} 
-            onCloseCart={toggleCart} // Dropdown içindeki kapatma butonu için
+          {/* TopBar'a Gerekli Tüm Propları Gönder */}
+          <TopBar
+            cartCount={cartItems.length}
+            onCartClick={toggleCart}
+            setCartIconPosition={setCartIconPosition}
+            isCartOpen={isCartOpen}
+            cartItems={cartItems}
+            totalAmount={totalAmount}
+            onRemoveFromCart={handleRemoveFromCart}
+            onIncreaseQuantity={handleIncreaseQuantity}
+            onDecreaseQuantity={handleDecreaseQuantity}
+            onCloseCart={toggleCart}
+            // Arama ile ilgili proplar
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
           />
-          <ProductList onAddToCart={handleAddToCart} />
+
+          {/* ProductList burada render ediliyorsa kalsın, yoksa kaldırılabilir */}
+          {/* <ProductList onAddToCart={handleAddToCart} /> */}
+
           <div className="content-wrapper">
             <Routes>
               {/* Giriş/Kayıt Sayfası */}
               <Route path="/auth" element={<AuthPage />} />
-              
+
               {/* Ana Sayfa */}
-              <Route path="/home" element={<HomePage
-                onAddToCart={handleAddToCart} // Ürün ekleme fonksiyonu
-                activeCategory={activeCategory}
-                onCategorySelect={handleCategorySelect}
-                getCartPosition={getCartPosition} // Gerekli mi?
-              />} />
-              
-              {/* Tam Ekran Sepet Sayfası */}
-              <Route 
-                  path="/cart" 
-                  element={
-                      <CartPage 
-                          cartItems={cartItems} 
-                          totalAmount={totalAmount}
-                          onRemoveFromCart={handleRemoveFromCart} 
-                          onIncreaseQuantity={handleIncreaseQuantity} 
-                          onDecreaseQuantity={handleDecreaseQuantity} 
-                          // CartPage içinden sepete ürün ekleme olmayacağı için handleAddToCart burada yok
-                      />
-                  } 
+              <Route path="/home" element={
+                <HomePage
+                  onAddToCart={handleAddToCart} // Ürün ekleme fonksiyonu
+                  activeCategory={activeCategory}
+                  onCategorySelect={handleCategorySelect}
+                  getCartPosition={getCartPosition} // Gerekli mi kontrol et
+                  searchTerm={searchTerm} // Arama terimi prop'u
+                />}
               />
-              
-              {/* Kök dizine gelince /auth'a yönlendir (Veya giriş yapılmışsa /home'a yönlendirilebilir) */}
-              <Route path="/" element={<Navigate to="/auth" />} /> 
-              
+
+              {/* Tam Ekran Sepet Sayfası - ESLint Hatası Düzeltildi */}
+              <Route
+                  path="/cart"
+                  // ----> DÜZELTME BURADA: element prop'u geçerli JSX içermeli <----
+                  element={
+                      <CartPage
+                          cartItems={cartItems}
+                          totalAmount={totalAmount}
+                          onRemoveFromCart={handleRemoveFromCart}
+                          onIncreaseQuantity={handleIncreaseQuantity}
+                          onDecreaseQuantity={handleDecreaseQuantity}
+                      />
+                  }
+                  // ----> DÜZELTME SONU <----
+              />
+
+              {/* Kök dizine gelince /auth'a yönlendir */}
+              <Route path="/" element={<Navigate to="/auth" />} />
+
               {/* Diğer sayfalarınız için routelar buraya eklenebilir */}
             </Routes>
-            
-            {/* Eski sepet modalı render edilmiyor */}
 
-            {/* <NearestMarket totalAmount={totalAmount} /> */}
           </div>
           <footer>
             <p>&copy; 2025 Shop-GO</p>

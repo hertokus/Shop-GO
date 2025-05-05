@@ -2,34 +2,50 @@ import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import './ProductList.css';
 
-function ProductList({ selectedCategory, onAddToCart, getCartPosition }) {
-  const [products, setProducts] = useState([]);
+// HomePage'den gelen searchTerm prop'unu ekle
+function ProductList({ selectedCategory, onAddToCart, getCartPosition, searchTerm }) {
+  const [products, setProducts] = useState([]); // Backend'den gelen (kategoriye göre filtrelenmiş) ürünler
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-        // selectedCategory'yi URL'ye ekliyoruz
-        const response = await fetch(`http://localhost:5000/api/products/${selectedCategory}`);
+      setLoading(true);
+      setError(null);
+      console.log(`ProductList: ${selectedCategory} kategorisi için ürünler çekiliyor...`); // Log eklendi
+      try {
+        // Backend'den kategoriye göre filtrelenmiş ürünleri çek
+        const apiUrl = selectedCategory && selectedCategory !== 'Hepsi'
+          ? `http://localhost:5000/api/products/${selectedCategory}` // Kategori varsa URL'e ekle
+          : `http://localhost:5000/api/products`; // Kategori 'Hepsi' ise veya yoksa tüm ürünleri çek (Backend bunu destekliyorsa)
+
+        const response = await fetch(apiUrl);
         if (!response.ok) {
-        throw new Error('Ürünler alınırken bir hata oluştu.');
+          throw new Error('Ürünler alınırken bir hata oluştu.');
         }
         const data = await response.json();
-        setProducts(data);
-    } catch (error) {
+        setProducts(data); // Gelen veriyi state'e ata
+      } catch (error) {
         setError(error.message);
-    } finally {
+      } finally {
         setLoading(false);
-    }
+      }
     };
 
     fetchProducts();
-}, [selectedCategory]);  // selectedCategory değiştiğinde tekrar çek
+  }, [selectedCategory]); // selectedCategory değiştiğinde tekrar çek
 
-  
+  // ----> YENİ: Arama terimine göre filtreleme <----
+  // Backend'den gelen (ve zaten kategoriye göre filtrelenmiş olan) 'products' listesini kullan
+  const searchFilteredProducts = products.filter(product => {
+    // Eğer arama terimi varsa, ürün adının arama terimini içerip içermediğine bak
+    // Büyük/küçük harf duyarsız arama yap
+    return searchTerm
+      ? product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      : true; // Arama terimi yoksa (boşsa), tüm ürünleri göster (true döndür)
+  });
+  // ----> YENİ SONU <----
+
 
   if (loading) {
     return <div>Yükleniyor...</div>;
@@ -39,22 +55,29 @@ function ProductList({ selectedCategory, onAddToCart, getCartPosition }) {
     return <div>Hata: {error}</div>;
   }
 
-  // Kategoriye göre filtrelenmiş ürünleri göster (backend'den gelen tüm ürünler)
-  const filteredProducts = products.filter(product => {
-    // Varsayımsal olarak, eğer her ürünün bir 'category' özelliği varsa:
-    return selectedCategory === 'Hepsi' || product.category === selectedCategory;
-  });
+  // Eski frontend kategori filtrelemesi kaldırıldı, çünkü backend yapıyor varsayıyoruz.
 
   return (
     <div className="product-list-container">
-    <h2>{selectedCategory}</h2>
-    <div className="product-list">
-        {products.map((product) => (
-        <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} getCartPosition={getCartPosition} />
-        ))}
+      <h2>{selectedCategory || 'Tüm Ürünler'}</h2> {/* Kategori adını göster */}
+      {/* Filtrelenmiş ürün listesini map ile dön */}
+      <div className="product-list">
+        {searchFilteredProducts.length > 0 ? ( // Eğer filtrelenmiş ürün varsa
+          searchFilteredProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAddToCart={onAddToCart}
+              getCartPosition={getCartPosition} // Bu prop hala gerekli mi kontrol et
+            />
+          ))
+        ) : (
+          // Filtreleme sonucu ürün yoksa mesaj göster
+          <p>"{selectedCategory}" kategorisinde "{searchTerm}" ile eşleşen ürün bulunamadı.</p>
+        )}
+      </div>
     </div>
-    </div>
-);
+  );
 }
 
 export default ProductList;
