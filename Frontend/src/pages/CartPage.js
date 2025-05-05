@@ -104,30 +104,31 @@ function CartPage({
        </div>
       </div>
      </div>
+     {/* En Yakın Marketler Listesi */}
+{marketSuggestions.length > 0 && (
+  <div className="market-suggestions-container">
+    <h2>En Yakın Marketler</h2>
+    <ul>
+      {marketSuggestions.map((market, index) => (
+        <li key={index}>
+          <strong>{market.market.name}</strong> - {market.distance} km
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
+{marketError && (
+  <div style={{ color: 'red', marginTop: '1rem' }}>
+    {marketError}
+  </div>
+)}
+
+
 
      {/* En Yakın Marketler Listesi */}
-     <div className="market-suggestion-section mt-4">
-      {marketError && <p className="market-error">{marketError}</p>}
-      {!isLoadingMarkets && marketSuggestions.length > 0 && (
-       <div className="market-suggestions">
-        <h3>📍 En Yakın Marketler:</h3>
-        <ul>
-         {marketSuggestions.map((item, index) => (
-          <li key={index}>
-           <div>
-           <strong>{item.name || item.market?.name}</strong>
-            <small>{item.address || item.market?.address}</small>
-
-            <br/>
-            <small style={{ color: '#555' }}>{item.address || item.market?.address}</small>
-           </div>
-           <div>📏 {item.distance?.toFixed(2) || 0} km uzaklıkta</div>
-          </li>
-         ))}
-        </ul>
-       </div>
-      )}
-     </div>
+     
+     
     </>
    )}
   </div>
