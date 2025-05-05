@@ -22,6 +22,7 @@ function App() {
   const [cartIconPosition, setCartIconPosition] = useState(null);
   // Arama terimi state'i
   const [searchTerm, setSearchTerm] = useState('');
+  
 
   // --- Sepet Fonksiyonları ---
   const handleAddToCart = (product) => {

@@ -26,33 +26,7 @@ function ShoppingCart({
       navigate('/cart'); // Tam sepet sayfasına yönlendir (bu route'u oluşturmanız gerekebilir)
   };
 
-  const handleFindNearestMarkets = () => {
-    setLoadingMarkets(true);
-    setError(null);
-
-    // Örnek koordinatları sabit verdik, istersen props veya navigator.geolocation ile dinamik yapabilirsin
-    const latitude = 36.9618812;
-    const longitude = 35.3103072;
-
-    fetch(`http://127.0.0.1:5000/api/nearest-markets?latitude=${latitude}&longitude=${longitude}`)
-      .then(res => {
-        if (!res.ok) {
-          throw new Error("Veri alınamadı");
-        }
-        return res.json();
-      })
-      .then(data => {
-        setNearestMarkets(data);
-      })
-      .catch(err => {
-        setError(err.message);
-      })
-      .finally(() => {
-        setLoadingMarkets(false);
-      });
-  };
-
-
+  
   return (
     // Ana kapsayıcıya dropdown ve open/close sınıflarını ekle
     <div className={`shopping-cart-dropdown ${isOpen ? 'open' : ''}`}> 
@@ -120,25 +94,7 @@ function ShoppingCart({
                 <span className="total-price">{totalAmount} ₺</span>
             </button>
                 {/* Sepet dışında, sayfanın altında ayrı bir container */}
-                {/* En Yakın Marketleri Bul Butonu */}
-                <button className="nearest-market-button" onClick={handleFindNearestMarkets}>
-              En Yakın 5 Marketi Göster
-            </button>
-
-            {/* Market Sonuçlarını Göster */}
-            <div className="nearest-markets-container">
-              {loadingMarkets && <p>Yükleniyor...</p>}
-              {error && <p style={{ color: 'red' }}>{error}</p>}
-              {nearestMarkets.length > 0 && (
-                <ul className="nearest-markets-list">
-                  {nearestMarkets.map((item, index) => (
-                    <li key={index}>
-                      <strong>{item.market.name}</strong> - {item.distance} km
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+              
 
 
           </>

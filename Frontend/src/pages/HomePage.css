@@ -1,0 +1,40 @@
+.location-bar {
+  background-color: #f1f1f1;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  width: fit-content;
+}
+
+.modal {
+  background-color: white;
+  padding: 1rem;
+  width: 80%;
+  max-width: 600px;
+  margin: auto;
+  border-radius: 10px;
+  position: relative;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button {
+  margin-top: 1rem;
+  padding: 8px 15px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}

@@ -30,11 +30,11 @@ function CartPage({
     navigator.geolocation.getCurrentPosition(async (position) => {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
-  
+    
       try {
-        const response = await fetch(`http://localhost:5000/api/nearest-markets?latitude=${lat}&longitude=${lon}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/nearest-markets?latitude=${lat}&longitude=${lon}`);
         if (!response.ok) throw new Error("API yanıtı alınamadı.");
-  
+    
         const result = await response.json();
         const sliced = result.slice(0, 5); // En yakın 5 market
         setMarketSuggestions(sliced);
@@ -49,6 +49,7 @@ function CartPage({
       setIsLoadingMarkets(false);
       setMarketError("Konum alınamadı. Lütfen konum izni verin.");
     });
+    
   };
   
 
