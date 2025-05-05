@@ -1,8 +1,7 @@
-/* TopBar.css - Güncellenmiş Hali */
+/* TopBar.css - Değişiklik Gerekmiyor */
 
 .top-bar {
-    background-color: #ffe643; /* Sarı */
-    
+  background-color: #ffe643; /* Sarı */
   /* color: white; */ /* Genel yazı rengi beyaz yerine spesifik tanımlayalım */
   padding: 10px 25px; /* Padding biraz azaltıldı */
   display: flex;
@@ -10,115 +9,115 @@
   justify-content: space-between; /* Öğeleri iki uca yasla */
   position: sticky; /* Üstte sabit kalması için */
   top: 0;
-  z-index: 100; 
+  z-index: 100;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Hafif alt çizgi */
 }
 
 /* Sol Taraf: Logo ve Uygulama Adı */
 .logo-link {
-  text-decoration: none; /* Link alt çizgisini kaldır */
+text-decoration: none; /* Link alt çizgisini kaldır */
 }
 
 .logo-container {
-  display: flex; 
-  align-items: center; 
+display: flex;
+align-items: center;
 }
 
 .logo {
-  height: 35px; /* Logo yüksekliği biraz artırıldı */
-  margin-right: 8px; /* Logo ile yazı arasında boşluk */
+height: 35px; /* Logo yüksekliği biraz artırıldı */
+margin-right: 8px; /* Logo ile yazı arasında boşluk */
 }
 
 .app-name {
-  font-family: sans-serif; 
-  font-size: 1.4rem; /* Boyut biraz artırıldı */
-  font-weight: bold; 
-  color: #12461f; /* Koyu gri/siyah yazı rengi sarı üstünde daha okunaklı */
-  /* color: #037a31f8; */ /* Yeşil yerine koyu renk daha iyi olabilir */
-  margin: 0; 
+font-family: sans-serif;
+font-size: 1.4rem; /* Boyut biraz artırıldı */
+font-weight: bold;
+color: #12461f; /* Koyu gri/siyah yazı rengi sarı üstünde daha okunaklı */
+/* color: #037a31f8; */ /* Yeşil yerine koyu renk daha iyi olabilir */
+margin: 0;
 }
 
 /* Orta Kısım: Arama Çubuğu */
 .search-bar {
-  flex-grow: 1; /* Ortada kalan alanı doldurur */
-  margin: 0 30px; /* Sağ ve sol boşluklar */
-  max-width: 450px; /* Maksimum genişlik artırıldı */
+flex-grow: 1; /* Ortada kalan alanı doldurur */
+margin: 0 30px; /* Sağ ve sol boşluklar */
+max-width: 450px; /* Maksimum genişlik artırıldı */
 }
 
 .search-bar input[type="text"] {
-  width: 100%;
-  padding: 10px 15px; /* Padding artırıldı */
-  border: 1px solid #ddd; /* Hafif kenarlık */
-  border-radius: 20px; /* Yuvarlak kenarlar */
-  font-size: 0.95rem; 
-  color: #333;
+width: 100%;
+padding: 10px 15px; /* Padding artırıldı */
+border: 1px solid #ddd; /* Hafif kenarlık */
+border-radius: 20px; /* Yuvarlak kenarlar */
+font-size: 0.95rem;
+color: #333;
 }
 
 /* Sağ Taraf: Kullanıcı Bilgisi ve Sepet */
 .top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 25px; /* Sağdaki öğeler (kullanıcı alanı ve sepet) arası boşluk */
+display: flex;
+align-items: center;
+gap: 25px; /* Sağdaki öğeler (kullanıcı alanı ve sepet) arası boşluk */
 }
 
 /* Kullanıcı Bilgisi / Giriş Linkleri Alanı */
 .user-auth-section {
-  display: flex;
-  align-items: center;
-  gap: 12px; /* İçindeki öğeler arası boşluk */
+display: flex;
+align-items: center;
+gap: 12px; /* İçindeki öğeler arası boşluk */
 }
 
 .welcome-user-message {
-  font-weight: 500;
-  color: #12461f; /* Koyu renk (sarı arka plana uygun) */
-  white-space: nowrap; /* Uzun isimlerin alt satıra kaymasını engelle */
-  font-size: 0.9rem;
+font-weight: 500;
+color: #12461f; /* Koyu renk (sarı arka plana uygun) */
+white-space: nowrap; /* Uzun isimlerin alt satıra kaymasını engelle */
+font-size: 0.9rem;
 }
 
 /* Çıkış Butonu ve Giriş/Kayıt Linki Stili */
 .logout-button, .auth-link {
-  background-color: rgba(255, 255, 255, 0.1); /* Çok hafif şeffaf beyaz */
-  border: 1px solid rgba(0, 0, 0, 0.2); /* İnce koyu border */
-  color: #333; /* Koyu renk yazı */
-  cursor: pointer;
-  text-decoration: none;
-  padding: 6px 12px; /* Buton/Link iç boşluğu */
-  border-radius: 5px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  white-space: nowrap; /* Yazıların tek satırda kalması */
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+background-color: rgba(255, 255, 255, 0.1); /* Çok hafif şeffaf beyaz */
+border: 1px solid rgba(0, 0, 0, 0.2); /* İnce koyu border */
+color: #333; /* Koyu renk yazı */
+cursor: pointer;
+text-decoration: none;
+padding: 6px 12px; /* Buton/Link iç boşluğu */
+border-radius: 5px;
+font-size: 0.85rem;
+font-weight: 500;
+white-space: nowrap; /* Yazıların tek satırda kalması */
+transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 .logout-button:hover, .auth-link:hover {
-  background-color: rgba(0, 0, 0, 0.05); /* Hover'da hafif koyulaşma */
-  border-color: #333;
-  color: #000;
+background-color: rgba(0, 0, 0, 0.05); /* Hover'da hafif koyulaşma */
+border-color: #333;
+color: #000;
 }
 
 /* Sepet Alanı */
 .cart {
-  position: relative; /* Sayaç pozisyonu için */
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: #333; /* Sepet ikon rengi (koyu) */
+position: relative; /* Sayaç pozisyonu için */
+display: flex;
+align-items: center;
+cursor: pointer;
+color: #333; /* Sepet ikon rengi (koyu) */
 }
 
 /* Sepet Ürün Sayacı */
 .cart-count {
-  background-color: #dc3545; /* Kırmızı arka plan (daha dikkat çekici) */
-  /* background-color: #037a31f8; */ /* VEYA Yeşil */
-  color: white; 
-  border-radius: 50%;
-  padding: 2px 6px; /* İç boşluk */
-  font-size: 0.75rem; /* Küçük yazı */
-  font-weight: bold;
-  line-height: 1; /* Dikey hizalama için */
-  position: absolute; /* İkona göre pozisyon */
-  top: -6px;     /* Yukarı */
-  right: -10px;  /* Sağa */
-  border: 1px solid #fff; /* Beyaz ince çerçeve */
-  min-width: 18px; /* Tek rakamda bile yuvarlak durması için */
-  box-sizing: border-box;
-  text-align: center;
+background-color: #dc3545; /* Kırmızı arka plan (daha dikkat çekici) */
+/* background-color: #037a31f8; */ /* VEYA Yeşil */
+color: white;
+border-radius: 50%;
+padding: 2px 6px; /* İç boşluk */
+font-size: 0.75rem; /* Küçük yazı */
+font-weight: bold;
+line-height: 1; /* Dikey hizalama için */
+position: absolute; /* İkona göre pozisyon */
+top: -6px;     /* Yukarı */
+right: -10px;  /* Sağa */
+border: 1px solid #fff; /* Beyaz ince çerçeve */
+min-width: 18px; /* Tek rakamda bile yuvarlak durması için */
+box-sizing: border-box;
+text-align: center;
 }
