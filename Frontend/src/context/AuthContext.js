@@ -1,55 +1,67 @@
-// src/context/AuthContext.js KODU (DÜZELTİLMİŞ):
+// src/context/AuthContext.js (sessionStorage ile Güncellenmiş)
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// 1. Context'i oluştur
 const AuthContext = createContext(null);
 
-// 2. Provider Component'i oluştur (Uygulamayı saracak)
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  // Token state'ini başlangıçta null yap (Düzeltme burada)
+  const [user, setUser] = useState(null); // Artık { username: '...', fullName: '...' } gibi bir obje
   const [token, setToken] = useState(null);
 
-  // Bileşen yüklendiğinde localStorage'ı kontrol et
   useEffect(() => {
-    const storedToken = localStorage.getItem('accessToken');
-    const storedUsername = localStorage.getItem('username');
-    if (storedToken && storedUsername) {
-      setToken(storedToken);
-      setUser({ username: storedUsername });
-      console.log("AuthContext (useEffect): localStorage'dan oturum bilgisi bulundu.", { username: storedUsername });
+    // localStorage yerine sessionStorage kullanılıyor
+    const storedToken = sessionStorage.getItem('accessToken');
+    const storedUserString = sessionStorage.getItem('user');
+
+    if (storedToken && storedUserString) {
+      try {
+        const storedUser = JSON.parse(storedUserString);
+        setToken(storedToken);
+        setUser(storedUser);
+        console.log("AuthContext (useEffect): sessionStorage'dan oturum bilgisi bulundu.", { token: storedToken, user: storedUser });
+      } catch (error) {
+        console.error("AuthContext (useEffect): sessionStorage'dan user parse edilirken hata:", error);
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('user');
+        setToken(null);
+        setUser(null);
+      }
     } else {
       setToken(null);
       setUser(null);
     }
-  }, []); // Sadece component ilk yüklendiğinde çalışır.
+  }, []);
 
-  // Login fonksiyonu
   const login = (userData) => {
     if (userData.access_token && userData.username) {
-      localStorage.setItem('accessToken', userData.access_token);
-      localStorage.setItem('username', userData.username);
+      // localStorage yerine sessionStorage kullanılıyor
+      sessionStorage.setItem('accessToken', userData.access_token);
+
+      const userToStore = {
+        username: userData.username,
+        fullName: userData.fullName || userData.username
+      };
+      sessionStorage.setItem('user', JSON.stringify(userToStore));
+
       setToken(userData.access_token);
-      setUser({ username: userData.username });
-      console.log("AuthContext: Kullanıcı giriş yaptı ve state güncellendi.", { username: userData.username });
+      setUser(userToStore);
+      console.log("AuthContext: Kullanıcı giriş yaptı ve state güncellendi (sessionStorage).", { token: userData.access_token, user: userToStore });
     } else {
-        console.error("AuthContext: Login fonksiyonuna eksik veri geldi.", userData);
+      console.error("AuthContext: Login fonksiyonuna eksik veri geldi.", userData);
     }
   };
 
-  // Logout fonksiyonu
   const logout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('username');
+    // localStorage yerine sessionStorage kullanılıyor
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('user');
     setToken(null);
     setUser(null);
-    console.log("AuthContext: Kullanıcı çıkış yaptı.");
+    console.log("AuthContext: Kullanıcı çıkış yaptı (sessionStorage temizlendi).");
   };
 
-  // Context değeri
   const value = {
-    isAuthenticated: !!token, // Token varsa true, yoksa false
+    isAuthenticated: !!token,
     user,
     token,
     login,
@@ -59,7 +71,6 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// 3. Context'i kullanmak için özel hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

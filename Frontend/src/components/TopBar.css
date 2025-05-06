@@ -1,123 +1,249 @@
-/* TopBar.css - Değişiklik Gerekmiyor */
+/* TopBar.css - RENKLER VE TESLİMAT SÜRESİ GÜNCELLENMİŞ */
 
 .top-bar {
-  background-color: #ffe643; /* Sarı */
-  /* color: white; */ /* Genel yazı rengi beyaz yerine spesifik tanımlayalım */
-  padding: 10px 25px; /* Padding biraz azaltıldı */
+  background-color: #ffe643; /* Orijinal Sarı Arka Plan */
+  padding: 10px 20px; /* Padding ayarlandı */
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Öğeleri iki uca yasla */
-  position: sticky; /* Üstte sabit kalması için */
+  justify-content: space-between;
+  position: sticky;
   top: 0;
-  z-index: 100;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Hafif alt çizgi */
+  z-index: 1000;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Sol Taraf: Logo ve Uygulama Adı */
+/* Sol Taraf: Sadece Logo ve Uygulama Adı */
+.top-bar-left-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .logo-link {
-text-decoration: none; /* Link alt çizgisini kaldır */
+  text-decoration: none;
+  display: flex;
+  align-items: center;
 }
-
 .logo-container {
-display: flex;
-align-items: center;
+  display: flex;
+  align-items: center;
 }
-
 .logo {
-height: 35px; /* Logo yüksekliği biraz artırıldı */
-margin-right: 8px; /* Logo ile yazı arasında boşluk */
+  height: 35px;
+  margin-right: 8px;
 }
-
 .app-name {
-font-family: sans-serif;
-font-size: 1.4rem; /* Boyut biraz artırıldı */
-font-weight: bold;
-color: #12461f; /* Koyu gri/siyah yazı rengi sarı üstünde daha okunaklı */
-/* color: #037a31f8; */ /* Yeşil yerine koyu renk daha iyi olabilir */
-margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #12461f; /* Koyu Yeşil - Sarı arka plana uygun */
+  margin: 0;
 }
 
-/* Orta Kısım: Arama Çubuğu */
-.search-bar {
-flex-grow: 1; /* Ortada kalan alanı doldurur */
-margin: 0 30px; /* Sağ ve sol boşluklar */
-max-width: 450px; /* Maksimum genişlik artırıldı */
+/* ---- Birleşik Arama/Konum Barı Stilleri ---- */
+.search-location-bar {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 25px;
+  padding: 0;
+  flex-grow: 1;
+  margin: 0 20px;
+  max-width: 700px;
+  height: 45px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  overflow: hidden;
 }
 
-.search-bar input[type="text"] {
-width: 100%;
-padding: 10px 15px; /* Padding artırıldı */
-border: 1px solid #ddd; /* Hafif kenarlık */
-border-radius: 20px; /* Yuvarlak kenarlar */
-font-size: 0.95rem;
-color: #333;
+.search-input-container {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  padding-left: 15px;
 }
 
-/* Sağ Taraf: Kullanıcı Bilgisi ve Sepet */
+.search-icon-inside {
+  color: #757575;
+  margin-right: 10px;
+  font-size: 1.1rem;
+}
+
+.search-input-field {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #333;
+  padding: 10px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.search-input-field::placeholder {
+  color: #aaa;
+}
+
+.location-display-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0 15px;
+  border-left: 1px solid #e0e0e0;
+  /* border-right: 1px solid #e0e0e0; // Teslimat süresi kalktığı için sağ border gereksiz */
+  height: 100%;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+.location-display-container:hover {
+  background-color: #f5f5f5;
+}
+
+.location-icon-inside {
+  color: #12461f; /* Koyu Yeşil - Sarı TopBar ile uyumlu */
+  margin-right: 8px;
+  font-size: 1rem;
+}
+
+.location-text-inside {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* .location-separator { KALDIRILDI } */
+/* .delivery-estimate-container { KALDIRILDI } */
+/* ---- YENİ BAR STİLLERİ SONU ---- */
+
+
+/* Sağ Taraf: Profil ve Sepet */
 .top-bar-right {
-display: flex;
-align-items: center;
-gap: 25px; /* Sağdaki öğeler (kullanıcı alanı ve sepet) arası boşluk */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.auth-link {
+  color: #12461f; /* Koyu Yeşil - Sarı arka plana uygun */
+  cursor: pointer;
+  text-decoration: none;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+.auth-link:hover {
+  color: #0d3a1b; /* Koyu Yeşilin biraz daha koyusu */
 }
 
-/* Kullanıcı Bilgisi / Giriş Linkleri Alanı */
-.user-auth-section {
-display: flex;
-align-items: center;
-gap: 12px; /* İçindeki öğeler arası boşluk */
+/* Profil Alanı Stilleri */
+.profile-section { position: relative; }
+.profile-button {
+  background: none; border: none; padding: 0; cursor: pointer;
+  display: flex; align-items: center; color: #12461f; /* Koyu Yeşil İkon */
+  border-radius: 50%;
+  transition: color 0.2s ease;
 }
+.profile-button:hover {
+  color: #0d3a1b; /* Koyu Yeşilin biraz daha koyusu */
+}
+.profile-button:focus-visible { outline: 2px solid #12461f; outline-offset: 2px; }
 
-.welcome-user-message {
-font-weight: 500;
-color: #12461f; /* Koyu renk (sarı arka plana uygun) */
-white-space: nowrap; /* Uzun isimlerin alt satıra kaymasını engelle */
-font-size: 0.9rem;
+.profile-dropdown {
+  position: absolute; top: calc(100% + 12px); right: 0;
+  background-color: white; border: 1px solid #e0e0e0; border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); z-index: 1001;
+  min-width: 240px; padding: 0; overflow: hidden;
 }
-
-/* Çıkış Butonu ve Giriş/Kayıt Linki Stili */
-.logout-button, .auth-link {
-background-color: rgba(255, 255, 255, 0.1); /* Çok hafif şeffaf beyaz */
-border: 1px solid rgba(0, 0, 0, 0.2); /* İnce koyu border */
-color: #333; /* Koyu renk yazı */
-cursor: pointer;
-text-decoration: none;
-padding: 6px 12px; /* Buton/Link iç boşluğu */
-border-radius: 5px;
-font-size: 0.85rem;
-font-weight: 500;
-white-space: nowrap; /* Yazıların tek satırda kalması */
-transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+.profile-dropdown .dropdown-header {
+  font-weight: 600; padding: 12px 16px; color: #333;
+  background-color: #f8f9fa; border-bottom: 1px solid #e0e0e0;
 }
-.logout-button:hover, .auth-link:hover {
-background-color: rgba(0, 0, 0, 0.05); /* Hover'da hafif koyulaşma */
-border-color: #333;
-color: #000;
+.profile-dropdown ul { list-style: none; padding: 8px 0; margin: 0; }
+.profile-dropdown ul li button, .profile-dropdown ul li a {
+  display: block; width: 100%; text-align: left; padding: 10px 16px;
+  background: none; border: none; color: #333; text-decoration: none;
+  cursor: pointer; font-size: 0.9rem; line-height: 1.4;
+  transition: background-color 0.15s ease-in-out;
 }
+.profile-dropdown ul li button:hover, .profile-dropdown ul li a:hover { background-color: #f0f0f0; }
+.logout-dropdown-button { color: #dc3545 !important; font-weight: 500; }
+.logout-dropdown-button:hover { background-color: rgba(220, 53, 69, 0.1) !important; }
 
 /* Sepet Alanı */
 .cart {
-position: relative; /* Sayaç pozisyonu için */
-display: flex;
-align-items: center;
-cursor: pointer;
-color: #333; /* Sepet ikon rengi (koyu) */
+  position: relative; display: flex; align-items: center; cursor: pointer;
+  color: #12461f; /* Koyu Yeşil İkon */
+  transition: color 0.2s ease;
+}
+.cart:hover {
+  color: #0d3a1b; /* Koyu Yeşilin biraz daha koyusu */
+}
+.cart-count {
+  background-color: #dc3545; color: white; border-radius: 50%;
+  padding: 2px 6px; font-size: 0.75rem; font-weight: bold;
+  line-height: 1; position: absolute; top: -6px; right: -10px;
+  border: 1px solid #ffe643; /* Sarı arka planla uyumlu border */
+  min-width: 18px; box-sizing: border-box; text-align: center;
 }
 
-/* Sepet Ürün Sayacı */
-.cart-count {
-background-color: #dc3545; /* Kırmızı arka plan (daha dikkat çekici) */
-/* background-color: #037a31f8; */ /* VEYA Yeşil */
-color: white;
-border-radius: 50%;
-padding: 2px 6px; /* İç boşluk */
-font-size: 0.75rem; /* Küçük yazı */
-font-weight: bold;
-line-height: 1; /* Dikey hizalama için */
-position: absolute; /* İkona göre pozisyon */
-top: -6px;     /* Yukarı */
-right: -10px;  /* Sağa */
-border: 1px solid #fff; /* Beyaz ince çerçeve */
-min-width: 18px; /* Tek rakamda bile yuvarlak durması için */
-box-sizing: border-box;
-text-align: center;
+/* Harita Modalı Stilleri */
+.map-overlay {
+  background-color: rgba(0, 0, 0, 0.65);
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.map-modal {
+  background-color: white;
+  padding: 25px;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-modal h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.leaflet-container {
+  height: 400px;
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.modal-close-button {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  align-self: center;
+  transition: background-color 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.modal-close-button:hover {
+  background-color: #c0392b;
 }
