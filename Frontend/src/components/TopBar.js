@@ -5,6 +5,9 @@ import logo from '../assets/CHART.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom'; // useLocation import edildi
 import { useAuth } from '../context/AuthContext';
 import ShoppingCart from './ShoppingCart';
+import { useContext } from 'react';
+import { LocationContext } from '../context/LocationContext';
+
 
 // Harita ve Modal için importlar
 import Modal from 'react-modal';
@@ -39,6 +42,12 @@ function TopBar({
     onLocationSelectForModal,
     initialMapCoords
 }) {
+  const handleMapClick = ({ lat, lng }) => {
+    setSelectedLocation({ latitude: lat, longitude: lng }); // Konumu global context'e kaydeder
+    onLocationSelectForModal({ lat, lng }); // Ana uygulamanın da bildiği yerel state veya işlem
+  };
+  
+  const { setSelectedLocation } = useContext(LocationContext);
   const cartIconRef = useRef(null);
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
@@ -153,23 +162,25 @@ function TopBar({
         >
           <h2>Haritadan Konum Seçin</h2>
           <MapContainer
-            center={defaultMapCenter}
-            zoom={13}
-            style={{ height: "400px", width: "100%" }}
-            whenCreated={ mapInstance => {
-                setTimeout(() => { mapInstance.invalidateSize() }, 100);
-              }
-            }
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <LocationPicker onLocationSelect={onLocationSelectForModal} />
-            {initialMapCoords && (
-              <Marker position={[initialMapCoords.lat, initialMapCoords.lng]} />
-            )}
-          </MapContainer>
+  center={defaultMapCenter}
+  zoom={13}
+  style={{ height: "400px", width: "100%" }}
+  whenCreated={(mapInstance) => {
+    setTimeout(() => {
+      mapInstance.invalidateSize();
+    }, 100);
+  }}
+>
+  <TileLayer
+    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  />
+  <LocationPicker onLocationSelect={handleMapClick} />
+  {initialMapCoords && (
+    <Marker position={[initialMapCoords.lat, initialMapCoords.lng]} />
+  )}
+</MapContainer>
+
           <button className="modal-close-button" onClick={toggleAddressModal}>Kapat</button>
         </Modal>
       )}

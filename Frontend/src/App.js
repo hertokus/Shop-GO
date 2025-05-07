@@ -5,6 +5,7 @@ import TopBar from './components/TopBar';
 import CategoryBar from './components/CategoryBar';
 import AuthPage from './pages/AuthPage';
 import CartPage from './pages/CartPage';
+import { LocationProvider } from './context/LocationContext';
 // Rotalama importları
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 // Context importu
@@ -169,11 +170,13 @@ function AppContent() {
 // Ana App component'i artık AuthProvider'ı ve AppContent'i sarıyor.
 function App() {
   return (
+    <LocationProvider>
     <AuthProvider>
       <Router>
         <AppContent />
       </Router>
     </AuthProvider>
+    </LocationProvider>
   );
 }
 

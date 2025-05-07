@@ -1,5 +1,6 @@
 // src/pages/CartPage.js - Dinamik Market Önerisi Eklendi (Kullanıcı Konumu Alarak ve Sepet Altına Yazdırma)
-
+import { useContext, useEffect } from 'react';
+import { LocationContext } from '../context/LocationContext';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrashAlt, FaPlus, FaMinus } from 'react-icons/fa';
@@ -12,10 +13,36 @@ function CartPage({
  onIncreaseQuantity,
  onDecreaseQuantity
 }) {
+  const { selectedLocation } = useContext(LocationContext);
  const navigate = useNavigate();
  const [marketSuggestions, setMarketSuggestions] = useState([]);
  const [isLoadingMarkets, setIsLoadingMarkets] = useState(false);
  const [marketError, setMarketError] = useState('');
+
+ const fetchNearestMarkets = async (lat, lon) => {
+  try {
+    setIsLoadingMarkets(true);
+    setMarketError('');
+    const response = await fetch(`http://127.0.0.1:5000/api/nearest-markets?latitude=${lat}&longitude=${lon}`);
+    if (!response.ok) throw new Error("API yanıtı alınamadı.");
+    const result = await response.json();
+    setMarketSuggestions(result.slice(0, 5));
+  } catch (err) {
+    console.error(err);
+    setMarketError("❌ Market verileri alınamadı.");
+  } finally {
+    setIsLoadingMarkets(false);
+  }
+};
+
+
+
+
+ useEffect(() => {
+  if (selectedLocation) {
+    fetchNearestMarkets(selectedLocation.latitude, selectedLocation.longitude);
+  }
+}, [selectedLocation]);
 
  const handleCheckout = () => {
     if (!navigator.geolocation) {
