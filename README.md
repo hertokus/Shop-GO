@@ -1,89 +1,68 @@
-# 🛒 SmartShopGo
+# 🛒 SMARTSHOPGO
 
-**SmartShopGo**, kullanıcıların oluşturduğu alışveriş listesine göre en uygun fiyatlı ve ilerleyen versiyonlarda **en yakın** marketi öneren bir web uygulamasıdır. Fiyat verileri Flask tabanlı bir API üzerinden alınmakta ve kullanıcıya ekonomik, hızlı ve pratik bir alışveriş deneyimi sunulmaktadır.
+SmartShopGo, kullanıcıların oluşturduğu alışveriş listesine göre hem en uygun fiyatlı hem de en yakın marketi öneren bir web uygulamasıdır. Fiyat ve konum verileri Flask tabanlı bir API üzerinden alınmakta, kullanıcıya ekonomik ve konforlu bir alışveriş deneyimi sunulmaktadır.
 
----
+# 🚀 PROJE AMACI
 
-## 🚀 Proje Amacı
+Bu proje, bireylerin zaman ve maliyet tasarrufu yapmasını sağlamayı hedefler. Kullanıcı ürünlerini sepete ekledikten sonra sistem, fiyat karşılaştırması yaparak en ekonomik marketi önerir. Ayrıca tarayıcı konumu alınarak en yakın marketler listelenir. Geliştirilmeye açık mimarisi sayesinde ilerleyen sürümlerde rota optimizasyonu ve mobil uygulama entegrasyonu da hedeflenmektedir.
 
-Bu proje, alışveriş yapan bireylerin **zaman ve maliyet tasarrufu sağlamasını** hedefler. Kullanıcı, alışveriş listesine ürünleri ekledikten sonra sistem en uygun fiyatlı marketi belirler. Geliştirmeye açık mimarisi sayesinde, ilerleyen süreçte **konum bazlı öneri**, **rota optimizasyonu** ve **mobil uygulama entegrasyonu** da eklenebilecektir.
+# 👥 EKİP
 
----
+| İsim  | Rol                | Teknolojiler                     |
+|-------|--------------------|----------------------------------|
+| Ahmet | Backend Developer  | Python, Flask, PostgreSQL        |
+| Hasan | Frontend Developer | React.js, HTML, CSS, JS          |
 
-## 👥 Ekip
+# 🧩 ÖZELLİKLER
 
-| İsim   | Rol                 | Teknolojiler            |
-|--------|---------------------|--------------------------|
-| Ahmet  | Backend Developer   | Python, Flask, PostgreSQL |
-| Hasan  | Frontend Developer  | React.js, HTML, CSS, JS  |
+📝 Alışveriş listesi oluşturma
 
----
+📦 Flask API üzerinden ürün ve market verisi alma
 
-## 🧩 Özellikler
+📊 Sepet toplamı ve fiyat karşılaştırması yapma
 
-- 📝 Alışveriş listesi oluşturma  
-- 📦 Flask API üzerinden ürün ve market verisi alma  
-- 📊 Fiyat karşılaştırması yaparak en uygun marketi önerme  
-- 📍 Geliştirme aşamasında: Konuma göre yakın market belirleme  
-- 💻 Modern, responsive (mobil uyumlu) arayüz  
-- 🔄 Modüler mimari: Kolayca genişletilebilir yapı  
-- 🛠️ GitHub üzerinden iki geliştiriciyle ortak yürütülen proje  
+📍 Tarayıcıdan alınan konuma göre en yakın 5 marketi önerme
 
----
+💻 Responsive web arayüz (mobil uyumlu)
 
-## 🛠️ Kullanılan Teknolojiler
+🔑 Kullanıcı kayıt/giriş ve JWT ile kimlik doğrulama
 
-| Katman      | Teknoloji                            |
-|-------------|--------------------------------------|
-| Frontend    | React.js, JavaScript, CSS, Bootstrap |
-| Backend     | Python, Flask                        |
-| Veritabanı  | PostgreSQL                           |
-| VCS         | Git, GitHub Desktop                  |
-| IDE         | PyCharm, Visual Studio Code          |
+🧭 Konuma dayalı mesafe hesaplama (haversine algoritması ile)
 
----
+🔄 Geliştirilmeye açık, modüler mimari
 
-## 📦 Geliştirme Durumu
+🧪 Geliştirilen özelliklerin tümü GitHub üzerinden yönetilmektedir
 
-| Aşama                                      | Durum   |
-|-------------------------------------------|---------|
-| Proje planlaması ve görev dağılımı        | ✅ Tamamlandı |
-| Frontend yapısı ve bileşenleri            | ✅ Tamamlandı |
-| Flask backend kurulumu                    | ✅ Tamamlandı |
-| PostgreSQL veritabanı kurulumu ve bağlantı| ✅ Tamamlandı |
-| 150 ürünlük veri seti oluşturulması       | ✅ Tamamlandı |
-| API ile veri çekme                        | ✅ Tamamlandı |
-| Kategori bazlı filtreleme                 | ✅ Tamamlandı |
-| Sepet yönetimi                            | ✅ Tamamlandı |
-| Kullanıcı giriş/kayıt sistemi             | ✅ Tamamlandı|
-| Fiyat karşılaştırması (algoritma geliştirme) | 🔄 Devam ediyor |
-| Konuma göre market önerisi                | 🔜 Planlandı |
-| Mobil uyumluluk iyileştirmeleri           | 🔄 Devam ediyor |
-| Sunum demosu ve test                      | 🔜 Hazırlanacak |
+# 🛠️ KULLANILAN TEKNOLOJİLER
 
----
+| Katman          | Teknoloji                                |
+|-----------------|------------------------------------------|
+| Frontend        | React.js, JavaScript, CSS, Bootstrap     |
+| Backend         | Python, Flask, Flask-JWT, SQLAlchemy     |
+| Veritabanı      | PostgreSQL                               |
+| Versiyon Kontrol| Git, GitHub Desktop                      |
+| IDE             | PyCharm, Visual Studio Code              |
 
-## 🎯 Hedef
+# 📦 GELİŞTİRME DURUMU
 
-Bu proje, Çukurova Üniversitesi Bilgisayar Mühendisliği bitirme projesi kapsamında geliştirilmektedir. Hedef; kullanışlı, sade ve geliştirilebilir bir alışveriş öneri sistemi oluşturmak ve mümkünse mobil versiyona taşımaktır.
+| Aşama                                      | Durum         |
+|--------------------------------------------|---------------|
+| ✅ Proje planlaması ve görev dağılımı        | Tamamlandı    |
+| ✅ Frontend bileşenleri (ProductCard, CategoryList, Cart vb.) | Tamamlandı    |
+| ✅ Flask backend kurulumu ve bağlantı        | Tamamlandı    |
+| ✅ PostgreSQL veritabanı bağlantısı ve veri seti | Tamamlandı    |
+| ✅ Ürün ve kategori bazlı listeleme         | Tamamlandı    |
+| ✅ Sepet yönetimi (ekle/sil/arttır/azalt)   | Tamamlandı    |
+| ✅ Kullanıcı kayıt ve giriş (JWT destekli)  | Tamamlandı    |
+| ✅ Tarayıcı konumu alındı                   | Tamamlandı    |
+| ✅ En yakın marketler mesafe ile listelendi | Tamamlandı    |
+| 🔄 Fiyat karşılaştırma algoritması         | Geliştiriliyor|
+| 🔜 Harita entegrasyonu (opsiyonel)          | Planlandı     |
+| 🔜 Mobil uyumluluk testleri ve performans   | Planlandı     |
+| 🔜 Kullanıcı profil ekranı                  | Planlandı     |
+| 🔜 Ödeme sistemi entegrasyonu (opsiyonel)   | Planlandı     |
 
----
+![Ekran Görüntüsü (18)](https://github.com/user-attachments/assets/3d63d845-500e-465b-8663-ab769e93002c)
+![Ekran Görüntüsü (19)](https://github.com/user-attachments/assets/a71227ce-375f-4051-b523-8891f7d29e51)
+![Ekran Görüntüsü (20)](https://github.com/user-attachments/assets/d9fba805-e5d0-44ee-b6cf-38094238b659)
 
-## 📌 Notlar
-
-- Proje, GitHub üzerinde **ortak çalışma** sistemiyle yürütülmektedir.
-- Kod yapısı **modüler** olacak şekilde tasarlanmış, ileri aşamalarda:
-  - 🗺️ Konum bazlı market önerisi  
-  - 📱 Mobil uygulamaya dönüşüm  
-  - 📦 Lojistik ve rota optimizasyonu  
-  gibi özelliklerle zenginleştirilmesi planlanmaktadır.
-
----
-
-## 💬 Katkı ve Geri Bildirim
-
-Proje hakkında önerilerin veya katkıların varsa, bizimle [Issues](https://github.com/CaramelMisto/Shop-GO/issues) ya da [Pull Requests](https://github.com/CaramelMisto/Shop-GO/pulls) üzerinden iletişime geçebilirsin!
-
----
-
-📍 GitHub: [github.com/CaramelMisto/Shop-GO](https://github.com/CaramelMisto/Shop-GO)
