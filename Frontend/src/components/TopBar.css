@@ -1,8 +1,8 @@
-/* TopBar.css - RENKLER VE TESLİMAT SÜRESİ GÜNCELLENMİŞ */
+/* TopBar.css - Profil Menüsü Güncellemeleri Dahil */
 
 .top-bar {
   background-color: #ffe643; /* Orijinal Sarı Arka Plan */
-  padding: 10px 20px; /* Padding ayarlandı */
+  padding: 10px 20px; 
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -88,7 +88,6 @@
   cursor: pointer;
   padding: 0 15px;
   border-left: 1px solid #e0e0e0;
-  /* border-right: 1px solid #e0e0e0; // Teslimat süresi kalktığı için sağ border gereksiz */
   height: 100%;
   flex-shrink: 0;
   transition: background-color 0.2s ease;
@@ -98,7 +97,7 @@
 }
 
 .location-icon-inside {
-  color: #12461f; /* Koyu Yeşil - Sarı TopBar ile uyumlu */
+  color: #12461f; 
   margin-right: 8px;
   font-size: 1rem;
 }
@@ -114,8 +113,6 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* .location-separator { KALDIRILDI } */
-/* .delivery-estimate-container { KALDIRILDI } */
 /* ---- YENİ BAR STİLLERİ SONU ---- */
 
 
@@ -127,7 +124,7 @@
   flex-shrink: 0;
 }
 .auth-link {
-  color: #12461f; /* Koyu Yeşil - Sarı arka plana uygun */
+  color: #12461f; 
   cursor: pointer;
   text-decoration: none;
   padding: 6px 0;
@@ -137,57 +134,145 @@
   transition: color 0.2s ease;
 }
 .auth-link:hover {
-  color: #0d3a1b; /* Koyu Yeşilin biraz daha koyusu */
+  color: #0d3a1b; 
 }
 
 /* Profil Alanı Stilleri */
 .profile-section { position: relative; }
 .profile-button {
   background: none; border: none; padding: 0; cursor: pointer;
-  display: flex; align-items: center; color: #12461f; /* Koyu Yeşil İkon */
+  display: flex; align-items: center; color: #12461f; 
   border-radius: 50%;
   transition: color 0.2s ease;
 }
 .profile-button:hover {
-  color: #0d3a1b; /* Koyu Yeşilin biraz daha koyusu */
+  color: #0d3a1b; 
 }
 .profile-button:focus-visible { outline: 2px solid #12461f; outline-offset: 2px; }
 
+
+/* === Profil Açılır Menüsü (Dropdown) Stilleri - GÜNCELLENMİŞ VE YENİ EKLENMİŞ === */
 .profile-dropdown {
-  position: absolute; top: calc(100% + 12px); right: 0;
-  background-color: white; border: 1px solid #e0e0e0; border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); z-index: 1001;
-  min-width: 240px; padding: 0; overflow: hidden;
+  position: absolute; 
+  top: calc(100% + 12px); 
+  right: 0;
+  background-color: white; 
+  border: 1px solid #e0e0e0; 
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+  z-index: 1001;
+  min-width: 260px; /* Yeni bölümler için biraz daha geniş */
+  padding: 0; 
+  overflow: hidden; 
 }
+
 .profile-dropdown .dropdown-header {
-  font-weight: 600; padding: 12px 16px; color: #333;
-  background-color: #f8f9fa; border-bottom: 1px solid #e0e0e0;
+  font-weight: 600; 
+  padding: 12px 16px; 
+  color: #333;
+  background-color: #f8f9fa; 
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.95rem; 
 }
-.profile-dropdown ul { list-style: none; padding: 8px 0; margin: 0; }
-.profile-dropdown ul li button, .profile-dropdown ul li a {
-  display: block; width: 100%; text-align: left; padding: 10px 16px;
-  background: none; border: none; color: #333; text-decoration: none;
-  cursor: pointer; font-size: 0.9rem; line-height: 1.4;
+
+.profile-dropdown .dropdown-menu-list { /* ul için */
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+}
+
+/* Menüdeki her bir tıklanabilir öğe veya bilgi satırı için genel stil */
+.profile-dropdown .dropdown-menu-item {
+  display: block; 
+  width: 100%; 
+  text-align: left; 
+  padding: 10px 16px; /* Tutarlı padding */
+  background: none; 
+  border: none; 
+  color: #333; 
+  text-decoration: none;
+  cursor: pointer; 
+  font-size: 0.9rem; 
+  line-height: 1.4;
   transition: background-color 0.15s ease-in-out;
+  box-sizing: border-box; 
 }
-.profile-dropdown ul li button:hover, .profile-dropdown ul li a:hover { background-color: #f0f0f0; }
-.logout-dropdown-button { color: #dc3545 !important; font-weight: 500; }
-.logout-dropdown-button:hover { background-color: rgba(220, 53, 69, 0.1) !important; }
+.profile-dropdown .dropdown-menu-item:hover { 
+  background-color: #f0f0f0; 
+}
+
+/* Çıkış Yap butonu için özel renk */
+.profile-dropdown .logout-dropdown-button { 
+  color: #dc3545 !important; 
+  font-weight: 500; 
+}
+.profile-dropdown .logout-dropdown-button:hover { 
+  background-color: rgba(220, 53, 69, 0.1) !important; 
+}
+
+/* Yeni Eklenen Bölümler İçin Stiller */
+.profile-dropdown .dropdown-section { /* Ad Soyad, Adresim, Kuponlarım gibi bölümlerin li'si */
+  padding: 12px 16px; /* Bölüm içi genel boşluk */
+}
+
+.profile-dropdown .dropdown-section-title {
+  font-size: 0.75rem; 
+  font-weight: bold;
+  color: #6c757d; /* Başlık için gri tonu */
+  margin-bottom: 6px;
+  text-transform: uppercase; 
+  letter-spacing: 0.5px; 
+}
+
+/* Hesap Sahibi (Ad Soyad) metni için stil */
+.profile-dropdown .dropdown-user-info-text {
+  font-size: 0.9rem; 
+  color: #333; 
+  line-height: 1.4;
+  font-weight: 500; /* Biraz daha vurgulu */
+}
+
+/* Adres metni için stil */
+.profile-dropdown .dropdown-address-text {
+  font-size: 0.85rem;
+  color: #495057; 
+  line-height: 1.4; /* Satır yüksekliği ayarlandı */
+  word-break: break-word; 
+}
+
+/* İndirim Kuponlarım linki/alanı için stil (dropdown-menu-item sınıfını da kullanıyor) */
+.profile-dropdown .dropdown-link { 
+  color: #12461f; /* Ana tema yeşili - veya standart link rengi #007bff */
+  font-weight: 500;
+  /* padding, display vb. .dropdown-menu-item'dan alıyor */
+}
+.profile-dropdown .dropdown-link:hover {
+  /* background-color .dropdown-menu-item'dan alıyor */
+  /* text-decoration: underline; İsteğe bağlı: hover'da altını çiz */
+}
+
+.profile-dropdown .dropdown-divider {
+  height: 1px;
+  background-color: #e9ecef; /* Daha yumuşak ayırıcı çizgi */
+  margin: 8px 0; /* Ayırıcı çizgi etrafında dikey boşluk */
+}
+/* === Profil Açılır Menüsü Stilleri Sonu === */
+
 
 /* Sepet Alanı */
 .cart {
   position: relative; display: flex; align-items: center; cursor: pointer;
-  color: #12461f; /* Koyu Yeşil İkon */
+  color: #12461f; 
   transition: color 0.2s ease;
 }
 .cart:hover {
-  color: #0d3a1b; /* Koyu Yeşilin biraz daha koyusu */
+  color: #0d3a1b; 
 }
 .cart-count {
   background-color: #dc3545; color: white; border-radius: 50%;
   padding: 2px 6px; font-size: 0.75rem; font-weight: bold;
   line-height: 1; position: absolute; top: -6px; right: -10px;
-  border: 1px solid #ffe643; /* Sarı arka planla uyumlu border */
+  border: 1px solid #ffe643; 
   min-width: 18px; box-sizing: border-box; text-align: center;
 }
 

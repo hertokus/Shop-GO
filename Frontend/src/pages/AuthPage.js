@@ -142,7 +142,7 @@ function AuthPage() {
             <form onSubmit={isLogin ? handleLoginSubmit : handleRegisterSubmit} className="auth-form">
                 {!isLogin && (
                    <div className="form-group">
-                     <label htmlFor="username">KULLANICI ADI</label>
+                     <label htmlFor="username">Ad Soyad</label>
                      <input type="text" id="username" name="username" value={username} onChange={handleInputChange} required />
                    </div>
                  )}

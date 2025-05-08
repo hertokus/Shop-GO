@@ -1,4 +1,4 @@
-/* src/pages/CartPage.css - Market Bulma Bölümü Eklendi */
+/* src/pages/CartPage.css */
 
 .cart-page-container {
   padding: 25px; 
@@ -22,7 +22,7 @@
   display: flex;
   flex-wrap: wrap; 
   gap: 30px; 
-  margin-bottom: 40px; /* Market bulma bölümü için altta boşluk */
+  margin-bottom: 40px; 
 }
 
 /* Sol Sütun (Ürün Listesi) */
@@ -91,7 +91,7 @@
   align-items: center;
 }
 .item-quantity-adjuster button:hover {
-  background-color: #f8f0ff; 
+  background-color: #f8f0ff; /* Temanızda farklı bir hover rengi olabilir */
 }
 .item-quantity-adjuster button:disabled { 
   color: #ccc;
@@ -103,8 +103,8 @@
   font-weight: bold;
   min-width: 30px;
   text-align: center;
-  background-color: #ffe643; /* Mor */
-  color: #fff; /* Beyaz */
+  background-color: #ffe643; /* Sarı arka plan */
+  color: #333; /* Sarı arka plana koyu renk yazı daha okunaklı olabilir */
   height: 100%; 
   display: flex;
   align-items: center;
@@ -175,8 +175,8 @@
 .checkout-button {
   width: 100%;
   padding: 12px;
-  background-color: #efe807; /* Sarı renk */
-  color: #333; /* Koyu yazı */
+  background-color:  #12461f;; /* Sarı renk */
+  color: #bbb4b4; /* Koyu yazı */
   border: none;
   border-radius: 5px;
   font-size: 1rem; 
@@ -186,45 +186,54 @@
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 .checkout-button:hover {
-  background-color: #12461f; /* Koyu Sarı */
+  background-color:  #ffe643; /* Koyu Sarı (veya #12461f gibi farklı bir renk) */
+  /* color: white; Eğer arka plan çok koyulaşırsa yazı rengi değişebilir */
   transform: scale(1.02); 
 }
 
 
-/* Market Öneri Bölümü Stilleri */
-.market-suggestion-section {
-  width: 100%; /* Tam genişlik kaplasın */
-  margin-top: 40px; /* Üstteki bölümle boşluk */
+/* Market Öneri Bölümü Stilleri (Mevcut Bölüm) */
+/* Bu bölümdeki .market-suggestion-section sınıfını, .market-list-section için temel olarak kullanabilirsiniz
+   veya aşağıdaki yeni market kart stillerini doğrudan kullanabilirsiniz. */
+.market-suggestion-section { /* Bu sınıfı yeni .market-list-section için de kullanabilirsiniz veya stilleri oraya taşıyabilirsiniz */
+  width: 100%; 
+  margin-top: 40px; 
   padding-top: 30px;
-  border-top: 1px dashed #ccc; /* Ayırıcı çizgi */
-  text-align: center; /* İçeriği ortala */
+  border-top: 1px dashed #ccc; 
+  text-align: center; 
 }
 
 .find-market-button { 
-  background-color: #12461f; /* Mor buton (Getir rengi) */
+  background-color: #ffe643; 
   color: white;
   border: none;
   border-radius: 8px; 
-  padding: 12px 30px; /* Daha geniş padding */
+  padding: 12px 30px; 
   font-size: 1rem; 
   font-weight: 500;
   cursor: pointer;
   outline: none;
   transition: background-color 0.3s ease;
-  margin-bottom: 25px; /* Alt boşluk */
-  display: inline-block; /* Ortalamak için inline-block */
+  margin-bottom: 25px; 
+  display: inline-block; 
   min-width: 220px;
 }
 .find-market-button:hover {
-  background-color: #ffe643; /* Koyu mor */
-}
+  background-color:  #12461f; /* Sarı hover */
+  color: #333; /* Sarı hover üzerine koyu yazı */
+} 
 .find-market-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.market-suggestions {
-  margin-top: 15px; /* Butonla arası */
+/*
+   YENİ KART YAPISI KULLANILDIĞI İÇİN AŞAĞIDAKİ ESKİ MARKET LİSTESİ
+   STİLLERİ YORUM SATIRINA ALINMIŞTIR. İHTİYACINIZ YOKSA SİLEBİLİRSİNİZ.
+*/
+/*
+.market-suggestions { 
+  margin-top: 15px; 
 }
 
 .market-suggestions h3 {
@@ -239,8 +248,8 @@
 .market-suggestions ul {
   list-style: none;
   padding: 0;
-  margin: 0 auto; /* Ortala */
-  max-width: 700px; /* Genişliği sınırla */
+  margin: 0 auto; 
+  max-width: 700px; 
   border: 1px solid #eee;
   border-radius: 5px;
   text-align: left; 
@@ -260,34 +269,34 @@
 .market-suggestions li:last-child {
   border-bottom: none;
 }
-.market-suggestions li strong { /* Market adı */
+.market-suggestions li strong { 
   margin-right: 5px; 
   flex-shrink: 0; 
 }
-.market-suggestions li div:first-of-type { /* Market adı ve adres grubu */
+.market-suggestions li div:first-of-type { 
     flex-grow: 1; 
 }
-.market-suggestions li div:last-of-type { /* Fiyat ve eksik ürün grubu */
+.market-suggestions li div:last-of-type { 
     text-align: right;
     flex-shrink: 0; 
 }
-.market-suggestions li span { /* Fiyat kısmı */
+.market-suggestions li span { 
   font-weight: bold;
-  color: #28a745; /* Yeşil fiyat */
+  color: #28a745; 
   margin-left: auto; 
   padding-left: 10px;
 }
-.market-suggestions li small { /* Eksik ürün uyarısı */
+.market-suggestions li small { 
     font-size: 0.75rem;
     display: inline-block; 
     margin-left: 5px;
 }
-.market-suggestions li small.address { /* Adres için */
+.market-suggestions li small.address { 
     color: #666;
     font-style: italic;
     margin-left: 5px;
 }
-
+*/
 
 .market-error {
     color: #dc3545;
@@ -309,41 +318,131 @@
 .empty-cart-message a {
     display: inline-block;
     padding: 10px 25px;
-    background-color: #efe807; /* Sarı */
-    color: #333; /* Koyu */
+    background-color: #efe807; 
+    color: #333; 
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
     transition: background-color 0.2s ease;
 }
 .empty-cart-message a:hover {
-    background-color: #d4cc06; /* Koyu Sarı */
+    background-color: #d4cc06; 
 }
 
-/* Responsive (Küçük Ekranlar) */
+/* === Yeni Market Kartı Stilleri (İkon stilleri dahil) === */
+
+.market-list-section {
+  margin-top: 40px; /* .market-suggestion-section ile aynı */
+  padding-top: 30px; /* .market-suggestion-section ile aynı */
+  border-top: 1px dashed #ccc; /* .market-suggestion-section ile aynı */
+  /* text-align: center; Bu genel ortalamayı kaldırabiliriz, kartlar kendi içinde hizalanacak */
+}
+
+.market-list-section h2 { /* CartPage.js'de h2 kullanıyorsanız */
+  margin-bottom: 25px;
+  text-align: center;
+  color: #333;
+  font-size: 1.5rem; 
+  font-weight: 600;
+}
+
+.market-cards-area {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Kartlar arası boşluk */
+  max-width: 700px; /* Kartların genel konteyner genişliği */
+  margin: 0 auto; /* Sayfada ortalamak için */
+}
+
+.market-card-item {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  background-color: #fdfdfd; /* Kart arka planı */
+  padding: 18px 20px; /* Kart içi boşluk */
+  border: 1px solid #e8e8e8; /* Kart sınırı */
+  border-radius: 8px; /* Yuvarlak köşeler */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Hafif gölge */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.market-card-item:hover {
+  transform: translateY(-3px); /* Üzerine gelince hafif yukarı kalkma efekti */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); /* Hover'da gölgeyi belirginleştir */
+}
+
+.market-card-details {
+  flex-grow: 1; /* İsim alanı genişlesin */
+  display: flex; /* İkon ve ismi yan yana hizalamak için */
+  align-items: center; /* Dikeyde ortalamak için */
+}
+
+.market-icon {
+  font-size: 1.3rem; /* İkon boyutu */
+  color: #555; /* İkon rengi */
+  margin-right: 10px; /* İkon ile market adı arasında boşluk */
+}
+
+.market-card-name {
+  font-size: 1.1rem; 
+  font-weight: 600;
+  color: #333;
+}
+
+.market-card-distance-badge {
+  background-color: #ffe643; /* Sarı rozet arka planı */
+  color: #333; /* Koyu yazı */
+  padding: 6px 12px;
+  border-radius: 15px; /* Hap şeklinde */
+  font-size: 0.85rem;
+  font-weight: bold;
+  white-space: nowrap; /* Mesafenin tek satırda kalması için */
+  margin-left: 15px; /* Solundaki elemanla arasında boşluk */
+}
+
+
+/* Responsive (Genel ve Market Kartları İçin) */
 @media (max-width: 768px) {
   .cart-page-content {
-    flex-direction: column; /* Sütunları alt alta getir */
+    flex-direction: column; 
   }
   .cart-summary-column {
-     margin-top: 20px; 
+      margin-top: 20px; 
   }
   .cart-summary {
-    position: static; /* Sticky özelliği kalksın */
+    position: static; 
   }
-   .market-suggestion-section{
-     margin-top: 30px;
+  /* Eğer .market-suggestion-section yerine .market-list-section kullanıyorsanız
+     ve bu sınıf için responsive ayar gerekiyorsa buraya ekleyebilirsiniz.
+     Örn: .market-list-section { margin-top: 30px; }
+  */
+}
+
+@media (max-width: 480px) { /* Sadece market kartları için daha küçük ekran ayarı */
+  .market-card-item {
+    flex-direction: column; 
+    align-items: flex-start; /* İçerik sola yaslansın */
+    gap: 10px; /* İç elemanlar arası boşluk */
   }
-  .market-suggestions li {
-    flex-direction: column; /* Küçük ekranda market öneri elemanları alt alta */
-    align-items: flex-start;
+
+  .market-card-details {
+    /* İkon ve isim küçük ekranda da yan yana kalacak. */
+    /* Eğer alt alta gelmelerini isterseniz: flex-direction: column; align-items: flex-start; */
   }
-   .market-suggestions li div:last-of-type { 
-    text-align: left; /* Fiyat sola gelsin */
-    margin-top: 5px;
+  
+  .market-icon {
+    font-size: 1.2rem; 
+    margin-right: 8px; 
   }
-   .market-suggestions li span {
-    margin-left: 0;
-    padding-left: 0;
+
+  .market-card-name {
+    font-size: 1rem; /* Biraz daha küçük font */
+  }
+
+  .market-card-distance-badge {
+    margin-left: 0; /* Üstteki elemanla hizalamak için */
+    align-self: flex-start; /* Kendi içinde sola yaslansın */
+    padding: 5px 10px;
+    font-size: 0.8rem;
   }
 }
