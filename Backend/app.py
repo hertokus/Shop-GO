@@ -1,4 +1,4 @@
-# app.py - Tam Hali (Ürün ID Gönderimini Loglama Eklenmiş)
+# app.py - Tam Hali (Detaylı Ürün ID Takibi için Güncellenmiş)
 import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
@@ -42,7 +42,7 @@ class User(db.Model):
 
 class Product(db.Model):
     __tablename__ = 'products'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True) # Bu ID'nin frontend'e doğru gittiğinden emin olmalıyız
     name = db.Column(db.String(255), nullable=False)
     unit = db.Column(db.String(50))
     category = db.Column(db.String(100))
@@ -118,11 +118,13 @@ def get_all_products():
     try:
         products = Product.query.all()
         products_to_send = []
-        for product_obj in products: # Değişken adı product_obj olarak değiştirildi
+        print(f"\n--- [DEBUG API /api/products] ---") # Endpoint başlangıç logu
+        for product_obj in products:
             product_dict = product_obj.to_dict()
-            # DEBUG: Her ürünün ID'sini ve to_dict sonucunu logla
-            print(f"[DEBUG API /api/products] DB Product ID: {product_obj.id}, Dict ID: {product_dict.get('id')}, Name: {product_dict.get('name')}")
+            # DEBUG: Her ürünün veritabanındaki ID'sini ve frontend'e gönderilecek dict içindeki ID'yi logla
+            print(f"  Product DB ID: {product_obj.id}, Sent Dict ID: {product_dict.get('id')}, Name: {product_dict.get('name')}")
             products_to_send.append(product_dict)
+        print(f"--- [DEBUG API /api/products] Yanıt gönderiliyor, toplam {len(products_to_send)} ürün. ---")
         return jsonify(products_to_send)
     except Exception as e:
         app.logger.error(f"Get All Products Error: {e}")
@@ -133,11 +135,13 @@ def get_products_by_category_slug(category_name_from_url):
     try:
         products_in_category = Product.query.filter(Product.category == category_name_from_url).all()
         products_to_send = []
-        for product_obj in products_in_category: # Değişken adı product_obj olarak değiştirildi
+        print(f"\n--- [DEBUG API /api/products/category/{category_name_from_url}] ---") # Endpoint başlangıç logu
+        for product_obj in products_in_category:
             product_dict = product_obj.to_dict()
-            # DEBUG: Her ürünün ID'sini ve to_dict sonucunu logla
-            print(f"[DEBUG API /api/products/category] DB Product ID: {product_obj.id}, Dict ID: {product_dict.get('id')}, Name: {product_dict.get('name')}, Category: {category_name_from_url}")
+            # DEBUG: Her ürünün veritabanındaki ID'sini ve frontend'e gönderilecek dict içindeki ID'yi logla
+            print(f"  Product DB ID: {product_obj.id}, Sent Dict ID: {product_dict.get('id')}, Name: {product_dict.get('name')}")
             products_to_send.append(product_dict)
+        print(f"--- [DEBUG API /api/products/category/{category_name_from_url}] Yanıt gönderiliyor, toplam {len(products_to_send)} ürün. ---")
         return jsonify(products_to_send)
     except Exception as e:
         app.logger.error(f"Get Products by Category Error ({category_name_from_url}): {e}")
@@ -183,7 +187,14 @@ def calculate_list_prices():
     user_lat_str = data.get('latitude')
     user_lon_str = data.get('longitude')
     shopping_list_items = data.get('shopping_list')
-    app.logger.info(f"Calculate List Prices: Gelen istek verisi: latitude={user_lat_str}, longitude={user_lon_str}, shopping_list_count={len(shopping_list_items) if shopping_list_items else 0}")
+    
+    print(f"\n--- [DEBUG API /api/calculate-list-prices] ---") # Endpoint başlangıç logu
+    print(f"  Gelen İstek: latitude={user_lat_str}, longitude={user_lon_str}, shopping_list_count={len(shopping_list_items) if shopping_list_items else 0}")
+    if shopping_list_items:
+        for i, s_item in enumerate(shopping_list_items):
+            print(f"    Shopping List Item {i+1}: {s_item}")
+
+
     if user_lat_str is None or user_lon_str is None or shopping_list_items is None:
         app.logger.error("Calculate List Prices: Eksik parametreler.")
         return jsonify({"message": "Eksik parametreler: latitude, longitude ve shopping_list gereklidir."}), 400
@@ -202,58 +213,65 @@ def calculate_list_prices():
         for market_obj in all_db_markets:
             if market_obj.latitude is not None and market_obj.longitude is not None:
                 distance = haversine(user_lon, user_lat, market_obj.longitude, market_obj.latitude)
-                markets_with_distance.append({'id': market_obj.id, 'name': market_obj.name, 'distance': round(distance, 2)})
+                markets_with_distance.append({'id': market_obj.id, 'name': market_obj.name, 'distance': round(distance, 2), 'latitude': market_obj.latitude, 'longitude': market_obj.longitude})
         markets_with_distance.sort(key=lambda x: x['distance'])
         nearest_top_markets = markets_with_distance[:5]
-        app.logger.info(f"Calculate List Prices: En yakın {len(nearest_top_markets)} market bulundu.")
+        print(f"  En yakın {len(nearest_top_markets)} market bulundu.")
+
         response_data = []
         for market_info in nearest_top_markets:
             market_id = market_info['id']
             current_market_total_list_price = 0.0
             unavailable_items_count = 0
             unavailable_item_details_list = [] 
-            print(f"\n[DEBUG] Market ID: {market_id}, Market Adı: {market_info['name']}")
+            print(f"    Processing Market ID: {market_id}, Name: {market_info['name']}")
             for item in shopping_list_items:
-                product_id_str = item.get('productId')
+                product_id_str = item.get('productId') # Frontend'den 'productId' olarak geldiğini varsayıyoruz
                 quantity_str = item.get('quantity')
-                print(f"  [DEBUG] İşlenen Ürün: productId='{product_id_str}', quantity='{quantity_str}'")
-                if product_id_str is None or quantity_str is None:
-                    app.logger.warning(f"Calculate List Prices: Alışveriş listesinde eksik productId veya quantity: {item} (Market ID: {market_id})")
-                    print(f"    [DEBUG] EKSİK BİLGİ: productId veya quantity. Bu ürün atlanıyor.")
+                print(f"      İşlenen Liste Ürünü: Gelen productId='{product_id_str}', quantity='{quantity_str}'")
+                
+                if product_id_str is None or product_id_str == 'None' or quantity_str is None: # 'None' string kontrolü eklendi
+                    app.logger.warning(f"Calculate List Prices: Alışveriş listesinde eksik veya 'None' productId veya quantity: {item} (Market ID: {market_id})")
+                    print(f"        EKSİK/NONE BİLGİ: productId veya quantity. Bu ürün atlanıyor.")
                     unavailable_items_count += 1
-                    unavailable_item_details_list.append({"productId": product_id_str, "name": "Bilinmeyen Ürün (Eksik Bilgi)"})
+                    unavailable_item_details_list.append({"productId": product_id_str, "name": "Bilinmeyen Ürün (Eksik/None ID)"})
                     continue 
                 try:
-                    product_id = int(product_id_str)
+                    product_id = int(product_id_str) # Burası 'None' string ise hata verecektir, yukarıda kontrol edildi.
                     quantity = int(quantity_str)
                     if quantity <= 0:
                         app.logger.warning(f"Calculate List Prices: Geçersiz miktar (quantity <= 0): {item} (Market ID: {market_id})")
-                        print(f"    [DEBUG] GEÇERSİZ MİKTAR: quantity={quantity}. Bu ürün atlanıyor.")
+                        print(f"        GEÇERSİZ MİKTAR: quantity={quantity}. Bu ürün atlanıyor.")
                         unavailable_items_count += 1
                         product_name_for_log = Product.query.get(product_id).name if Product.query.get(product_id) else f"ID:{product_id}"
                         unavailable_item_details_list.append({"productId": product_id, "name": f"{product_name_for_log} (Geçersiz Miktar)"})
                         continue
                 except ValueError:
-                    app.logger.warning(f"Calculate List Prices: Geçersiz productId veya quantity formatı: {item} (Market ID: {market_id})")
-                    print(f"    [DEBUG] GEÇERSİZ FORMAT: productId veya quantity. Bu ürün atlanıyor.")
+                    app.logger.warning(f"Calculate List Prices: Geçersiz productId veya quantity formatı (int'e çevrilemedi): {item} (Market ID: {market_id})")
+                    print(f"        GEÇERSİZ FORMAT: productId veya quantity. Bu ürün atlanıyor.")
                     unavailable_items_count += 1
                     unavailable_item_details_list.append({"productId": product_id_str, "name": "Bilinmeyen Ürün (Format Hatası)"})
                     continue
+                
+                print(f"        Sorgu için: market_id={market_id}, product_id={product_id}")
                 market_product_entry = MarketProduct.query.filter_by(market_id=market_id, product_id=product_id).first()
+                
                 if market_product_entry and market_product_entry.price is not None:
                     price_value = float(market_product_entry.price)
                     item_total = price_value * quantity
                     current_market_total_list_price += item_total
-                    print(f"    [DEBUG] MarketProduct Bulundu: product_id={product_id}, market_id={market_id}, Fiyat={price_value}, Miktar={quantity}, Ürün Toplamı={item_total:.2f}, Kümülatif Toplam={current_market_total_list_price:.2f}")
+                    print(f"        MarketProduct Bulundu: Fiyat={price_value}, Miktar={quantity}, Ürün Toplamı={item_total:.2f}, Kümülatif Toplam={current_market_total_list_price:.2f}")
                 else:
                     unavailable_items_count += 1
                     product_detail = Product.query.get(product_id)
                     product_name = product_detail.name if product_detail else f"Bilinmeyen Ürün (ID: {product_id})"
                     unavailable_item_details_list.append({"productId": product_id, "name": product_name})
-                    print(f"    [DEBUG] MarketProduct BULUNAMADI veya Fiyatı Yok: product_id={product_id}, market_id={market_id}. Ürün Adı: {product_name}")
-            print(f"  [DEBUG] Market {market_info['name']} için Nihai Liste Toplamı: {current_market_total_list_price:.2f}")
-            response_data.append({"market_id": market_id, "market_name": market_info['name'], "distance": market_info['distance'], "total_list_price": round(current_market_total_list_price, 2), "currency": "₺", "unavailable_items_count": unavailable_items_count, "unavailable_item_details": unavailable_item_details_list})
-        app.logger.info(f"Calculate List Prices: Yanıt hazırlanıyor, {len(response_data)} market için fiyat hesaplandı.")
+                    print(f"        MarketProduct BULUNAMADI veya Fiyatı Yok. Ürün Adı: {product_name}")
+            
+            print(f"    Market {market_info['name']} için Nihai Liste Toplamı: {current_market_total_list_price:.2f}")
+            response_data.append({"market_id": market_id, "market_name": market_info['name'], "distance": market_info['distance'], "latitude": market_info['latitude'], "longitude": market_info['longitude'], "total_list_price": round(current_market_total_list_price, 2), "currency": "₺", "unavailable_items_count": unavailable_items_count, "unavailable_item_details": unavailable_item_details_list})
+        
+        print(f"--- [DEBUG API /api/calculate-list-prices] Yanıt gönderiliyor, {len(response_data)} market için. ---")
         return jsonify(response_data), 200
     except ValueError as ve: 
         app.logger.error(f"Calculate List Prices - Value Error: {ve}")
@@ -264,12 +282,12 @@ def calculate_list_prices():
 
 @app.route('/api/markets-with-products', methods=['GET'])
 def get_markets_with_products():
-    app.logger.warning("DEPRECATED: '/api/markets-with-products' endpoint'i çağrıldı. Yeni mantıkla uyumluluğu gözden geçirilmeli veya kaldırılmalı.")
+    app.logger.warning("DEPRECATED: '/api/markets-with-products' endpoint'i çağrıldı.")
     return jsonify({"message": "Bu endpoint kullanımdan kaldırılmıştır veya güncellenmelidir."}), 501
 
 @app.route('/api/markets-with-products/filter', methods=['GET'])
 def filter_markets_with_products():
-    app.logger.warning("DEPRECATED: '/api/markets-with-products/filter' endpoint'i çağrıldı. Yeni mantıkla uyumluluğu gözden geçirilmeli veya kaldırılmalı.")
+    app.logger.warning("DEPRECATED: '/api/markets-with-products/filter' endpoint'i çağrıldı.")
     return jsonify({"message": "Bu endpoint kullanımdan kaldırılmıştır veya güncellenmelidir."}), 501
 
 if __name__ == '__main__':
