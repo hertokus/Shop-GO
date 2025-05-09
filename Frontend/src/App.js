@@ -29,29 +29,27 @@ const categories = [
 ];
 
 function AppContent() {
-  const { isAuthenticated, user, logout } = useAuth(); // AuthContext'ten user ve logout'u da alıyoruz
+  const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
 
-  // Sepet state'ini localStorage'dan okuyarak başlatma
   const [cartItems, setCartItems] = useState(() => {
     try {
-      const storedCart = localStorage.getItem('shopGoCartItems');
+      const storedCart = localStorage.getItem('shopGoShoppingList'); 
       if (storedCart) {
         const parsedCart = JSON.parse(storedCart);
         if (Array.isArray(parsedCart)) {
-          console.log("AppContent: Sepet localStorage'dan yüklendi.", parsedCart);
+          console.log("AppContent: Alışveriş Listesi localStorage'dan yüklendi.", parsedCart);
           return parsedCart;
         }
       }
     } catch (error) {
-      console.error("AppContent: localStorage'dan sepet yüklenirken hata oluştu:", error);
-      localStorage.removeItem('shopGoCartItems'); // Hatalı veriyi temizle
+      console.error("AppContent: localStorage'dan alışveriş listesi yüklenirken hata oluştu:", error);
+      localStorage.removeItem('shopGoShoppingList');
     }
-    console.log("AppContent: localStorage'da sepet bulunamadı veya hatalı, boş sepetle başlanıyor.");
+    console.log("AppContent: localStorage'da liste bulunamadı/hatalı, boş listeyle başlanıyor.");
     return [];
   });
 
-  // Diğer state'ler
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(categories[0]?.name || 'Atıştırmalık');
   const [searchTerm, setSearchTerm] = useState('');
@@ -59,17 +57,15 @@ function AppContent() {
   const [selectedLocationCoords, setSelectedLocationCoords] = useState(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
-  // cartItems her değiştiğinde localStorage'a kaydetme
   useEffect(() => {
     try {
-      console.log("AppContent: Sepet localStorage'a kaydediliyor...", cartItems);
-      localStorage.setItem('shopGoCartItems', JSON.stringify(cartItems));
+      console.log("AppContent: Alışveriş Listesi localStorage'a kaydediliyor...", cartItems);
+      localStorage.setItem('shopGoShoppingList', JSON.stringify(cartItems));
     } catch (error) {
-      console.error("AppContent: Sepet localStorage'a kaydedilirken hata oluştu:", error);
+      console.error("AppContent: Alışveriş Listesi localStorage'a kaydedilirken hata oluştu:", error);
     }
   }, [cartItems]);
 
-  // Konum bilgilerini localStorage'dan yükleme (bu zaten vardı)
   useEffect(() => {
     const savedAddressText = localStorage.getItem('selectedUserAddressText');
     const savedCoordsString = localStorage.getItem('selectedUserCoords');
@@ -82,52 +78,64 @@ function AppContent() {
         localStorage.removeItem('selectedUserCoords');
       }
     }
-  }, []); // Bu useEffect sadece bileşen ilk yüklendiğinde çalışır
+  }, []);
 
-  // Sepet işlemleri fonksiyonları (setCartItems'ı fonksiyonel güncelleme ile kullanacak şekilde güncellendi)
   const handleAddToCart = (product) => {
+    // DEBUG: handleAddToCart'a gelen product objesini ve ID'sini logla
+    console.log("%c[DEBUG App.js handleAddToCart]%c Gelen Ürün:", "color:teal; font-weight:bold;", "color:teal;", product);
+    if (product && typeof product.id !== 'undefined') {
+        console.log("%c[DEBUG App.js handleAddToCart]%c Gelen Ürün ID:", "color:teal; font-weight:bold;", "color:teal;", product.id);
+    } else {
+        console.warn("%c[DEBUG App.js handleAddToCart]%c Gelen Ürün objesi tanımsız veya 'id' alanı yok!", "color:red; font-weight:bold;", "color:red;", product);
+        // Eğer product.id tanımsızsa, burada bir işlem yapmadan çıkmak veya hata vermek isteyebilirsiniz.
+        // Şimdilik devam etmesine izin veriyoruz, backend logları productId='None' olarak gösterecektir.
+    }
+
     setCartItems(prevItems => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+      // product.id'nin geçerli bir değer olduğunu ve backend'deki product ID ile eşleştiğini varsayıyoruz.
+      const existingItem = prevItems.find((item) => item.productId === product.id); 
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.productId === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prevItems, { ...product, quantity: 1 }];
+      return [...prevItems, {
+        productId: product.id, // Burası çok önemli! product.id tanımsızsa, buraya da tanımsız geçer.
+        name: product.name,
+        category: product.category, 
+        unit: product.unit,         
+        image_url: product.image_url, 
+        quantity: 1
+      }];
     });
+    console.log("Listeye Eklendi (App.js):", product.name, "ile productId:", product.id);
   };
 
   const handleRemoveFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter((item) => item.id !== productId));
+    setCartItems(prevItems => prevItems.filter((item) => item.productId !== productId));
   };
 
   const handleIncreaseQuantity = (productId) => {
     setCartItems(prevItems => prevItems.map((item) =>
-      item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+      item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item
     ));
   };
 
   const handleDecreaseQuantity = (productId) => {
     setCartItems(prevItems => prevItems.map((item) =>
-      item.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
+      item.productId === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
     ));
   };
 
-  // Çıkış yapıldığında sepeti de temizlemek için (TopBar'a prop olarak geçilebilir)
   const handleLogoutAndClearCart = () => {
-    logout(); // AuthContext'ten gelen logout
-    setCartItems([]); // Sepeti boşaltır (bu useEffect ile localStorage'ı da günceller)
-    // localStorage.removeItem('shopGoCartItems'); // Doğrudan da silinebilir, ama setCartItems([]) yeterli olmalı.
-    // Yönlendirme zaten TopBar içinde navigate('/auth') ile yapılıyor.
+    logout();
+    setCartItems([]);
   };
 
-
-  // Diğer handle fonksiyonları
   const handleCategorySelect = (categoryName) => setActiveCategory(categoryName);
   const toggleCart = () => setIsCartOpen(!isCartOpen);
   const handleSearchChange = (event) => setSearchTerm(event.target.value);
   const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
-
   const handleLocationSelectedFromMap = async (latlng) => {
     setSelectedLocationCoords(latlng);
     setIsAddressModalOpen(false);
@@ -153,8 +161,6 @@ function AppContent() {
     }
   };
 
-  const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
-
   return (
     <div className="app-container">
       <TopBar
@@ -162,7 +168,6 @@ function AppContent() {
         onCartClick={toggleCart}
         isCartOpen={isCartOpen}
         cartItems={cartItems}
-        totalAmount={totalAmount}
         onRemoveFromCart={handleRemoveFromCart}
         onIncreaseQuantity={handleIncreaseQuantity}
         onDecreaseQuantity={handleDecreaseQuantity}
@@ -174,8 +179,6 @@ function AppContent() {
         toggleAddressModal={toggleAddressModal}
         onLocationSelectForModal={handleLocationSelectedFromMap}
         initialMapCoords={selectedLocationCoords}
-        // onLogout={handleLogoutAndClearCart} // Eğer TopBar'daki logout butonu sepeti de temizleyecekse bu prop'u kullanın.
-                                               // TopBar.js içinde logout yerine onLogout çağrılmalı.
       />
 
       {isAuthenticated && location.pathname !== '/cart' && (
@@ -198,7 +201,14 @@ function AppContent() {
           />
           <Route
             path="/cart"
-            element={ <CartPage cartItems={cartItems} totalAmount={totalAmount} onRemoveFromCart={handleRemoveFromCart} onIncreaseQuantity={handleIncreaseQuantity} onDecreaseQuantity={handleDecreaseQuantity} /> }
+            element={
+              <CartPage
+                cartItems={cartItems}
+                onRemoveFromCart={handleRemoveFromCart}
+                onIncreaseQuantity={handleIncreaseQuantity}
+                onDecreaseQuantity={handleDecreaseQuantity}
+              />
+            }
           />
           <Route path="/" element={<Navigate to="/auth" />} />
         </Routes>
@@ -210,7 +220,6 @@ function AppContent() {
   );
 }
 
-// Ana App component'i (değişiklik yok)
 function App() {
   return (
     <LocationProvider>

@@ -1,108 +1,102 @@
-import React from 'react'; // useState'e gerek kalmadı
-import './ShoppingCart.css'; // Güncellenmiş CSS dosyasını import ediyoruz
-import { AiOutlineClose } from 'react-icons/ai'; 
-// İkonları ekleyelim (react-icons kütüphanesini kurduğunuzu varsayıyorum: npm install react-icons)
-import { FaTrashAlt, FaPlus, FaMinus } from 'react-icons/fa'; 
-import { useNavigate } from 'react-router-dom'; // Sepete git butonu için
-import { useState } from 'react';
-// isOpen ve totalAmount prop'larını ekledik
-function ShoppingCart({ 
-  cartItems, 
-  onRemoveFromCart, 
-  onIncreaseQuantity, 
-  onDecreaseQuantity, 
+// src/components/ShoppingCart.js
+import React from 'react'; // useState'e gerek kalmadı (kullanılmıyorsa)
+import './ShoppingCart.css';
+import { AiOutlineClose } from 'react-icons/ai';
+import { FaTrashAlt, FaPlus, FaMinus } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+
+// isOpen prop'u eklendi, totalAmount prop'u artık kullanılmayacak (veya farklı bir anlamda)
+function ShoppingCart({
+  cartItems,      // Artık fiyatsız ürünleri içeren alışveriş listesi
+  onRemoveFromCart,
+  onIncreaseQuantity,
+  onDecreaseQuantity,
   onCloseCart,
-  isOpen,
-  totalAmount
+  isOpen
+  // totalAmount prop'u artık bu bileşen için doğrudan bir fiyat toplamı ifade etmiyor.
 }) {
   const navigate = useNavigate();
 
-  const [nearestMarkets, setNearestMarkets] = useState([]);
-  const [loadingMarkets, setLoadingMarkets] = useState(false);
-  const [error, setError] = useState(null);
+  // nearestMarkets, loadingMarkets, error state'leri bu dropdown için gereksiz görünüyor,
+  // bu mantık CartPage.js'e ait. Eğer burada kullanılmayacaksa kaldırılabilir.
+  // const [nearestMarkets, setNearestMarkets] = useState([]);
+  // const [loadingMarkets, setLoadingMarkets] = useState(false);
+  // const [error, setError] = useState(null);
 
-  const handleGoToCart = () => {
-      onCloseCart(); // Sepet dropdown'ını kapat
-      navigate('/cart'); // Tam sepet sayfasına yönlendir (bu route'u oluşturmanız gerekebilir)
+  const handleGoToCartPage = () => { // Fonksiyon adı daha açıklayıcı olabilir
+    onCloseCart(); // Sepet dropdown'ını kapat
+    navigate('/cart'); // Tam alışveriş listesi ve market fiyatları sayfasına yönlendir
   };
 
-  
+  // Alışveriş listesindeki toplam ürün adedini (çeşit değil, toplam miktar) hesaplayalım
+  const totalItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+
   return (
-    // Ana kapsayıcıya dropdown ve open/close sınıflarını ekle
-    <div className={`shopping-cart-dropdown ${isOpen ? 'open' : ''}`}> 
-      {/* İçerik için sarmalayıcı */}
-      <div className="cart-content"> 
+    <div className={`shopping-cart-dropdown ${isOpen ? 'open' : ''}`}>
+      <div className="cart-content">
         <div className="cart-header">
-          <h2>Sepetim</h2>
+          <h2>Alışveriş Listem</h2> {/* Başlık güncellendi */}
           <button className="close-button-cart" onClick={onCloseCart}>
             <AiOutlineClose size={20} />
           </button>
         </div>
 
         {cartItems.length === 0 ? (
-          // Sepet boş mesajı için yeni sınıf adı
-          <div className="empty-cart-message"> 
-            <p>Sepetiniz şu an boş.</p>
+          <div className="empty-cart-message">
+            <p>Listeniz şu an boş.</p> {/* Mesaj güncellendi */}
           </div>
         ) : (
-          <> {/* Fragment kullanarak listeyi ve butonu grupla */}
-            {/* Ürün listesi için yeni sınıf adı */}
-            <ul className="cart-item-list"> 
+          <>
+            <ul className="cart-item-list">
               {cartItems.map((item) => (
-                // Liste elemanı için yeni sınıf adı ve yapı
-                <li key={item.id} className="cart-item"> 
-                  {/* Sol taraf: İsim ve Fiyat */}
+                // item.productId kullandığımızı varsayıyoruz (App.js'teki handleAddToCart'a göre)
+                <li key={item.productId} className="cart-item">
                   <div className="item-details">
                     <span className="item-name">{item.name}</span>
-                    <span className="item-price">{item.price.toFixed(2)} ₺</span> 
+                    {/* FİYAT GÖSTERİMİ KALDIRILDI */}
+                    {/* <span className="item-price">{item.price.toFixed(2)} ₺</span> */}
+                    {/* İsteğe bağlı: Ürün birimi gösterilebilir */}
+                    {item.unit && <span className="item-unit-display">({item.unit})</span>}
                   </div>
-                  {/* Sağ taraf: Kontroller */}
                   <div className="item-controls">
-                     {/* Silme Butonu (İkon) */}
-                     <button 
-                        className="remove-item-btn" 
-                        onClick={() => onRemoveFromCart(item.id)}
-                        aria-label={`${item.name} ürününü sil`} // Erişilebilirlik için
-                     >
-                        <FaTrashAlt />
-                     </button>
-                     {/* Adet Ayarlayıcı */}
-                     <div className="item-quantity-adjuster">
-                        <button 
-                           onClick={() => onDecreaseQuantity(item.id)} 
-                           disabled={item.quantity <= 1} // Adet 1 ise eksi butonu pasif
-                           aria-label={`${item.name} adetini azalt`}
-                        >
-                           <FaMinus size={10}/> {/* Daha küçük ikon */}
-                        </button>
-                        <span className="item-quantity">{item.quantity}</span>
-                        <button 
-                           onClick={() => onIncreaseQuantity(item.id)}
-                           aria-label={`${item.name} adetini artır`}
-                        >
-                            <FaPlus size={10}/> {/* Daha küçük ikon */}
-                        </button>
-                     </div>
+                    <button
+                      className="remove-item-btn"
+                      onClick={() => onRemoveFromCart(item.productId)} // productId kullanılmalı
+                      aria-label={`${item.name} ürününü listeden çıkar`}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                    <div className="item-quantity-adjuster">
+                      <button
+                        onClick={() => onDecreaseQuantity(item.productId)} // productId kullanılmalı
+                        disabled={item.quantity <= 1}
+                        aria-label={`${item.name} adetini azalt`}
+                      >
+                        <FaMinus size={10} />
+                      </button>
+                      <span className="item-quantity">{item.quantity}</span>
+                      <button
+                        onClick={() => onIncreaseQuantity(item.productId)} // productId kullanılmalı
+                        aria-label={`${item.name} adetini artır`}
+                      >
+                        <FaPlus size={10} />
+                      </button>
+                    </div>
                   </div>
                 </li>
               ))}
             </ul>
             
-            {/* Sepete Git Butonu */}
-            <button className="go-to-cart-button" onClick={handleGoToCart}>
-                <span>Sepete Git</span>
-                <span className="total-price">{totalAmount} ₺</span>
+            <button className="go-to-cart-button" onClick={handleGoToCartPage}>
+              <span>Listeye Git</span>
+              {/* Toplam fiyat yerine toplam ürün adedini gösterebiliriz */}
+              {totalItemCount > 0 && (
+                <span className="total-item-count-badge">{totalItemCount} ürün</span>
+              )}
             </button>
-                {/* Sepet dışında, sayfanın altında ayrı bir container */}
-              
-
-
           </>
         )}
-
-        {/* Market Önerileri Bölümü KALDIRILDI */}
-        
-      </div> 
+      </div>
     </div>
   );
 }

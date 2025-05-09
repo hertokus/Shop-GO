@@ -1,192 +1,147 @@
-# app.py - Tam Hali
+# app.py - Tam Hali (Ürün ID Gönderimini Loglama Eklenmiş)
 import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, JWTManager, get_jwt_identity
-from unidecode import unidecode
+from unidecode import unidecode 
 from math import radians, cos, sin, asin, sqrt 
-import requests
-from geopy.distance import geodesic
-
 
 # --- Uygulama ve Eklenti Başlatma ---
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}}) 
 
-
-# CORS Yapılandırması (Geliştirme için *, production'da daha kısıtlı)
-CORS(app, resources={r"/*": {"origins": "*"}})
-
-# --- Yapılandırma (Configuration) ---
-# Veritabanı URI (Sizin ayarlarınız)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123@localhost/smartshopgo_db'
+# --- Yapılandırma ---
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:123@localhost/smartshopgo_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'cok-guclu-bir-flask-secret-key-olmali-bunu-degistirin!') 
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'cok-guclu-bir-jwt-secret-key-olmali-bunu-da-degistirin!')
 
-# Gizli Anahtarlar (JWT ve Flask Session için - DEĞİŞTİRİN VE GÜVENDE TUTUN!)
-# Ortam değişkenlerinden okumak en iyi pratiktir: os.environ.get('SECRET_KEY', 'varsayilan')
-app.config['SECRET_KEY'] = 'cok-guclu-bir-flask-secret-key-olmalı-bunu-degistirin!' 
-app.config['JWT_SECRET_KEY'] = 'cok-guclu-bir-jwt-secret-key-olmalı-bunu-da-degistirin!'
-
-# Eklentileri Başlatma
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 def haversine(lon1, lat1, lon2, lat2):
-    """
-    İki nokta arasındaki uzaklığı hesaplar (km cinsinden). 📏
-    """
-    R = 6371  # Dünya'nın yarıçapı (km) 🌍
+    R = 6371 
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-
     dlon = lon2 - lon1
     dlat = lat2 - lat1
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
     c = 2 * asin(sqrt(a))
     return R * c
 
-
-
 # --- Veritabanı Modelleri ---
-
-# Kullanıcı Modeli (Yeni Eklendi)
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False) 
+    def __repr__(self): return f'<User {self.username}>'
 
-    def __repr__(self):
-        return f'<User {self.username}>'
-
-# Ürün Modeli (Mevcut Kodunuzdan)
 class Product(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     unit = db.Column(db.String(50))
     category = db.Column(db.String(100))
-    price = db.Column(db.Numeric(10, 2))
     image_url = db.Column(db.String(255))
-
     def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'unit': self.unit,
-            'category': self.category,
-            'price': float(self.price) if self.price is not None else None, # None kontrolü eklendi
-            'image_url': self.image_url
-        }
+        return {'id': self.id, 'name': self.name, 'unit': self.unit, 'category': self.category, 'image_url': self.image_url}
 
-# Market Modeli (Varsayılan - Kendi yapınıza göre güncelleyin!)
 class Market(db.Model):
-   __tablename__ = 'markets'
-   id = db.Column(db.Integer, primary_key=True)
-   name = db.Column(db.String(255), nullable=False)
-   address = db.Column(db.String(255))
-   city = db.Column(db.String(50))
-   district = db.Column(db.String(50))
-   latitude = db.Column(db.Float)  # Enlem
-   longitude = db.Column(db.Float) # Boylam
+    __tablename__ = 'markets'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    address = db.Column(db.String(255))
+    city = db.Column(db.String(50))
+    district = db.Column(db.String(50))
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    def to_dict(self):
+        return {'id': self.id, 'name': self.name, 'address': self.address, 'city': self.city, 'district': self.district, 'latitude': self.latitude, 'longitude': self.longitude}
 
-   def to_dict(self):
-       return {'id': self.id, 'name': self.name, 'address': self.address , 'city': self.city,
-            'district': self.district,
-            'latitude': self.latitude,
-            'longitude': self.longitude}
-
-# Market-Ürün İlişki Modeli (Mevcut Kodunuzdan)
 class MarketProduct(db.Model):
     __tablename__ = 'market_products'
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key=True)
-    price = db.Column(db.Numeric(10, 2))
-
-    # İlişkileri tanımlamak ORM sorgularını kolaylaştırabilir (opsiyonel ama önerilir)
-    # market = db.relationship('Market', backref=db.backref('market_products', lazy=True))
-    # product = db.relationship('Product', backref=db.backref('market_products', lazy=True))
-
-
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    market = db.relationship('Market', backref=db.backref('market_product_entries', lazy='dynamic'))
+    product = db.relationship('Product', backref=db.backref('market_product_entries', lazy='dynamic'))
     def to_dict(self):
-        return {
-            'market_id': self.market_id,
-            'product_id': self.product_id,
-            'price': float(self.price) if self.price is not None else None # None kontrolü eklendi
-        }
-
+        return {'market_id': self.market_id, 'product_id': self.product_id, 'price': float(self.price) if self.price is not None else None}
 
 # --- API Endpoint'leri ---
-
-# --- Kullanıcı Kimlik Doğrulama Endpoint'leri (Yeni Eklendi) ---
-
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
-
-    if not username or not email or not password:
-        return jsonify({"message": "Kullanıcı adı, e-posta ve şifre gereklidir"}), 400
-
-    existing_user_email = User.query.filter_by(email=email).first()
-    if existing_user_email:
-        return jsonify({"message": "Bu e-posta adresi zaten kayıtlı"}), 409
-    existing_user_username = User.query.filter_by(username=username).first()
-    if existing_user_username:
-        return jsonify({"message": "Bu kullanıcı adı zaten alınmış"}), 409
-
+    if not username or not email or not password: return jsonify({"message": "Kullanıcı adı, e-posta ve şifre gereklidir"}), 400
+    if User.query.filter_by(email=email).first(): return jsonify({"message": "Bu e-posta adresi zaten kayıtlı"}), 409
+    if User.query.filter_by(username=username).first(): return jsonify({"message": "Bu kullanıcı adı zaten alınmış"}), 409
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(username=username, email=email, password_hash=hashed_password)
-
     try:
         db.session.add(new_user)
         db.session.commit()
         return jsonify({"message": "Kullanıcı başarıyla kaydedildi"}), 201
     except Exception as e:
         db.session.rollback()
-        print(f"Register Error: {e}") # Hata loglama
-        return jsonify({"message": "Kayıt sırasında bir hata oluştu"}), 500
-
+        app.logger.error(f"Register Error: {e}")
+        return jsonify({"message": "Kayıt sırasında bir sunucu hatası oluştu"}), 500
 
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-
-    if not email or not password:
-        return jsonify({"message": "E-posta ve şifre gereklidir"}), 400
-
+    if not email or not password: return jsonify({"message": "E-posta ve şifre gereklidir"}), 400
     user = User.query.filter_by(email=email).first()
-
     if user and bcrypt.check_password_hash(user.password_hash, password):
-        access_token = create_access_token(identity=user.id) # Kimlik olarak user.id kullanıldı
-        return jsonify(
-            access_token=access_token,
-            user_id=user.id,
-            username=user.username,
-            email=user.email
-        ), 200
-    else:
-        return jsonify({"message": "Geçersiz e-posta veya şifre"}), 401
+        access_token = create_access_token(identity=user.id)
+        return jsonify(access_token=access_token, user_id=user.id, username=user.username, fullName=user.username ), 200
+    else: return jsonify({"message": "Geçersiz e-posta veya şifre"}), 401
 
-# Örnek Korumalı Rota (JWT gerektirir)
 @app.route('/api/profile', methods=['GET'])
-@jwt_required() # Bu decorator, geçerli bir JWT Bearer token gerektirir
+@jwt_required()
 def get_profile():
-    current_user_id = get_jwt_identity() # Token içerisinden kimliği (user.id) alır
+    current_user_id = get_jwt_identity()
     user = User.query.get(current_user_id)
-    if not user:
-         return jsonify({"message": "Kullanıcı bulunamadı"}), 404
-    # Şifre hash'i DAHİL ETMEDEN kullanıcı bilgilerini döndür
+    if not user: return jsonify({"message": "Kullanıcı bulunamadı"}), 404
     return jsonify(id=user.id, username=user.username, email=user.email), 200
 
+@app.route('/api/products', methods=['GET'])
+def get_all_products():
+    try:
+        products = Product.query.all()
+        products_to_send = []
+        for product_obj in products: # Değişken adı product_obj olarak değiştirildi
+            product_dict = product_obj.to_dict()
+            # DEBUG: Her ürünün ID'sini ve to_dict sonucunu logla
+            print(f"[DEBUG API /api/products] DB Product ID: {product_obj.id}, Dict ID: {product_dict.get('id')}, Name: {product_dict.get('name')}")
+            products_to_send.append(product_dict)
+        return jsonify(products_to_send)
+    except Exception as e:
+        app.logger.error(f"Get All Products Error: {e}")
+        return jsonify({"message": "Tüm ürünler getirilirken hata oluştu"}), 500
 
-# --- Mevcut Market ve Ürün Endpoint'leri ---
+@app.route('/api/products/category/<path:category_name_from_url>', methods=['GET'])
+def get_products_by_category_slug(category_name_from_url):
+    try:
+        products_in_category = Product.query.filter(Product.category == category_name_from_url).all()
+        products_to_send = []
+        for product_obj in products_in_category: # Değişken adı product_obj olarak değiştirildi
+            product_dict = product_obj.to_dict()
+            # DEBUG: Her ürünün ID'sini ve to_dict sonucunu logla
+            print(f"[DEBUG API /api/products/category] DB Product ID: {product_obj.id}, Dict ID: {product_dict.get('id')}, Name: {product_dict.get('name')}, Category: {category_name_from_url}")
+            products_to_send.append(product_dict)
+        return jsonify(products_to_send)
+    except Exception as e:
+        app.logger.error(f"Get Products by Category Error ({category_name_from_url}): {e}")
+        return jsonify({"message": f"'{category_name_from_url}' kategorisindeki ürünler getirilirken hata oluştu"}), 500
 
 @app.route('/api/markets', methods=['GET'])
 def get_markets():
@@ -194,152 +149,134 @@ def get_markets():
         markets = Market.query.all()
         return jsonify([market.to_dict() for market in markets])
     except Exception as e:
-        print(f"Get Markets Error: {e}")
+        app.logger.error(f"Get Markets Error: {e}")
         return jsonify({"message": "Marketler getirilirken hata oluştu"}), 500
-
-
-
-
-@app.route('/api/products/<path:category>', methods=['GET'])
-def get_products_by_category(category):
-    try:
-        all_products = Product.query.all()
-        filtered = [
-            p for p in all_products
-            if unidecode(p.category.lower()) == unidecode(category.lower())
-        ]
-        return jsonify([p.to_dict() for p in filtered])
-    except Exception as e:
-        print(f"Get Products by Category Error: {e}")
-        return jsonify({"message": "Ürünler getirilirken hata oluştu"}), 500
-
-
-@app.route('/api/products', methods=['GET'])
-def get_products():
-    try:
-        products = Product.query.all()
-        return jsonify([product.to_dict() for product in products])
-    except Exception as e:
-        print(f"Get Products Error: {e}")
-        return jsonify({"message": "Ürünler getirilirken hata oluştu"}), 500
-
-
-# Bu endpoint'ler için SQL sorgularını kullanmaya devam edebilirsiniz
-# veya SQLAlchemy ilişkilerini (relationships) kullanarak ORM sorguları yazabilirsiniz.
-@app.route('/api/markets-with-products', methods=['GET'])
-def get_markets_with_products():
-    query = """
-        SELECT m.name, m.address, p.name, p.unit, mp.price
-        FROM markets m
-        JOIN market_products mp ON m.id = mp.market_id
-        JOIN products p ON p.id = mp.product_id;
-    """
-    try:
-        result = db.session.execute(db.text(query)) # db.text() kullanmak daha güvenli
-        rows = result.fetchall()
-        # ... (Geri kalan işleme kodunuz aynı) ...
-        market_dict = {}
-        for market_name, address, product_name, unit, price in rows:
-            if market_name not in market_dict:
-                market_dict[market_name] = {"adres": address, "urunler": {}}
-            if product_name not in market_dict[market_name]["urunler"]:
-                 # Fiyat None ise veya formatlama hatası verirse kontrol ekle
-                price_str = f"{float(price):.2f} ₺" if price is not None else "N/A"
-                market_dict[market_name]["urunler"][product_name] = f"{price_str} / {unit}"
-
-        response = [{"market": market, "adres": data["adres"], "urunler": data["urunler"]}
-                    for market, data in market_dict.items()]
-        return jsonify(response)
-    except Exception as e:
-        print(f"Markets with Products Error: {e}")
-        return jsonify({"message": "Market ve ürünler getirilirken hata oluştu"}), 500
 
 @app.route('/api/nearest-markets', methods=['GET'])
 def get_nearest_markets():
-    # Enlem ve boylam parametrelerini al
     try:
-        user_lat = float(request.args.get('latitude'))
-        user_lon = float(request.args.get('longitude'))
-        print("✅ Kullanıcı konumu:", user_lat, user_lon)
-        
-    except (TypeError, ValueError):
-        return jsonify({"message": "Geçerli enlem ve boylam bilgisi gereklidir."}), 400
-
+        user_lat_str = request.args.get('latitude')
+        user_lon_str = request.args.get('longitude')
+        if user_lat_str is None or user_lon_str is None: return jsonify({"message": "Enlem ve boylam parametreleri gereklidir."}), 400
+        user_lat = float(user_lat_str)
+        user_lon = float(user_lon_str)
+    except (TypeError, ValueError): return jsonify({"message": "Geçerli enlem ve boylam (sayısal) bilgisi gereklidir."}), 400
     try:
-        markets = Market.query.all()
-        nearest_markets = []
-
-        for market in markets:
-            market_info = market.to_dict()
-
+        all_markets = Market.query.all()
+        markets_with_distance = []
+        for market in all_markets:
             if market.latitude is not None and market.longitude is not None:
                 distance = haversine(user_lon, user_lat, market.longitude, market.latitude)
-                nearest_markets.append({
-                    'market': market_info,
-                    'distance': round(distance, 2)
-                })
-            else:
-                nearest_markets.append({
-                    'market': market_info,
-                    'distance': None
-                })
-
-        # Uzaklık bilgisine göre sırala
-        nearest_markets = [m for m in nearest_markets if m['distance'] is not None]
-        nearest_markets.sort(key=lambda x: x['distance'])
-
-        return jsonify(nearest_markets[:5])
+                markets_with_distance.append({'market': market.to_dict(), 'distance': round(distance, 2)})
+        markets_with_distance.sort(key=lambda x: x['distance'])
+        return jsonify(markets_with_distance[:5]) 
     except Exception as e:
-        print("❌ Nearest market hesaplama hatası:", str(e))
+        app.logger.error(f"Nearest market hesaplama hatası: {e}")
         return jsonify({"message": "Market verileri alınırken bir hata oluştu."}), 500
-    
 
+@app.route('/api/calculate-list-prices', methods=['POST'])
+def calculate_list_prices():
+    data = request.get_json()
+    if not data:
+        app.logger.error("Calculate List Prices: İstek gövdesi (JSON) boş.")
+        return jsonify({"message": "İstek gövdesi boş olamaz."}), 400
+    user_lat_str = data.get('latitude')
+    user_lon_str = data.get('longitude')
+    shopping_list_items = data.get('shopping_list')
+    app.logger.info(f"Calculate List Prices: Gelen istek verisi: latitude={user_lat_str}, longitude={user_lon_str}, shopping_list_count={len(shopping_list_items) if shopping_list_items else 0}")
+    if user_lat_str is None or user_lon_str is None or shopping_list_items is None:
+        app.logger.error("Calculate List Prices: Eksik parametreler.")
+        return jsonify({"message": "Eksik parametreler: latitude, longitude ve shopping_list gereklidir."}), 400
+    if not isinstance(shopping_list_items, list):
+        app.logger.error("Calculate List Prices: shopping_list bir dizi değil.")
+        return jsonify({"message": "shopping_list bir dizi olmalıdır."}), 400
+    try:
+        user_lat = float(user_lat_str)
+        user_lon = float(user_lon_str)
+    except ValueError:
+        app.logger.error("Calculate List Prices: Latitude/Longitude sayısal değil.")
+        return jsonify({"message": "Latitude ve longitude sayısal değer olmalıdır."}), 400
+    try:
+        all_db_markets = Market.query.all()
+        markets_with_distance = []
+        for market_obj in all_db_markets:
+            if market_obj.latitude is not None and market_obj.longitude is not None:
+                distance = haversine(user_lon, user_lat, market_obj.longitude, market_obj.latitude)
+                markets_with_distance.append({'id': market_obj.id, 'name': market_obj.name, 'distance': round(distance, 2)})
+        markets_with_distance.sort(key=lambda x: x['distance'])
+        nearest_top_markets = markets_with_distance[:5]
+        app.logger.info(f"Calculate List Prices: En yakın {len(nearest_top_markets)} market bulundu.")
+        response_data = []
+        for market_info in nearest_top_markets:
+            market_id = market_info['id']
+            current_market_total_list_price = 0.0
+            unavailable_items_count = 0
+            unavailable_item_details_list = [] 
+            print(f"\n[DEBUG] Market ID: {market_id}, Market Adı: {market_info['name']}")
+            for item in shopping_list_items:
+                product_id_str = item.get('productId')
+                quantity_str = item.get('quantity')
+                print(f"  [DEBUG] İşlenen Ürün: productId='{product_id_str}', quantity='{quantity_str}'")
+                if product_id_str is None or quantity_str is None:
+                    app.logger.warning(f"Calculate List Prices: Alışveriş listesinde eksik productId veya quantity: {item} (Market ID: {market_id})")
+                    print(f"    [DEBUG] EKSİK BİLGİ: productId veya quantity. Bu ürün atlanıyor.")
+                    unavailable_items_count += 1
+                    unavailable_item_details_list.append({"productId": product_id_str, "name": "Bilinmeyen Ürün (Eksik Bilgi)"})
+                    continue 
+                try:
+                    product_id = int(product_id_str)
+                    quantity = int(quantity_str)
+                    if quantity <= 0:
+                        app.logger.warning(f"Calculate List Prices: Geçersiz miktar (quantity <= 0): {item} (Market ID: {market_id})")
+                        print(f"    [DEBUG] GEÇERSİZ MİKTAR: quantity={quantity}. Bu ürün atlanıyor.")
+                        unavailable_items_count += 1
+                        product_name_for_log = Product.query.get(product_id).name if Product.query.get(product_id) else f"ID:{product_id}"
+                        unavailable_item_details_list.append({"productId": product_id, "name": f"{product_name_for_log} (Geçersiz Miktar)"})
+                        continue
+                except ValueError:
+                    app.logger.warning(f"Calculate List Prices: Geçersiz productId veya quantity formatı: {item} (Market ID: {market_id})")
+                    print(f"    [DEBUG] GEÇERSİZ FORMAT: productId veya quantity. Bu ürün atlanıyor.")
+                    unavailable_items_count += 1
+                    unavailable_item_details_list.append({"productId": product_id_str, "name": "Bilinmeyen Ürün (Format Hatası)"})
+                    continue
+                market_product_entry = MarketProduct.query.filter_by(market_id=market_id, product_id=product_id).first()
+                if market_product_entry and market_product_entry.price is not None:
+                    price_value = float(market_product_entry.price)
+                    item_total = price_value * quantity
+                    current_market_total_list_price += item_total
+                    print(f"    [DEBUG] MarketProduct Bulundu: product_id={product_id}, market_id={market_id}, Fiyat={price_value}, Miktar={quantity}, Ürün Toplamı={item_total:.2f}, Kümülatif Toplam={current_market_total_list_price:.2f}")
+                else:
+                    unavailable_items_count += 1
+                    product_detail = Product.query.get(product_id)
+                    product_name = product_detail.name if product_detail else f"Bilinmeyen Ürün (ID: {product_id})"
+                    unavailable_item_details_list.append({"productId": product_id, "name": product_name})
+                    print(f"    [DEBUG] MarketProduct BULUNAMADI veya Fiyatı Yok: product_id={product_id}, market_id={market_id}. Ürün Adı: {product_name}")
+            print(f"  [DEBUG] Market {market_info['name']} için Nihai Liste Toplamı: {current_market_total_list_price:.2f}")
+            response_data.append({"market_id": market_id, "market_name": market_info['name'], "distance": market_info['distance'], "total_list_price": round(current_market_total_list_price, 2), "currency": "₺", "unavailable_items_count": unavailable_items_count, "unavailable_item_details": unavailable_item_details_list})
+        app.logger.info(f"Calculate List Prices: Yanıt hazırlanıyor, {len(response_data)} market için fiyat hesaplandı.")
+        return jsonify(response_data), 200
+    except ValueError as ve: 
+        app.logger.error(f"Calculate List Prices - Value Error: {ve}")
+        return jsonify({"message": f"Geçersiz veri formatı: {ve}"}), 400
+    except Exception as e:
+        app.logger.error(f"Calculate List Prices Genel Hata: {e}", exc_info=True)
+        return jsonify({"message": "Alışveriş listesi fiyatları hesaplanırken bir sunucu hatası oluştu."}), 500
 
+@app.route('/api/markets-with-products', methods=['GET'])
+def get_markets_with_products():
+    app.logger.warning("DEPRECATED: '/api/markets-with-products' endpoint'i çağrıldı. Yeni mantıkla uyumluluğu gözden geçirilmeli veya kaldırılmalı.")
+    return jsonify({"message": "Bu endpoint kullanımdan kaldırılmıştır veya güncellenmelidir."}), 501
 
 @app.route('/api/markets-with-products/filter', methods=['GET'])
 def filter_markets_with_products():
-    requested_products = request.args.getlist('product') 
+    app.logger.warning("DEPRECATED: '/api/markets-with-products/filter' endpoint'i çağrıldı. Yeni mantıkla uyumluluğu gözden geçirilmeli veya kaldırılmalı.")
+    return jsonify({"message": "Bu endpoint kullanımdan kaldırılmıştır veya güncellenmelidir."}), 501
 
-    if not requested_products:
-         return jsonify({"message": "Filtrelemek için en az bir ürün adı gereklidir ('product' parametresi)"}), 400
-
-    # SQL Injection'a karşı parametreleri doğru kullanmak önemli!
-    # ANY() PostgreSQL'e özgü olabilir, başka DB'ler için IN kullanmak gerekebilir.
-    query = db.text("""
-        SELECT m.name, m.address, p.name, p.unit, mp.price
-        FROM markets m
-        JOIN market_products mp ON m.id = mp.market_id
-        JOIN products p ON p.id = mp.product_id
-        WHERE LOWER(p.name) = ANY(:products)
-    """) # ANY(:products) yerine IN :products kullanmak daha genel olabilir
-
-    try:
-        result = db.session.execute(query, {'products': [p.lower() for p in requested_products]})
-        rows = result.fetchall()
-        # ... (Geri kalan işleme kodunuz aynı) ...
-        market_dict = {}
-        for market_name, address, product_name, unit, price in rows:
-            if market_name not in market_dict:
-                 market_dict[market_name] = {"adres": address, "urunler": {}}
-            if product_name not in market_dict[market_name]["urunler"]:
-                 price_str = f"{float(price):.2f} ₺" if price is not None else "N/A"
-                 market_dict[market_name]["urunler"][product_name] = f"{price_str} / {unit}"
-
-        response = [{"market": market, "adres": data["adres"], "urunler": data["urunler"]}
-                     for market, data in market_dict.items()]
-        return jsonify(response)
-
-    except Exception as e:
-        print(f"Filter Markets Error: {e}")
-        return jsonify({"message": "Marketler filtrelenirken hata oluştu"}), 500
-
-
-# --- Uygulamayı Çalıştırma ---
 if __name__ == '__main__':
-    # Veritabanı tablolarının oluşturulması (eğer yoksa)
-    # Production'da Flask-Migrate kullanmak daha iyidir.
     with app.app_context():
-         db.create_all() 
-    app.run(debug=True) # debug=True geliştirme aşamasında kullanışlıdır, production'da False olmalı
-
-    
+        try:
+            db.create_all() 
+            app.logger.info("Veritabanı tabloları başarıyla kontrol edildi/oluşturuldu.")
+        except Exception as e:
+            app.logger.error(f"Veritabanı oluşturulurken hata: {e}")
+    app.run(debug=True, host='0.0.0.0', port=5000)
