@@ -1,68 +1,68 @@
-# 🛒 SMARTSHOPGO
+# 🛒 SmartShopGo
 
-SmartShopGo, kullanıcıların oluşturduğu alışveriş listesine göre hem en uygun fiyatlı hem de en yakın marketi öneren bir web uygulamasıdır. Fiyat ve konum verileri Flask tabanlı bir API üzerinden alınmakta, kullanıcıya ekonomik ve konforlu bir alışveriş deneyimi sunulmaktadır.
+**SmartShopGo**, kullanıcıların oluşturduğu alışveriş listesine göre en uygun fiyatlı ve **en yakın** marketi öneren bir web uygulamasıdır. Ürün fiyat verileri Flask tabanlı bir API üzerinden alınmakta, konuma göre karşılaştırmalı fiyat önerisi yapılmakta ve kullanıcıya ekonomik, hızlı ve pratik bir alışveriş deneyimi sunulmaktadır.
 
-# 🚀 PROJE AMACI
+---
 
-Bu proje, bireylerin zaman ve maliyet tasarrufu yapmasını sağlamayı hedefler. Kullanıcı ürünlerini sepete ekledikten sonra sistem, fiyat karşılaştırması yaparak en ekonomik marketi önerir. Ayrıca tarayıcı konumu alınarak en yakın marketler listelenir. Geliştirilmeye açık mimarisi sayesinde ilerleyen sürümlerde rota optimizasyonu ve mobil uygulama entegrasyonu da hedeflenmektedir.
+## 🚀 Proje Amacı
 
-# 👥 EKİP
+Bu proje, alışveriş yapan bireylerin **zaman ve maliyet tasarrufu sağlamasını** hedefler. Kullanıcı, alışveriş listesine ürünleri ekledikten sonra sistem, **konum bazlı** olarak en uygun fiyatlı marketi belirler. Geliştirmeye açık mimarisi sayesinde, ilerleyen süreçte **rota optimizasyonu**, **harita entegrasyonu** ve **mobil uygulama desteği** de sağlanabilecektir.
 
-| İsim  | Rol                | Teknolojiler                     |
-|-------|--------------------|----------------------------------|
-| Ahmet | Backend Developer  | Python, Flask, PostgreSQL        |
-| Hasan | Frontend Developer | React.js, HTML, CSS, JS          |
+---
 
-# 🧩 ÖZELLİKLER
+## 👥 Ekip
 
-📝 Alışveriş listesi oluşturma
+| İsim       | Rol               | Teknolojiler               |
+|------------|-------------------|-----------------------------|
+| Ahmetcan   | Backend Developer | Python, Flask, PostgreSQL  |
+| Hasan      | Frontend Developer| React.js, HTML, CSS, JS    |
 
-📦 Flask API üzerinden ürün ve market verisi alma
+---
 
-📊 Sepet toplamı ve fiyat karşılaştırması yapma
+## 🧩 Temel Özellikler
 
-📍 Tarayıcıdan alınan konuma göre en yakın 5 marketi önerme
+- 📋 Alışveriş listesi oluşturma (fiyatsız)
+- 🔍 Listeye göre en yakın 5 marketin toplam fiyatlarını karşılaştırma
+- 📍 Harita üzerinden konum seçme ve kaydetme
+- ✅ Kullanıcı girişi ve kimlik doğrulama (JWT)
+- 🧾 Ürünleri kategori bazlı listeleme
+- 💾 Alışveriş listesinin localStorage ile korunması
+- 🧭 Mobil uyumlu, responsive arayüz
+- 🛠️ Ortak GitHub deposunda sürdürülebilir geliştirme
 
-💻 Responsive web arayüz (mobil uyumlu)
+---
 
-🔑 Kullanıcı kayıt/giriş ve JWT ile kimlik doğrulama
+## 🛠️ Kullanılan Teknolojiler
 
-🧭 Konuma dayalı mesafe hesaplama (haversine algoritması ile)
+| Katman      | Teknoloji                            |
+|-------------|--------------------------------------|
+| Frontend    | React.js, JavaScript, CSS, Bootstrap |
+| Backend     | Python, Flask                        |
+| Veritabanı  | PostgreSQL                           |
+| Depo ve IDE | GitHub, VSCode, PyCharm              |
 
-🔄 Geliştirilmeye açık, modüler mimari
+---
 
-🧪 Geliştirilen özelliklerin tümü GitHub üzerinden yönetilmektedir
+## 📦 Geliştirme Durumu
 
-# 🛠️ KULLANILAN TEKNOLOJİLER
-
-| Katman          | Teknoloji                                |
-|-----------------|------------------------------------------|
-| Frontend        | React.js, JavaScript, CSS, Bootstrap     |
-| Backend         | Python, Flask, Flask-JWT, SQLAlchemy     |
-| Veritabanı      | PostgreSQL                               |
-| Versiyon Kontrol| Git, GitHub Desktop                      |
-| IDE             | PyCharm, Visual Studio Code              |
-
-# 📦 GELİŞTİRME DURUMU
-
-| Aşama                                      | Durum         |
-|--------------------------------------------|---------------|
+| Aşama                                         | Durum         |
+|----------------------------------------------|---------------|
 | ✅ Proje planlaması ve görev dağılımı        | Tamamlandı    |
-| ✅ Frontend bileşenleri (ProductCard, CategoryList, Cart vb.) | Tamamlandı    |
+| ✅ Frontend bileşenleri                       | Tamamlandı    |
 | ✅ Flask backend kurulumu ve bağlantı        | Tamamlandı    |
-| ✅ PostgreSQL veritabanı bağlantısı ve veri seti | Tamamlandı    |
-| ✅ Ürün ve kategori bazlı listeleme         | Tamamlandı    |
-| ✅ Sepet yönetimi (ekle/sil/arttır/azalt)   | Tamamlandı    |
-| ✅ Kullanıcı kayıt ve giriş (JWT destekli)  | Tamamlandı    |
-| ✅ Tarayıcı konumu alındı                   | Tamamlandı    |
-| ✅ En yakın marketler mesafe ile listelendi | Tamamlandı    |
-| 🔄 Fiyat karşılaştırma algoritması         | Geliştiriliyor|
-| 🔜 Harita entegrasyonu (opsiyonel)          | Planlandı     |
-| 🔜 Mobil uyumluluk testleri ve performans   | Planlandı     |
-| 🔜 Kullanıcı profil ekranı                  | Planlandı     |
-| 🔜 Ödeme sistemi entegrasyonu (opsiyonel)   | Planlandı     |
+| ✅ PostgreSQL veritabanı ve ürün verisi      | Tamamlandı    |
+| ✅ Fiyatsız ürün listeleme (product list)    | Tamamlandı    |
+| ✅ Alışveriş listesi yönetimi (state)        | Tamamlandı    |
+| ✅ localStorage ile liste kalıcılığı         | Tamamlandı    |
+| ✅ Kullanıcı kimlik doğrulama (JWT)          | Tamamlandı    |
+| ✅ Harita üzerinden konum seçimi             | Tamamlandı    |
+| ✅ En yakın marketleri hesaplama             | Tamamlandı    |
+| ✅ Marketlerde toplam fiyat karşılaştırması  | Tamamlandı    |
+| 🔄 Eksik ürün tespiti ve uyarı               | Geliştiriliyor|
+| 🔜 Harita entegrasyonu (harita üzerinde market gösterimi) | Planlandı |
+| 🔜 Mobil uyumluluk testleri ve optimizasyon | Planlandı     |
+| 🔜 Kullanıcı profil ekranı                   | Planlandı     |
 
-![Ekran Görüntüsü (18)](https://github.com/user-attachments/assets/3d63d845-500e-465b-8663-ab769e93002c)
-![Ekran Görüntüsü (19)](https://github.com/user-attachments/assets/a71227ce-375f-4051-b523-8891f7d29e51)
-![Ekran Görüntüsü (20)](https://github.com/user-attachments/assets/d9fba805-e5d0-44ee-b6cf-38094238b659)
+---
+
 
