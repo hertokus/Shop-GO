@@ -1,7 +1,7 @@
 /* TopBar.css - Profil Menüsü Güncellemeleri Dahil */
 
 .top-bar {
-  background-color: #ffe643; /* Orijinal Sarı Arka Plan */
+  background-color: #f1ca78; /* Orijinal Sarı Arka Plan */
   padding: 10px 20px; 
   display: flex;
   align-items: center;
@@ -36,7 +36,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 1.4rem;
   font-weight: bold;
-  color: #12461f; /* Koyu Yeşil - Sarı arka plana uygun */
+  color: #285567; /* Koyu Yeşil - Sarı arka plana uygun */
   margin: 0;
 }
 
@@ -63,7 +63,7 @@
 }
 
 .search-icon-inside {
-  color: #757575;
+  color:#658fbc;
   margin-right: 10px;
   font-size: 1.1rem;
 }
@@ -97,7 +97,7 @@
 }
 
 .location-icon-inside {
-  color: #12461f; 
+  color: #658fbc; 
   margin-right: 8px;
   font-size: 1rem;
 }
@@ -124,7 +124,7 @@
   flex-shrink: 0;
 }
 .auth-link {
-  color: #12461f; 
+  color: #658fbc; 
   cursor: pointer;
   text-decoration: none;
   padding: 6px 0;
@@ -134,21 +134,21 @@
   transition: color 0.2s ease;
 }
 .auth-link:hover {
-  color: #0d3a1b; 
+  color: #658fbc; 
 }
 
 /* Profil Alanı Stilleri */
 .profile-section { position: relative; }
 .profile-button {
   background: none; border: none; padding: 0; cursor: pointer;
-  display: flex; align-items: center; color: #12461f; 
+  display: flex; align-items: center; color: #658fbc; 
   border-radius: 50%;
   transition: color 0.2s ease;
 }
 .profile-button:hover {
-  color: #0d3a1b; 
+  color: #658fbc; 
 }
-.profile-button:focus-visible { outline: 2px solid #12461f; outline-offset: 2px; }
+.profile-button:focus-visible { outline: 2px solid #658fbc; outline-offset: 2px; }
 
 
 /* === Profil Açılır Menüsü (Dropdown) Stilleri - GÜNCELLENMİŞ VE YENİ EKLENMİŞ === */
@@ -242,7 +242,7 @@
 
 /* İndirim Kuponlarım linki/alanı için stil (dropdown-menu-item sınıfını da kullanıyor) */
 .profile-dropdown .dropdown-link { 
-  color: #12461f; /* Ana tema yeşili - veya standart link rengi #007bff */
+  color: #658fbc; /* Ana tema yeşili - veya standart link rengi #007bff */
   font-weight: 500;
   /* padding, display vb. .dropdown-menu-item'dan alıyor */
 }
@@ -262,17 +262,17 @@
 /* Sepet Alanı */
 .cart {
   position: relative; display: flex; align-items: center; cursor: pointer;
-  color: #12461f; 
+  color: #658fbc; 
   transition: color 0.2s ease;
 }
 .cart:hover {
-  color: #0d3a1b; 
+  color: #658fbc; 
 }
 .cart-count {
   background-color: #dc3545; color: white; border-radius: 50%;
   padding: 2px 6px; font-size: 0.75rem; font-weight: bold;
   line-height: 1; position: absolute; top: -6px; right: -10px;
-  border: 1px solid #ffe643; 
+  border: 1px solid #f1ca78; 
   min-width: 18px; box-sizing: border-box; text-align: center;
 }
 

@@ -118,7 +118,7 @@
 .item-quantity-adjuster button {
   background-color: transparent; /* Şeffaf */
   border: none;
-  color: #ffe643; /* Buton ikon rengi */
+  color: #f1ca78; /* Buton ikon rengi */
   font-weight: bold;
   font-size: 1rem;
   padding: 5px 8px;
@@ -141,7 +141,7 @@
   min-width: 30px; /* Minimum genişlik */
   text-align: center;
   background-color: #fff; /* Arka planı beyaz yaptık */
-  color: #ffe643; /* Yazı rengini istediğiniz sarı yaptık */
+  color: #f1ca78; /* Yazı rengini istediğiniz sarı yaptık */
   /* Kenarlıklar, butonlarla hizalamak için opsiyonel */
   /* border-top: 1px solid #ddd; */
   /* border-bottom: 1px solid #ddd; */
@@ -154,7 +154,7 @@
   justify-content: space-between; /* Yazı sola, fiyat sağa */
   align-items: center;
   width: 100%;
-  background-color: #12461f; /* Ana buton rengi */
+  background-color: #658fbc; /* Ana buton rengi */
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -167,7 +167,7 @@
 }
 
 .go-to-cart-button:hover {
-  background-color: #ffe643; /* Hover rengi */
+  background-color: #f1ca78; /* Hover rengi */
 }
 
 .go-to-cart-button .total-price {
