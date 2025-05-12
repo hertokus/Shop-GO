@@ -1,7 +1,7 @@
 /* TopBar.css - Profil Menüsü Güncellemeleri Dahil */
 
 .top-bar {
-  background-color: #f1ca78; /* Orijinal Sarı Arka Plan */
+  background-color: #ffe643; /* Orijinal Sarı Arka Plan */
   padding: 10px 20px; 
   display: flex;
   align-items: center;
@@ -36,7 +36,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 1.4rem;
   font-weight: bold;
-  color: #285567; /* Koyu Yeşil - Sarı arka plana uygun */
+  color: #005800; /* Koyu Yeşil - Sarı arka plana uygun */
   margin: 0;
 }
 
@@ -63,7 +63,7 @@
 }
 
 .search-icon-inside {
-  color:#658fbc;
+  color:#005800;
   margin-right: 10px;
   font-size: 1.1rem;
 }
@@ -97,7 +97,7 @@
 }
 
 .location-icon-inside {
-  color: #658fbc; 
+  color: #005800; 
   margin-right: 8px;
   font-size: 1rem;
 }
@@ -124,7 +124,7 @@
   flex-shrink: 0;
 }
 .auth-link {
-  color: #658fbc; 
+  color: #005800; 
   cursor: pointer;
   text-decoration: none;
   padding: 6px 0;
@@ -134,21 +134,21 @@
   transition: color 0.2s ease;
 }
 .auth-link:hover {
-  color: #658fbc; 
+  color: #005800; 
 }
 
 /* Profil Alanı Stilleri */
 .profile-section { position: relative; }
 .profile-button {
   background: none; border: none; padding: 0; cursor: pointer;
-  display: flex; align-items: center; color: #658fbc; 
+  display: flex; align-items: center; color: #005800; 
   border-radius: 50%;
   transition: color 0.2s ease;
 }
 .profile-button:hover {
-  color: #658fbc; 
+  color: #b6edca; 
 }
-.profile-button:focus-visible { outline: 2px solid #658fbc; outline-offset: 2px; }
+.profile-button:focus-visible { outline: 2px solid #005800; outline-offset: 2px; }
 
 
 /* === Profil Açılır Menüsü (Dropdown) Stilleri - GÜNCELLENMİŞ VE YENİ EKLENMİŞ === */
@@ -218,7 +218,7 @@
 .profile-dropdown .dropdown-section-title {
   font-size: 0.75rem; 
   font-weight: bold;
-  color: #6c757d; /* Başlık için gri tonu */
+  color: #005800; /* Başlık için gri tonu */
   margin-bottom: 6px;
   text-transform: uppercase; 
   letter-spacing: 0.5px; 
@@ -227,7 +227,7 @@
 /* Hesap Sahibi (Ad Soyad) metni için stil */
 .profile-dropdown .dropdown-user-info-text {
   font-size: 0.9rem; 
-  color: #333; 
+  color: #005800; 
   line-height: 1.4;
   font-weight: 500; /* Biraz daha vurgulu */
 }
@@ -235,14 +235,14 @@
 /* Adres metni için stil */
 .profile-dropdown .dropdown-address-text {
   font-size: 0.85rem;
-  color: #495057; 
+  color: #005800; 
   line-height: 1.4; /* Satır yüksekliği ayarlandı */
   word-break: break-word; 
 }
 
 /* İndirim Kuponlarım linki/alanı için stil (dropdown-menu-item sınıfını da kullanıyor) */
 .profile-dropdown .dropdown-link { 
-  color: #658fbc; /* Ana tema yeşili - veya standart link rengi #007bff */
+  color: #005800; /* Ana tema yeşili - veya standart link rengi #007bff */
   font-weight: 500;
   /* padding, display vb. .dropdown-menu-item'dan alıyor */
 }
@@ -262,11 +262,11 @@
 /* Sepet Alanı */
 .cart {
   position: relative; display: flex; align-items: center; cursor: pointer;
-  color: #658fbc; 
+  color: #005800; 
   transition: color 0.2s ease;
 }
 .cart:hover {
-  color: #658fbc; 
+  color: #b6edca; 
 }
 .cart-count {
   background-color: #dc3545; color: white; border-radius: 50%;

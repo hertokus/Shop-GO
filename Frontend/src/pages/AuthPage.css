@@ -13,7 +13,7 @@
 /* Sol Panel: Karşılama (Sarı Arka Plan) */
 .auth-welcome-panel {
   flex-basis: 45%;
-  background-color: #f1ca78; /* Sarı */
+  background-color: #ffe643; /* Sarı */
   /* Ana metin rengini beyaza ayarlıyoruz, alt elemanlar miras alabilir */
   color: #fff;
   display: flex;
@@ -40,7 +40,7 @@
   font-size: 2.5rem;
   font-weight: bold;
   margin-bottom: 15px;
-  color:#658fbc ;
+  color:#005800 ;
   margin-top: 0; /* Başlığın üstündeki boşluk sıfır */
   font-family: inherit;
   /* order özelliği eklenmedi, çünkü görsel order: -1 ile zaten en üstte */
@@ -51,7 +51,7 @@
   line-height: 1.6;
   margin-bottom: 0;
   opacity: 0.9;
-  color: #658fbc ;
+  color: #005800 ;
   font-family: inherit;
   /* order özelliği eklenmedi */
 }
@@ -145,7 +145,7 @@
 /* Input Odaklanma (#efe807 Sarı Vurgulu) */
 .form-group input:focus {
   outline: none;
-  border-color: #f1ca78;
+  border-color:  #ffe643;
   box-shadow: 0 0 0 3px rgba(239, 232, 7, 0.3);
 }
 
@@ -166,7 +166,7 @@
 /* Checkbox (#efe807 Sarı Vurgulu) */
 .remember-me input[type="checkbox"] {
   margin-right: 8px;
-  accent-color: #f1ca78;
+  accent-color:  #ffe643;
 }
 
 .remember-me label {
@@ -191,8 +191,8 @@
 
 /* Submit Butonu (Normal Hali - Sarı) */
 .submit-button {
-  background-color: #f1ca78; /* Sarı */
-  color: #333;
+  background-color:  #005800; /* Sarı */
+  color: #ffffff;
   padding: 12px 20px;
   border: none;
   border-radius: 5px;
@@ -210,7 +210,7 @@
 
 /* Submit Butonu (Hover Hali - Yeşile Dönecek) */
 .submit-button:hover {
-  background-color: #658fbc;
+  background-color: #ffe643;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
@@ -294,7 +294,7 @@
 .switch-mode {
   text-align: center;
   margin-top: 30px;
-  color: #888;
+  color: #005800;
   font-size: 0.9rem;
 }
 .switch-mode.alternate {
@@ -303,14 +303,14 @@
 }
 
 .switch-mode-link {
-  color: #658fbc; /* Sarı link */
+  color: #005800; /* Sarı link */
   font-weight: bold;
   cursor: pointer;
   text-decoration: none;
 }
 
 .switch-mode-link:hover {
-  color: #658fbc; /* Koyu sarı hover */
+  color: #005800; /* Koyu sarı hover */
   text-decoration: underline;
 }
 

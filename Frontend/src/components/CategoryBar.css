@@ -31,7 +31,7 @@
     height: 8px; /* Kaydırma çubuğunun yüksekliği */
   }
   .category-bar-container::-webkit-scrollbar-track {
-    background: #ffe643; /* Kaydırma çubuğu yolu */
+    background: #e0e0e0; /* Kaydırma çubuğu yolu */
     border-radius: 10px;
   }
   .category-bar-container::-webkit-scrollbar-thumb {
@@ -53,8 +53,8 @@
     padding: 10px 20px;
     border: 1px solid #e0e0e0;
     border-radius: 20px;
-    background-color: #658fbc;
-    color: #333;
+    background-color: #005800;
+    color: #e7e5e5;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -64,14 +64,14 @@
   }
   
   .category-button:hover {
-    background-color:#ffffff ;
+    background-color:#005800 ;
     border-color: #ced4da;
   }
   
   .category-button.active {
-    background-color: #f1ca78  ; /* Senin yeşil rengin */
+    background-color: #ffe643 ; /* Senin yeşil rengin */
     color: #ffffff;
-    border-color:#f1ca78 ;
+    border-color:#ffe643 ;
     font-weight: bold;
   }
   

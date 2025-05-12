@@ -104,7 +104,7 @@
 .item-quantity-adjuster button { 
   background-color: transparent;
   border: none;
-  color:#f1ca78 ; 
+  color:#005800 ; 
   font-weight: bold;
   font-size: 0.9rem;
   padding: 0 10px; 
@@ -126,7 +126,7 @@
   font-weight: bold;
   min-width: 30px;
   text-align: center;
-  background-color: #f1ca78 ; /* Mor (veya #ffe643 temanızdaki sarı) */
+  background-color: #005800  ; /* Mor (veya #ffe643 temanızdaki sarı) */
   color: #fff; /* Beyaz (veya sarı üzerine #333) */
   height: 100%; 
   display: flex;
@@ -187,7 +187,7 @@
 .checkout-button { /* "Market Fiyatlarını Göster" butonu */
   width: 100%;
   padding: 12px;
-  background-color:  #658fbc; /* Tema renginiz (koyu yeşil) */
+  background-color:#005800; /* Tema renginiz (koyu yeşil) */
   color: #ffffff; /* Beyaz yazı */
   border: none;
   border-radius: 5px;
@@ -198,7 +198,7 @@
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 .checkout-button:hover {
-  background-color:  #f1ca78; /* Tema sarısı hover */
+  background-color:  #ffe643; /* Tema sarısı hover */
   color: #12461f; /* Koyu yeşil yazı */
   transform: scale(1.02); 
 }
@@ -292,11 +292,11 @@
 .market-list-total-price {
     font-weight: bold;
     font-size: 0.95rem;
-    color:#658fbc  ; /* Yeşil fiyat */
+    color: #005800 ; /* Yeşil fiyat */
 }
 
 .market-card-distance-badge {
-  background-color: #f1ca78; 
+  background-color: #ffe643; 
   color: #333; 
   padding: 5px 10px; /* Biraz küçültüldü */
   border-radius: 15px; 
@@ -316,8 +316,8 @@
 
 /* Yol Tarifi Butonu Stili */
 .get-directions-button {
-  background-color: #004887; /* Farklı bir yeşil tonu */
-  color: white;
+  background-color: #b6edca; /* Farklı bir yeşil tonu */
+  color: rgb(4, 4, 4);
   border: none;
   padding: 8px 15px; /* Biraz daha geniş padding */
   text-align: center;
@@ -335,7 +335,7 @@
 }
 
 .get-directions-button:hover {
-  background-color:#004887; 
+  background-color:#b6edca; 
 }
 
 .get-directions-button:disabled {

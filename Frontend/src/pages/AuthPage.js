@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Context'i kullanmak için useAuth hook'unu import ediyoruz - YOLU KONTROL EDİN!
 // Eğer context dosyanız src/context/AuthContext.js ise ve AuthPage src/pages/AuthPage.js ise bu yol doğrudur.
 import { useAuth } from '../context/AuthContext'; 
-import illustrationImage from './logo6.png'; 
+import illustrationImage from './logo shopandgo.png'; 
 
 function AuthPage() {
   const [isLogin, setIsLogin] = useState(true); 
