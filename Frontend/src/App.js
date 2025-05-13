@@ -1,13 +1,13 @@
 // src/App.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 // Component importları
 import HomePage from './pages/homepage';
 import TopBar from './components/TopBar';
 import CategoryBar from './components/CategoryBar';
 import AuthPage from './pages/AuthPage';
 import CartPage from './pages/CartPage';
-import { LocationProvider } from './context/LocationContext';
+import { LocationProvider, LocationContext } from './context/LocationContext'; // LocationContext import edildi
 // Rotalama importları
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 // Context importu
@@ -31,6 +31,8 @@ const categories = [
 function AppContent() {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
+  
+  const { selectedLocation: contextSelectedLocation, setSelectedLocation: updateLocationInContext } = useContext(LocationContext);
 
   const [cartItems, setCartItems] = useState(() => {
     try {
@@ -38,7 +40,6 @@ function AppContent() {
       if (storedCart) {
         const parsedCart = JSON.parse(storedCart);
         if (Array.isArray(parsedCart)) {
-          console.log("AppContent: Alışveriş Listesi localStorage'dan yüklendi.", parsedCart);
           return parsedCart;
         }
       }
@@ -46,7 +47,6 @@ function AppContent() {
       console.error("AppContent: localStorage'dan alışveriş listesi yüklenirken hata oluştu:", error);
       localStorage.removeItem('shopGoShoppingList');
     }
-    console.log("AppContent: localStorage'da liste bulunamadı/hatalı, boş listeyle başlanıyor.");
     return [];
   });
 
@@ -54,92 +54,59 @@ function AppContent() {
   const [activeCategory, setActiveCategory] = useState(categories[0]?.name || 'Atıştırmalık');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAddressText, setSelectedAddressText] = useState("Konum Seçin");
-  const [selectedLocationCoords, setSelectedLocationCoords] = useState(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
   useEffect(() => {
     try {
-      console.log("AppContent: Alışveriş Listesi localStorage'a kaydediliyor...", cartItems);
       localStorage.setItem('shopGoShoppingList', JSON.stringify(cartItems));
     } catch (error) {
       console.error("AppContent: Alışveriş Listesi localStorage'a kaydedilirken hata oluştu:", error);
     }
   }, [cartItems]);
 
+  // Uygulama ilk yüklendiğinde localStorage'dan adres metnini VE KOORDİNATLARI yükle, Context'i güncelle
   useEffect(() => {
     const savedAddressText = localStorage.getItem('selectedUserAddressText');
+    if (savedAddressText) {
+      setSelectedAddressText(savedAddressText);
+    }
+
     const savedCoordsString = localStorage.getItem('selectedUserCoords');
-    if (savedAddressText) setSelectedAddressText(savedAddressText);
     if (savedCoordsString) {
       try {
-        setSelectedLocationCoords(JSON.parse(savedCoordsString));
+        const parsedCoords = JSON.parse(savedCoordsString); // Bu {lat, lng} formatında olmalı
+        if (parsedCoords && typeof parsedCoords.lat === 'number' && typeof parsedCoords.lng === 'number') {
+          // LocationContext'i güncelle (Context'in {latitude, longitude} formatını beklediğini varsayıyoruz)
+          if (updateLocationInContext) {
+            console.log("AppContent (useEffect on mount): LocationContext localStorage'dan güncelleniyor - ", { latitude: parsedCoords.lat, longitude: parsedCoords.lng });
+            updateLocationInContext({ latitude: parsedCoords.lat, longitude: parsedCoords.lng });
+          }
+        }
       } catch (e) {
         console.error("localStorage'dan koordinat parse hatası:", e);
-        localStorage.removeItem('selectedUserCoords');
+        localStorage.removeItem('selectedUserCoords'); // Hatalı veriyi temizle
       }
     }
-  }, []);
+  }, [updateLocationInContext]); // updateLocationInContext değişmeyeceği için bu genelde bir kere çalışır (mount'ta)
 
-  const handleAddToCart = (product) => {
-    // DEBUG: handleAddToCart'a gelen product objesini ve ID'sini logla
-    console.log("%c[DEBUG App.js handleAddToCart]%c Gelen Ürün:", "color:teal; font-weight:bold;", "color:teal;", product);
-    if (product && typeof product.id !== 'undefined') {
-        console.log("%c[DEBUG App.js handleAddToCart]%c Gelen Ürün ID:", "color:teal; font-weight:bold;", "color:teal;", product.id);
-    } else {
-        console.warn("%c[DEBUG App.js handleAddToCart]%c Gelen Ürün objesi tanımsız veya 'id' alanı yok!", "color:red; font-weight:bold;", "color:red;", product);
-        // Eğer product.id tanımsızsa, burada bir işlem yapmadan çıkmak veya hata vermek isteyebilirsiniz.
-        // Şimdilik devam etmesine izin veriyoruz, backend logları productId='None' olarak gösterecektir.
+
+  const handleLocationSelectedFromMap = async (latlng) => { // latlng: {lat, lng}
+    setIsAddressModalOpen(false); 
+    setSelectedAddressText("Adres yükleniyor..."); 
+
+    const newLocationForContext = { latitude: latlng.lat, longitude: latlng.lng };
+    const newLocationForStorage = { lat: latlng.lat, lng: latlng.lng }; // Leaflet formatı
+    
+    if (updateLocationInContext) {
+      console.log("AppContent (handleLocationSelectedFromMap): LocationContext güncelleniyor - ", newLocationForContext);
+      updateLocationInContext(newLocationForContext); 
     }
+    // localStorage'a Leaflet formatında ({lat, lng}) kaydetmek daha tutarlı olabilir,
+    // çünkü TopBar'daki initialMapCoords bu formatı bekliyor.
+    // Ya da context'in de {lat, lng} kullanmasını sağlayabilirsiniz.
+    // Şimdilik, localStorage'a {lat, lng} kaydedelim.
+    localStorage.setItem('selectedUserCoords', JSON.stringify(newLocationForStorage)); 
 
-    setCartItems(prevItems => {
-      // product.id'nin geçerli bir değer olduğunu ve backend'deki product ID ile eşleştiğini varsayıyoruz.
-      const existingItem = prevItems.find((item) => item.productId === product.id); 
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.productId === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...prevItems, {
-        productId: product.id, // Burası çok önemli! product.id tanımsızsa, buraya da tanımsız geçer.
-        name: product.name,
-        category: product.category, 
-        unit: product.unit,         
-        image_url: product.image_url, 
-        quantity: 1
-      }];
-    });
-    console.log("Listeye Eklendi (App.js):", product.name, "ile productId:", product.id);
-  };
-
-  const handleRemoveFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter((item) => item.productId !== productId));
-  };
-
-  const handleIncreaseQuantity = (productId) => {
-    setCartItems(prevItems => prevItems.map((item) =>
-      item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item
-    ));
-  };
-
-  const handleDecreaseQuantity = (productId) => {
-    setCartItems(prevItems => prevItems.map((item) =>
-      item.productId === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
-    ));
-  };
-
-  const handleLogoutAndClearCart = () => {
-    logout();
-    setCartItems([]);
-  };
-
-  const handleCategorySelect = (categoryName) => setActiveCategory(categoryName);
-  const toggleCart = () => setIsCartOpen(!isCartOpen);
-  const handleSearchChange = (event) => setSearchTerm(event.target.value);
-  const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
-  const handleLocationSelectedFromMap = async (latlng) => {
-    setSelectedLocationCoords(latlng);
-    setIsAddressModalOpen(false);
-    setSelectedAddressText("Adres yükleniyor...");
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}&accept-language=tr`
@@ -152,14 +119,72 @@ function AppContent() {
       const fullAddress = filteredParts.length > 0 ? filteredParts.join(", ") : data.display_name || "Adres detayı bulunamadı";
       setSelectedAddressText(fullAddress);
       localStorage.setItem('selectedUserAddressText', fullAddress);
-      localStorage.setItem('selectedUserCoords', JSON.stringify(latlng));
     } catch (err) {
       console.error("Adres alınamadı:", err);
       setSelectedAddressText("Adres bulunamadı");
-      localStorage.removeItem('selectedUserAddressText');
-      localStorage.removeItem('selectedUserCoords');
+      localStorage.removeItem('selectedUserAddressText'); 
     }
   };
+  
+  // contextSelectedLocation (LocationContext'ten gelen) değiştiğinde adres metnini ayarla
+  // Bu, özellikle sayfa yenilendiğinde ve LocationProvider localStorage'dan konumu yüklediğinde
+  // veya yukarıdaki useEffect context'i güncellediğinde adres metninin de ayarlanmasını sağlar.
+  useEffect(() => {
+    if (contextSelectedLocation && contextSelectedLocation.latitude && contextSelectedLocation.longitude) {
+        // Eğer adres metni hala başlangıç değerindeyse ("Konum Seçin")
+        // ve localStorage'da kayıtlı bir adres metni varsa, onu kullan.
+        // Bu, context'in koordinatları localStorage'dan alıp güncellendiği senaryoda,
+        // adres metninin de localStorage'dan senkronize olmasını sağlar.
+        const savedAddressText = localStorage.getItem('selectedUserAddressText');
+        if (selectedAddressText === "Konum Seçin" && savedAddressText) {
+            setSelectedAddressText(savedAddressText);
+        } else if (selectedAddressText === "Konum Seçin") {
+            // Eğer context'te konum var ama adres metni hala "Konum Seçin" ve localStorage'da da yoksa,
+            // belki yeniden adres getirme API'si çağrılabilir (isteğe bağlı).
+            // Şimdilik, handleLocationSelectedFromMap bu işi yapıyor.
+        }
+    } else {
+        // Eğer context'ten konum bilgisi gelmiyorsa (veya sıfırlanmışsa)
+        // ve localStorage'da da adres metni yoksa, "Konum Seçin" olarak ayarla.
+        const savedAddressText = localStorage.getItem('selectedUserAddressText');
+        if (!savedAddressText) {
+            setSelectedAddressText("Konum Seçin");
+        }
+    }
+  }, [contextSelectedLocation, selectedAddressText]); // selectedAddressText'i de bağımlılığa ekledik
+
+
+  const handleAddToCart = (product) => {
+    if (!product || typeof product.id === 'undefined' || product.id === null) {
+        console.error("[DEBUG App.js handleAddToCart] Gelen Ürün objesi tanımsız, 'id' alanı yok veya 'id' null!", product);
+        alert("Ürün listeye eklenirken bir sorun oluştu. Lütfen tekrar deneyin.");
+        return; 
+    }
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find((item) => item.productId === product.id); 
+      if (existingItem) {
+        return prevItems.map((item) =>
+          item.productId === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...prevItems, {
+        productId: product.id, 
+        name: product.name,
+        category: product.category, 
+        unit: product.unit,         
+        image_url: product.image_url, 
+        quantity: 1
+      }];
+    });
+  };
+  const handleRemoveFromCart = (productId) => setCartItems(prevItems => prevItems.filter((item) => item.productId !== productId));
+  const handleIncreaseQuantity = (productId) => setCartItems(prevItems => prevItems.map(item => item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item));
+  const handleDecreaseQuantity = (productId) => setCartItems(prevItems => prevItems.map(item => item.productId === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item));
+  const handleLogoutAndClearCart = () => { logout(); setCartItems([]); };
+  const handleCategorySelect = (categoryName) => setActiveCategory(categoryName);
+  const toggleCart = () => setIsCartOpen(!isCartOpen);
+  const handleSearchChange = (event) => setSearchTerm(event.target.value);
+  const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
 
   return (
     <div className="app-container">
@@ -174,11 +199,11 @@ function AppContent() {
         onCloseCart={toggleCart}
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
-        selectedAddressText={selectedAddressText}
+        selectedAddressText={selectedAddressText} 
         isAddressModalOpen={isAddressModalOpen}
         toggleAddressModal={toggleAddressModal}
-        onLocationSelectForModal={handleLocationSelectedFromMap}
-        initialMapCoords={selectedLocationCoords}
+        onLocationSelectForModal={handleLocationSelectedFromMap} 
+        initialMapCoords={contextSelectedLocation ? { lat: contextSelectedLocation.latitude, lng: contextSelectedLocation.longitude } : null}
       />
 
       {isAuthenticated && location.pathname !== '/cart' && (
@@ -222,10 +247,10 @@ function AppContent() {
 
 function App() {
   return (
-    <LocationProvider>
+    <LocationProvider> 
       <AuthProvider>
         <Router>
-          <AppContent />
+          <AppContent /> 
         </Router>
       </AuthProvider>
     </LocationProvider>

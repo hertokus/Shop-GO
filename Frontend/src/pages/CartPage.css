@@ -55,19 +55,79 @@
   border-bottom: none;
 }
 
-/* Ürün görselleri kaldırıldığı için bu sınıf artık kullanılmıyor olabilir.
-.cart-page-item-image {
-  flex-shrink: 0;
-  width: 60px; 
-  height: 60px; 
+/* src/pages/CartPage.css */
+
+/* ... (Mevcut diğer stilleriniz) ... */
+
+.cart-page-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 10px; 
+  border-bottom: 1px solid #f0f0f0; 
+  gap: 10px; 
 }
-.cart-page-item-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 4px;
+
+/* Liste İçi Ürün Görseli Stilleri - BOYUT GÜNCELLENDİ */
+.cart-item-image-container {
+  width: 100px; /* Örnek olarak 40px'e düşürüldü (önceki 50px idi) */
+  height: 100px; /* Örnek olarak 40px'e düşürüldü (önceki 50px idi) */
+  flex-shrink: 0; 
+  background-color: #f0f0f0; 
+  border-radius: 4px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; 
 }
-*/
+
+.cart-item-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; 
+}
+
+.cart-item-image-placeholder {
+  font-size: 0.6rem; /* Boyut küçüldüğü için placeholder yazısı da küçültülebilir */
+  color: #888;
+  text-align: center;
+}
+/* STİL GÜNCELLEMESİ SONU */
+
+.cart-page-item-details { 
+  flex-grow: 1; 
+  display: flex;
+  flex-direction: column; 
+}
+
+.cart-page-item-details .item-name {
+  font-weight: 600; 
+  display: block;
+  font-size: 0.95rem; 
+  color: #444;
+}
+
+.unavailable-items-warning {
+    font-size: 0.8rem;
+    color: #dc3545; /* Kırmızı uyarı */
+    width: 100%;
+    margin-top: 8px; /* Üstteki bölümle boşluk */
+    padding-top: 8px; /* İç boşluk */
+    border-top: 1px dashed #eee; 
+}
+
+/* YENİ: Bulunamayan ürünlerin detaylı listesi için stiller */
+.unavailable-list-details {
+  list-style: disc; /* Madde imi olarak disk kullan */
+  padding-left: 20px; /* Sol iç boşluk (madde imleri için) */
+  margin-top: 5px; /* Üstündeki metinle arasında boşluk */
+  font-size: 0.75rem; /* Biraz daha küçük font */
+  color: #555; /* Daha yumuşak bir renk */
+}
+
+.unavailable-list-details li {
+  margin-bottom: 3px; /* Liste elemanları arası boşluk */
+}
+
 
 .cart-page-item-details {
   flex-grow: 1; 
