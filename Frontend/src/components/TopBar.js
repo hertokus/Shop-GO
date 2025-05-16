@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import './TopBar.css';
 import { FaShoppingCart, FaUserCircle, FaSearch, FaHome } from 'react-icons/fa';
 import logo from '../assets/CHART.png';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Link burada zaten import edilmiş.
 import { useAuth } from '../context/AuthContext';
 import ShoppingCart from './ShoppingCart';
 import { LocationContext } from '../context/LocationContext';
@@ -50,7 +50,7 @@ function TopBar({
   
   const cartIconRef = useRef(null);
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout } = useAuth(); // user objesi { username, fullName } içeriyor
+  const { isAuthenticated, user, logout } = useAuth(); 
   const location = useLocation();
 
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -62,7 +62,7 @@ function TopBar({
           cartIconRef.current && !cartIconRef.current.contains(event.target) 
       ) {
         if (event.target.closest && !event.target.closest('#cart-icon')) {
-           setIsProfileDropdownOpen(false);
+            setIsProfileDropdownOpen(false);
         }
       }
     };
@@ -85,7 +85,7 @@ function TopBar({
   const defaultMapCenter = initialMapCoords ? [initialMapCoords.lat, initialMapCoords.lng] : [37.00, 35.325];
   const showAuthLink = !isAuthenticated && location.pathname !== '/auth';
 
-  const handleDropdownLinkClick = () => {
+  const handleDropdownLinkClick = () => { // Bu fonksiyon linke tıklandığında dropdown'ı kapatır.
     setIsProfileDropdownOpen(false); 
   };
 
@@ -131,7 +131,6 @@ function TopBar({
               <div className="profile-dropdown">
                 <div className="dropdown-header">Merhaba, {user.fullName || user.username}!</div>
                 <ul className="dropdown-menu-list">
-                  {/* YENİ: Ad Soyad Bilgisi Bölümü */}
                   <li className="dropdown-section">
                     <div className="dropdown-section-title">Hesap Sahibi</div>
                     <div className="dropdown-user-info-text">
@@ -139,7 +138,6 @@ function TopBar({
                     </div>
                   </li>
                   <li className="dropdown-divider"></li>
-                  {/* // YENİ BÖLÜM SONU */}
                   <li className="dropdown-section">
                     <div className="dropdown-section-title">Adresim</div>
                     <div className="dropdown-address-text">
@@ -151,12 +149,31 @@ function TopBar({
                     <div className="dropdown-section-title">İndirim Kuponlarım</div>
                     <div 
                       className="dropdown-menu-item dropdown-link"
-                      onClick={handleDropdownLinkClick} 
+                      onClick={() => {
+                        // İndirim kuponları için bir sayfanız varsa buraya navigate ekleyebilirsiniz.
+                        // navigate('/kuponlarim'); 
+                        handleDropdownLinkClick(); // Dropdown'ı kapat
+                        alert("İndirim kuponları özelliği yakında!"); // Placeholder
+                      }}
                       style={{ cursor: 'pointer' }} 
                     >
                       Kuponlarımı Gör
                     </div>
                   </li>
+                  
+                  {/* YENİ EKLENEN KISIM: Hesap Ayarları Linki */}
+                  <li className="dropdown-divider"></li>
+                  <li className="dropdown-section">
+                    <Link 
+                      to="/hesap-ayarlari" 
+                      className="dropdown-menu-item dropdown-link" 
+                      onClick={handleDropdownLinkClick} // Linke tıklandığında dropdown'ı kapatır
+                    >
+                      Hesap Ayarları
+                    </Link>
+                  </li>
+                  {/* YENİ EKLENEN KISIM SONU */}
+
                   <li className="dropdown-divider"></li>
                   <li>
                     <button onClick={handleLogoutClick} className="dropdown-menu-item logout-dropdown-button">

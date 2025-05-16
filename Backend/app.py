@@ -1,4 +1,4 @@
-# app.py - Tam Hali (Detaylı Ürün ID Takibi için Güncellenmiş)
+# app.py - Tam Hali (JWT Subject ve ID İşleme Güncellendi)
 import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
@@ -42,7 +42,7 @@ class User(db.Model):
 
 class Product(db.Model):
     __tablename__ = 'products'
-    id = db.Column(db.Integer, primary_key=True) # Bu ID'nin frontend'e doğru gittiğinden emin olmalıyız
+    id = db.Column(db.Integer, primary_key=True) 
     name = db.Column(db.String(255), nullable=False)
     unit = db.Column(db.String(50))
     category = db.Column(db.String(100))
@@ -101,27 +101,120 @@ def login():
     if not email or not password: return jsonify({"message": "E-posta ve şifre gereklidir"}), 400
     user = User.query.filter_by(email=email).first()
     if user and bcrypt.check_password_hash(user.password_hash, password):
-        access_token = create_access_token(identity=user.id)
+        # YENİ: user.id'yi string'e çevirerek token oluşturuyoruz
+        access_token = create_access_token(identity=str(user.id))
         return jsonify(access_token=access_token, user_id=user.id, username=user.username, fullName=user.username ), 200
     else: return jsonify({"message": "Geçersiz e-posta veya şifre"}), 401
 
 @app.route('/api/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
-    current_user_id = get_jwt_identity()
+    identity_from_token = get_jwt_identity()
+    try:
+        # YENİ: Token'dan gelen kimliği integer'a çeviriyoruz
+        current_user_id = int(identity_from_token)
+    except ValueError:
+        return jsonify(msg="Token'daki kullanıcı kimliği (ID) formatı geçersiz."), 401
+        
     user = User.query.get(current_user_id)
     if not user: return jsonify({"message": "Kullanıcı bulunamadı"}), 404
-    return jsonify(id=user.id, username=user.username, email=user.email), 200
+    return jsonify(id=user.id, username=user.username, email=user.email, fullName=user.username), 200
+
+@app.route('/api/profile', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    identity_from_token = get_jwt_identity()
+    try:
+        # YENİ: Token'dan gelen kimliği integer'a çeviriyoruz
+        current_user_id = int(identity_from_token)
+    except ValueError:
+        return jsonify(msg="Token'daki kullanıcı kimliği (ID) formatı geçersiz."), 401
+
+    user = User.query.get(current_user_id)
+
+    if not user:
+        return jsonify({"message": "Kullanıcı bulunamadı"}), 404
+
+    data = request.get_json()
+    if not data:
+        # Frontend'den boş payload gelirse (AccountSettingsPage.js'deki mantık bunu engellemeli ama yine de kontrol)
+        if request.content_length is not None and request.content_length == 0 :
+             app.logger.warning("PUT /api/profile: İstek gövdesi boş geldi (Content-Length: 0).")
+             return jsonify({"message": "İstek gövdesi (JSON) boş olamaz."}), 400
+        # Eğer data None ise ama content_length 0 değilse, JSON parse hatası olabilir
+        # request.get_json() zaten bu durumda bir 400 Bad Request hatası fırlatır (force=False ve silent=False ise)
+        # Ancak, eğer buraya kadar geldiyse ve data None ise, bu özel durumu loglayalım.
+        app.logger.warning(f"PUT /api/profile: request.get_json() None döndürdü. Gelen Content-Type: {request.content_type}")
+        return jsonify({"message": "Geçersiz JSON formatı veya istek gövdesi."}), 400
+
+
+    updated_fields = [] 
+
+    if 'username' in data and data['username'] and data['username'] != user.username:
+        new_username = data['username']
+        if User.query.filter(User.id != user.id).filter_by(username=new_username).first():
+            return jsonify({"message": "Bu kullanıcı adı zaten başkası tarafından alınmış"}), 409
+        user.username = new_username
+        updated_fields.append('kullanıcı adı')
+
+    if 'email' in data and data['email'] and data['email'] != user.email:
+        new_email = data['email']
+        if User.query.filter(User.id != user.id).filter_by(email=new_email).first():
+            return jsonify({"message": "Bu e-posta adresi zaten başkası tarafından kayıtlı"}), 409
+        user.email = new_email
+        updated_fields.append('e-posta')
+
+    if 'newPassword' in data and data['newPassword']:
+        if not data.get('currentPassword'):
+            return jsonify({"message": "Şifre güncellemek için mevcut şifrenizi girmelisiniz."}), 400
+        
+        if not bcrypt.check_password_hash(user.password_hash, data['currentPassword']):
+            return jsonify({"message": "Mevcut şifreniz yanlış."}), 401
+            
+        if len(data['newPassword']) < 6: 
+            return jsonify({"message": "Yeni şifre en az 6 karakter olmalıdır."}), 400
+            
+        user.password_hash = bcrypt.generate_password_hash(data['newPassword']).decode('utf-8')
+        updated_fields.append('şifre')
+
+    if not updated_fields:
+        # Bu durum, AccountSettingsPage.js'deki payload oluşturma mantığı tarafından
+        # zaten engellenmiş olmalı, yani boş payload ile istek gelmemeli.
+        # Eğer yine de gelirse, bu bir "Bad Request"tir.
+        return jsonify({"message": "Güncellenecek bir bilgi gönderilmedi veya bilgiler mevcut bilgilerle aynı."}), 400
+
+    try:
+        db.session.commit()
+        response_user_data = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "fullName": user.username 
+        }
+        return jsonify({
+            "message": f"{', '.join(updated_fields).capitalize()} başarıyla güncellendi.", 
+            "user": response_user_data 
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Profil Güncelleme Hatası: {e}")
+        return jsonify({"message": "Profil güncellenirken bir sunucu hatası oluştu."}), 500
+
+# ... (get_all_products, get_products_by_category_slug, get_markets, get_nearest_markets, calculate_list_prices, 
+#      get_markets_with_products, filter_markets_with_products fonksiyonları ve if __name__ == '__main__': bloğu aynı kalacak) ...
+# --- (Diğer endpoint'leriniz ve if __name__ == '__main__': bloğu buraya gelecek) ---
+# Önceki mesajınızdaki app.py'nin geri kalanını buraya ekleyebilirsiniz.
+# Ben sadece login, get_profile ve update_profile fonksiyonlarını güncelledim.
+# Geri kalan fonksiyonları olduğu gibi bırakıyorum:
 
 @app.route('/api/products', methods=['GET'])
 def get_all_products():
     try:
         products = Product.query.all()
         products_to_send = []
-        print(f"\n--- [DEBUG API /api/products] ---") # Endpoint başlangıç logu
+        print(f"\n--- [DEBUG API /api/products] ---") 
         for product_obj in products:
             product_dict = product_obj.to_dict()
-            # DEBUG: Her ürünün veritabanındaki ID'sini ve frontend'e gönderilecek dict içindeki ID'yi logla
             print(f"  Product DB ID: {product_obj.id}, Sent Dict ID: {product_dict.get('id')}, Name: {product_dict.get('name')}")
             products_to_send.append(product_dict)
         print(f"--- [DEBUG API /api/products] Yanıt gönderiliyor, toplam {len(products_to_send)} ürün. ---")
@@ -135,10 +228,9 @@ def get_products_by_category_slug(category_name_from_url):
     try:
         products_in_category = Product.query.filter(Product.category == category_name_from_url).all()
         products_to_send = []
-        print(f"\n--- [DEBUG API /api/products/category/{category_name_from_url}] ---") # Endpoint başlangıç logu
+        print(f"\n--- [DEBUG API /api/products/category/{category_name_from_url}] ---") 
         for product_obj in products_in_category:
             product_dict = product_obj.to_dict()
-            # DEBUG: Her ürünün veritabanındaki ID'sini ve frontend'e gönderilecek dict içindeki ID'yi logla
             print(f"  Product DB ID: {product_obj.id}, Sent Dict ID: {product_dict.get('id')}, Name: {product_dict.get('name')}")
             products_to_send.append(product_dict)
         print(f"--- [DEBUG API /api/products/category/{category_name_from_url}] Yanıt gönderiliyor, toplam {len(products_to_send)} ürün. ---")
@@ -188,12 +280,11 @@ def calculate_list_prices():
     user_lon_str = data.get('longitude')
     shopping_list_items = data.get('shopping_list')
     
-    print(f"\n--- [DEBUG API /api/calculate-list-prices] ---") # Endpoint başlangıç logu
+    print(f"\n--- [DEBUG API /api/calculate-list-prices] ---") 
     print(f"  Gelen İstek: latitude={user_lat_str}, longitude={user_lon_str}, shopping_list_count={len(shopping_list_items) if shopping_list_items else 0}")
     if shopping_list_items:
         for i, s_item in enumerate(shopping_list_items):
             print(f"    Shopping List Item {i+1}: {s_item}")
-
 
     if user_lat_str is None or user_lon_str is None or shopping_list_items is None:
         app.logger.error("Calculate List Prices: Eksik parametreler.")
@@ -226,18 +317,18 @@ def calculate_list_prices():
             unavailable_item_details_list = [] 
             print(f"    Processing Market ID: {market_id}, Name: {market_info['name']}")
             for item in shopping_list_items:
-                product_id_str = item.get('productId') # Frontend'den 'productId' olarak geldiğini varsayıyoruz
+                product_id_str = item.get('productId') 
                 quantity_str = item.get('quantity')
                 print(f"      İşlenen Liste Ürünü: Gelen productId='{product_id_str}', quantity='{quantity_str}'")
                 
-                if product_id_str is None or product_id_str == 'None' or quantity_str is None: # 'None' string kontrolü eklendi
+                if product_id_str is None or product_id_str == 'None' or quantity_str is None: 
                     app.logger.warning(f"Calculate List Prices: Alışveriş listesinde eksik veya 'None' productId veya quantity: {item} (Market ID: {market_id})")
                     print(f"        EKSİK/NONE BİLGİ: productId veya quantity. Bu ürün atlanıyor.")
                     unavailable_items_count += 1
                     unavailable_item_details_list.append({"productId": product_id_str, "name": "Bilinmeyen Ürün (Eksik/None ID)"})
                     continue 
                 try:
-                    product_id = int(product_id_str) # Burası 'None' string ise hata verecektir, yukarıda kontrol edildi.
+                    product_id = int(product_id_str) 
                     quantity = int(quantity_str)
                     if quantity <= 0:
                         app.logger.warning(f"Calculate List Prices: Geçersiz miktar (quantity <= 0): {item} (Market ID: {market_id})")
@@ -253,7 +344,7 @@ def calculate_list_prices():
                     unavailable_item_details_list.append({"productId": product_id_str, "name": "Bilinmeyen Ürün (Format Hatası)"})
                     continue
                 
-                print(f"        Sorgu için: market_id={market_id}, product_id={product_id}")
+                print(f"      Sorgu için: market_id={market_id}, product_id={product_id}")
                 market_product_entry = MarketProduct.query.filter_by(market_id=market_id, product_id=product_id).first()
                 
                 if market_product_entry and market_product_entry.price is not None:
@@ -267,7 +358,7 @@ def calculate_list_prices():
                     product_name = product_detail.name if product_detail else f"Bilinmeyen Ürün (ID: {product_id})"
                     unavailable_item_details_list.append({"productId": product_id, "name": product_name})
                     print(f"        MarketProduct BULUNAMADI veya Fiyatı Yok. Ürün Adı: {product_name}")
-            
+                
             print(f"    Market {market_info['name']} için Nihai Liste Toplamı: {current_market_total_list_price:.2f}")
             response_data.append({"market_id": market_id, "market_name": market_info['name'], "distance": market_info['distance'], "latitude": market_info['latitude'], "longitude": market_info['longitude'], "total_list_price": round(current_market_total_list_price, 2), "currency": "₺", "unavailable_items_count": unavailable_items_count, "unavailable_item_details": unavailable_item_details_list})
         

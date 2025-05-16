@@ -24,7 +24,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-backend": "cd ../Backend && .\\venv\\Scripts\\python app.py",
-    "dev": "concurrently \"npm run start\" \"npm run start-backend\""
+    "dev": "npx concurrently \"npm run start\" \"npm run start-backend\""
   },
   "eslintConfig": {
     "extends": [
@@ -43,7 +43,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
+  },   
+  "proxy": "http://localhost:5000",
   "devDependencies": {
     "concurrently": "^9.1.2"
   }

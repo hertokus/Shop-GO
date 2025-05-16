@@ -7,7 +7,8 @@ import TopBar from './components/TopBar';
 import CategoryBar from './components/CategoryBar';
 import AuthPage from './pages/AuthPage';
 import CartPage from './pages/CartPage';
-import { LocationProvider, LocationContext } from './context/LocationContext'; // LocationContext import edildi
+import AccountSettingsPage from './pages/AccountSettingsPage'; // YENİ: Hesap Ayarları sayfası import edildi
+import { LocationProvider, LocationContext } from './context/LocationContext'; 
 // Rotalama importları
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 // Context importu
@@ -64,7 +65,6 @@ function AppContent() {
     }
   }, [cartItems]);
 
-  // Uygulama ilk yüklendiğinde localStorage'dan adres metnini VE KOORDİNATLARI yükle, Context'i güncelle
   useEffect(() => {
     const savedAddressText = localStorage.getItem('selectedUserAddressText');
     if (savedAddressText) {
@@ -74,9 +74,8 @@ function AppContent() {
     const savedCoordsString = localStorage.getItem('selectedUserCoords');
     if (savedCoordsString) {
       try {
-        const parsedCoords = JSON.parse(savedCoordsString); // Bu {lat, lng} formatında olmalı
+        const parsedCoords = JSON.parse(savedCoordsString); 
         if (parsedCoords && typeof parsedCoords.lat === 'number' && typeof parsedCoords.lng === 'number') {
-          // LocationContext'i güncelle (Context'in {latitude, longitude} formatını beklediğini varsayıyoruz)
           if (updateLocationInContext) {
             console.log("AppContent (useEffect on mount): LocationContext localStorage'dan güncelleniyor - ", { latitude: parsedCoords.lat, longitude: parsedCoords.lng });
             updateLocationInContext({ latitude: parsedCoords.lat, longitude: parsedCoords.lng });
@@ -84,27 +83,23 @@ function AppContent() {
         }
       } catch (e) {
         console.error("localStorage'dan koordinat parse hatası:", e);
-        localStorage.removeItem('selectedUserCoords'); // Hatalı veriyi temizle
+        localStorage.removeItem('selectedUserCoords'); 
       }
     }
-  }, [updateLocationInContext]); // updateLocationInContext değişmeyeceği için bu genelde bir kere çalışır (mount'ta)
+  }, [updateLocationInContext]); 
 
 
-  const handleLocationSelectedFromMap = async (latlng) => { // latlng: {lat, lng}
+  const handleLocationSelectedFromMap = async (latlng) => { 
     setIsAddressModalOpen(false); 
     setSelectedAddressText("Adres yükleniyor..."); 
 
     const newLocationForContext = { latitude: latlng.lat, longitude: latlng.lng };
-    const newLocationForStorage = { lat: latlng.lat, lng: latlng.lng }; // Leaflet formatı
+    const newLocationForStorage = { lat: latlng.lat, lng: latlng.lng }; 
     
     if (updateLocationInContext) {
       console.log("AppContent (handleLocationSelectedFromMap): LocationContext güncelleniyor - ", newLocationForContext);
       updateLocationInContext(newLocationForContext); 
     }
-    // localStorage'a Leaflet formatında ({lat, lng}) kaydetmek daha tutarlı olabilir,
-    // çünkü TopBar'daki initialMapCoords bu formatı bekliyor.
-    // Ya da context'in de {lat, lng} kullanmasını sağlayabilirsiniz.
-    // Şimdilik, localStorage'a {lat, lng} kaydedelim.
     localStorage.setItem('selectedUserCoords', JSON.stringify(newLocationForStorage)); 
 
     try {
@@ -126,32 +121,19 @@ function AppContent() {
     }
   };
   
-  // contextSelectedLocation (LocationContext'ten gelen) değiştiğinde adres metnini ayarla
-  // Bu, özellikle sayfa yenilendiğinde ve LocationProvider localStorage'dan konumu yüklediğinde
-  // veya yukarıdaki useEffect context'i güncellediğinde adres metninin de ayarlanmasını sağlar.
   useEffect(() => {
     if (contextSelectedLocation && contextSelectedLocation.latitude && contextSelectedLocation.longitude) {
-        // Eğer adres metni hala başlangıç değerindeyse ("Konum Seçin")
-        // ve localStorage'da kayıtlı bir adres metni varsa, onu kullan.
-        // Bu, context'in koordinatları localStorage'dan alıp güncellendiği senaryoda,
-        // adres metninin de localStorage'dan senkronize olmasını sağlar.
-        const savedAddressText = localStorage.getItem('selectedUserAddressText');
-        if (selectedAddressText === "Konum Seçin" && savedAddressText) {
-            setSelectedAddressText(savedAddressText);
-        } else if (selectedAddressText === "Konum Seçin") {
-            // Eğer context'te konum var ama adres metni hala "Konum Seçin" ve localStorage'da da yoksa,
-            // belki yeniden adres getirme API'si çağrılabilir (isteğe bağlı).
-            // Şimdilik, handleLocationSelectedFromMap bu işi yapıyor.
-        }
+      const savedAddressText = localStorage.getItem('selectedUserAddressText');
+      if (selectedAddressText === "Konum Seçin" && savedAddressText) {
+          setSelectedAddressText(savedAddressText);
+      }
     } else {
-        // Eğer context'ten konum bilgisi gelmiyorsa (veya sıfırlanmışsa)
-        // ve localStorage'da da adres metni yoksa, "Konum Seçin" olarak ayarla.
-        const savedAddressText = localStorage.getItem('selectedUserAddressText');
-        if (!savedAddressText) {
-            setSelectedAddressText("Konum Seçin");
-        }
+      const savedAddressText = localStorage.getItem('selectedUserAddressText');
+      if (!savedAddressText) {
+          setSelectedAddressText("Konum Seçin");
+      }
     }
-  }, [contextSelectedLocation, selectedAddressText]); // selectedAddressText'i de bağımlılığa ekledik
+  }, [contextSelectedLocation, selectedAddressText]);
 
 
   const handleAddToCart = (product) => {
@@ -217,25 +199,47 @@ function AppContent() {
       <div className="content-wrapper">
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
-          <Route path="/home" element={
-            <HomePage
-              onAddToCart={handleAddToCart}
-              activeCategory={activeCategory}
-              searchTerm={searchTerm}
-            />}
+          <Route 
+            path="/home" 
+            element={
+              isAuthenticated ? (
+                <HomePage
+                  onAddToCart={handleAddToCart}
+                  activeCategory={activeCategory}
+                  searchTerm={searchTerm}
+                />
+              ) : (
+                <Navigate to="/auth" replace /> 
+              )
+            } 
           />
           <Route
             path="/cart"
             element={
-              <CartPage
-                cartItems={cartItems}
-                onRemoveFromCart={handleRemoveFromCart}
-                onIncreaseQuantity={handleIncreaseQuantity}
-                onDecreaseQuantity={handleDecreaseQuantity}
-              />
+              isAuthenticated ? (
+                <CartPage
+                  cartItems={cartItems}
+                  onRemoveFromCart={handleRemoveFromCart}
+                  onIncreaseQuantity={handleIncreaseQuantity}
+                  onDecreaseQuantity={handleDecreaseQuantity}
+                />
+              ) : (
+                <Navigate to="/auth" replace />
+              )
             }
           />
-          <Route path="/" element={<Navigate to="/auth" />} />
+          {/* YENİ: Hesap Ayarları Sayfası için Route */}
+          <Route
+            path="/hesap-ayarlari"
+            element={
+              isAuthenticated ? (
+                <AccountSettingsPage />
+              ) : (
+                <Navigate to="/auth" replace />
+              )
+            }
+          />
+          <Route path="/" element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/auth" />} />
         </Routes>
       </div>
       <footer>
