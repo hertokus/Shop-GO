@@ -88,7 +88,12 @@ Mobil uygulama, `Expo` kullanılarak geliştirilmekte olup şu an:
 
 🖼️ (Buraya uygulama ekran görüntüleri veya kısa bir tanıtım gif’i ekleyebilirsin.)
 
----
+![Ekran Görüntüsü (31)](https://github.com/user-attachments/assets/346aef79-1a52-4eac-956b-26c9f3422770)
+![Ekran Görüntüsü (32)](https://github.com/user-attachments/assets/f23e24f4-5ae5-4514-88f9-53553028befe)
+![Ekran Görüntüsü (33)](https://github.com/user-attachments/assets/63229e57-fc4c-4a64-a6f9-cff38d888817)
+![Ekran Görüntüsü (35)](https://github.com/user-attachments/assets/39b9c02b-daa7-4e53-a30a-77bf8af84efe)
+![Ekran Görüntüsü (36)](https://github.com/user-attachments/assets/837ab1a4-8207-4888-bf6e-39a99d441bc2)
+![Ekran Görüntüsü (37)](https://github.com/user-attachments/assets/e9219130-7204-4544-a8da-363bd664a32f)
 
 ## 🧪 Nasıl Çalıştırılır?
 
