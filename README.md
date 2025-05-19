@@ -1,21 +1,21 @@
-# 🛒 SmartShopGo
+# 🛒 Shop&GO – Akıllı Alışveriş ve Ulaşım Planlayıcı
 
-**SmartShopGo**, kullanıcıların oluşturduğu alışveriş listesine göre en uygun fiyatlı ve **en yakın** marketi öneren bir web uygulamasıdır. Ürün fiyat verileri Flask tabanlı bir API üzerinden alınmakta, konuma göre karşılaştırmalı fiyat önerisi yapılmakta ve kullanıcıya ekonomik, hızlı ve pratik bir alışveriş deneyimi sunulmaktadır.
+**Shop&GO**, kullanıcıların oluşturduğu alışveriş listesine göre **en uygun fiyatlı** ve **en yakın** marketi öneren bir web ve mobil uygulamadır. Flask tabanlı API ile ürün fiyatları yönetilir, React frontend ile kullanıcı etkileşimi sağlanır. En yakın markete rota önerisi sunar. Artık **mobil uygulama** (Expo + React Native) versiyonu da aktif olarak geliştirilmektedir.
 
 ---
 
 ## 🚀 Proje Amacı
 
-Bu proje, alışveriş yapan bireylerin **zaman ve maliyet tasarrufu sağlamasını** hedefler. Kullanıcı, alışveriş listesine ürünleri ekledikten sonra sistem, **konum bazlı** olarak en uygun fiyatlı marketi belirler. Geliştirmeye açık mimarisi sayesinde, ilerleyen süreçte **rota optimizasyonu**, **harita entegrasyonu** ve **mobil uygulama desteği** de sağlanabilecektir.
+Bu proje, alışveriş yapan bireylerin **zaman ve bütçe tasarrufu** sağlamasını amaçlar. Kullanıcı, alışveriş listesine ürünleri ekler → sistem, konum bazlı olarak en uygun fiyatlı marketi hesaplar → ulaşım yönlendirmesi sağlar.
 
 ---
 
 ## 👥 Ekip
 
-| İsim       | Rol               | Teknolojiler               |
-|------------|-------------------|-----------------------------|
-| Ahmetcan   | Backend Developer | Python, Flask, PostgreSQL  |
-| Hasan      | Frontend Developer| React.js, HTML, CSS, JS    |
+| İsim       | Rol                | Teknolojiler                        |
+|------------|--------------------|-------------------------------------|
+| Ahmetcan Selek | Backend & Mobile Developer | Python, Flask, PostgreSQL, React Native |
+| Hasan Ertokuş   | Frontend Developer        | React.js, HTML, CSS, JS             |
 
 ---
 
@@ -24,45 +24,77 @@ Bu proje, alışveriş yapan bireylerin **zaman ve maliyet tasarrufu sağlaması
 - 📋 Alışveriş listesi oluşturma (fiyatsız)
 - 🔍 Listeye göre en yakın 5 marketin toplam fiyatlarını karşılaştırma
 - 📍 Harita üzerinden konum seçme ve kaydetme
-- ✅ Kullanıcı girişi ve kimlik doğrulama (JWT)
-- 🧾 Ürünleri kategori bazlı listeleme
-- 💾 Alışveriş listesinin localStorage ile korunması
-- 🧭 Mobil uyumlu, responsive arayüz
+- 🧾 Eksik ürünleri belirten kontrol mekanizması
+- ✅ Kullanıcı girişi ve kimlik doğrulama (JWT + Firebase Google Auth)
+- 💾 Alışveriş listesinin localStorage (web) ve AsyncStorage (mobil) ile korunması
+- 🧭 Google Maps yönlendirme ile markete rota alma
+- 📱 Mobil uygulama (Expo) sürümü geliştirilmekte
+- 🧠 Fiyatsız planlama → fiyatlar butonla alınır
 - 🛠️ Ortak GitHub deposunda sürdürülebilir geliştirme
 
 ---
 
 ## 🛠️ Kullanılan Teknolojiler
 
-| Katman      | Teknoloji                            |
-|-------------|--------------------------------------|
-| Frontend    | React.js, JavaScript, CSS, Bootstrap |
-| Backend     | Python, Flask                        |
-| Veritabanı  | PostgreSQL                           |
-| Depo ve IDE | GitHub, VSCode, PyCharm              |
+| Katman        | Teknoloji                             |
+|---------------|----------------------------------------|
+| Frontend (Web)| React.js, JavaScript, CSS             |
+| Frontend (Mobil) | React Native, Expo, AsyncStorage    |
+| Backend       | Python, Flask, RESTful API            |
+| Veritabanı    | PostgreSQL                            |
+| Harita / Konum| Google Maps API, OpenStreetMap        |
+| Auth          | JWT + Firebase Authentication (Google)|
+| Geliştirme    | GitHub, VSCode, Postman               |
 
 ---
 
-## 📦 Geliştirme Durumu
+## 📦 Geliştirme Durumu (Güncel – 18 Mayıs 2025)
 
-| Aşama                                         | Durum         |
-|----------------------------------------------|---------------|
-| ✅ Proje planlaması ve görev dağılımı        | Tamamlandı    |
-| ✅ Frontend bileşenleri                       | Tamamlandı    |
-| ✅ Flask backend kurulumu ve bağlantı        | Tamamlandı    |
-| ✅ PostgreSQL veritabanı ve ürün verisi      | Tamamlandı    |
-| ✅ Fiyatsız ürün listeleme (product list)    | Tamamlandı    |
-| ✅ Alışveriş listesi yönetimi (state)        | Tamamlandı    |
-| ✅ localStorage ile liste kalıcılığı         | Tamamlandı    |
-| ✅ Kullanıcı kimlik doğrulama (JWT)          | Tamamlandı    |
-| ✅ Harita üzerinden konum seçimi             | Tamamlandı    |
-| ✅ En yakın marketleri hesaplama             | Tamamlandı    |
-| ✅ Marketlerde toplam fiyat karşılaştırması  | Tamamlandı    |
-| 🔄 Eksik ürün tespiti ve uyarı               | Geliştiriliyor|
-| 🔜 Harita entegrasyonu (harita üzerinde market gösterimi) | Planlandı |
-| 🔜 Mobil uyumluluk testleri ve optimizasyon | Planlandı     |
-| 🔜 Kullanıcı profil ekranı                   | Planlandı     |
+| Aşama                                                                 | Durum         |
+|------------------------------------------------------------------------|---------------|
+| ✅ Proje planlaması ve görev dağılımı                                  | Tamamlandı    |
+| ✅ React.js frontend ve bileşen yapısı                                 | Tamamlandı    |
+| ✅ Flask backend kurulumu, RESTful API’ler                             | Tamamlandı    |
+| ✅ PostgreSQL ile ürün ve market veri yapısı                           | Tamamlandı    |
+| ✅ Ürün listeleme (fiyatsız)                                           | Tamamlandı    |
+| ✅ Alışveriş listesi yönetimi (state + localStorage)                   | Tamamlandı    |
+| ✅ Kullanıcı giriş sistemi (JWT destekli)                              | Tamamlandı    |
+| ✅ Google Auth (Firebase) entegrasyonu                                 | Tamamlandı    |
+| ✅ Harita üzerinden konum kaydı ve market karşılaştırması              | Tamamlandı    |
+| ✅ En yakın market hesaplama (mesafe + toplam fiyat)                   | Tamamlandı    |
+| ✅ Eksik ürün kontrolü ve bildirimi                                    | Tamamlandı    |
+| ✅ Google Maps yönlendirme linki                                       | Tamamlandı    |
+| ✅ Mobil uygulama altyapısı (React Native + Expo)                      | Başladı       |
+| ✅ Mobilde ürün listeleme ve API bağlantısı                            | Başladı       |
+| 🔄 Mobilde alışveriş listesi yönetimi                                  | Sürmekte      |
+| 🔄 Mobil UI bileşenleri                                                | Sürmekte      |
+| 🔜 Mobil uygulamada market karşılaştırma ve harita yönlendirmesi      | Planlandı     |
+| 🔜 Son test ve sunum demosu hazırlığı                                  | Planlandı     |
 
 ---
 
+## 📱 Mobil Sürüm
 
+Mobil uygulama, `Expo` kullanılarak geliştirilmekte olup şu an:
+- Giriş ekranı ve sayfa geçişleri çalışıyor ✅
+- Web'deki backend API'lerine bağlanarak ürün verisi çekilebiliyor ✅
+- Aynı ağda çalışan Flask sunucusu üzerinden mobil bağlantı sağlanıyor ✅
+
+> GitHub Mobil klasörü: `ShopGoMobil/`
+
+---
+
+## 📷 Görseller ve Demo
+
+🖼️ (Buraya uygulama ekran görüntüleri veya kısa bir tanıtım gif’i ekleyebilirsin.)
+
+---
+
+## 🧪 Nasıl Çalıştırılır?
+
+### Web:
+```bash
+# Frontend ve Backend
+cd Frontend
+npm install
+npm run dev
