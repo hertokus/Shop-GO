@@ -1,9 +1,13 @@
 // src/pages/HomePage.js
 import React from 'react';
 import ProductList from '../components/ProductList';
+const user = JSON.parse(localStorage.getItem("user"));
+
 // HomePage.css içindeki CategoryList ile ilgili stiller de kaldırılabilir/güncellenebilir.
 
 function HomePage({ onAddToCart, activeCategory, searchTerm }) {
+
+  
   // onCategorySelect prop'u artık HomePage tarafından kullanılmıyor,
   // CategoryBar App.js seviyesinde yönetiliyor.
   return (

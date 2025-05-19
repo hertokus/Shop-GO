@@ -1,7 +1,8 @@
 // src/context/AuthContext.js (updateUserProfile eklendi)
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
-
+import { auth } from '../firebase'; // Yolunu kontrol et
+import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {

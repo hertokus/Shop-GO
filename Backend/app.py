@@ -376,6 +376,29 @@ def get_markets_with_products():
     app.logger.warning("DEPRECATED: '/api/markets-with-products' endpoint'i çağrıldı.")
     return jsonify({"message": "Bu endpoint kullanımdan kaldırılmıştır veya güncellenmelidir."}), 501
 
+@app.route('/api/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({"message": "E-posta adresi gereklidir."}), 400
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        # Bu aşamada gerçek token oluşturma ve e-posta gönderme yok.
+        # Sadece kullanıcıyı bulduğumuzu ve talebi aldığımızı belirtiyoruz.
+        # Sonraki adımlarda buraya token oluşturma, DB'ye kaydetme ve e-posta gönderme eklenecek.
+        app.logger.info(f"Şifre sıfırlama talebi alındı: {email} - Kullanıcı bulundu.")
+        # Örnek yanıt:
+        return jsonify({"message": "Eğer e-posta adresiniz sistemimizde kayıtlıysa, şifre sıfırlama talimatları gönderilecektir."}), 200
+    else:
+        # Kullanıcı bulunamasa bile, güvenlik nedeniyle aynı mesajı döndürmek daha iyi bir pratiktir.
+        # Bu, hangi e-postaların sistemde kayıtlı olup olmadığı bilgisini sızdırmaz.
+        app.logger.info(f"Şifre sıfırlama talebi alındı: {email} - Kullanıcı bulunamadı veya e-posta yanlış.")
+        return jsonify({"message": "Eğer e-posta adresiniz sistemimizde kayıtlıysa, şifre sıfırlama talimatları gönderilecektir."}), 200
+
 @app.route('/api/markets-with-products/filter', methods=['GET'])
 def filter_markets_with_products():
     app.logger.warning("DEPRECATED: '/api/markets-with-products/filter' endpoint'i çağrıldı.")
@@ -389,3 +412,5 @@ if __name__ == '__main__':
         except Exception as e:
             app.logger.error(f"Veritabanı oluşturulurken hata: {e}")
     app.run(debug=True, host='0.0.0.0', port=5000)
+
+    

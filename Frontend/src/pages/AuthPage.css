@@ -325,3 +325,87 @@
       padding: 40px 20px; /* Mobil için padding ayarı */
   }
 }
+
+/* AuthPage.css veya App.css içine eklenebilir */
+.auth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050; /* TopBar'dan yüksek olmalı */
+}
+
+.auth-modal {
+  background: white;
+  padding: 25px 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 450px;
+  outline: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.auth-modal h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-form .form-group {
+  margin-bottom: 20px;
+}
+.modal-form .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.modal-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end; /* Butonları sağa yasla */
+  gap: 10px;
+}
+
+.modal-submit-button, .modal-cancel-button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+.modal-submit-button {
+  background-color: #12461f; /* Temanızdaki ana buton rengi */
+  color: white;
+}
+.modal-submit-button:disabled {
+  background-color: #ccc;
+}
+.modal-cancel-button {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+}
+.success-message {
+    color: green;
+    margin-bottom: 15px;
+    text-align: center;
+}
+/* .error-message zaten AuthPage.css'de olabilir, yoksa ekleyin */
+.error-message { 
+    color: red; 
+    margin-bottom: 15px;
+    text-align: center;
+}
