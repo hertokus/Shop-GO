@@ -50,7 +50,8 @@ Bu dosya, Shop-GO projesinin mobil uygulamasının mevcut durumunu, kalan işler
     * [ ] Hata takip ve loglama mekanizması.
     * [ ] Çoklu dil desteği (isteğe bağlı).
 
----
+## 📷 Demo Fotoğraflar
+
 
 
 ## 📄 Notlar
