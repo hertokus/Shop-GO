@@ -51,8 +51,10 @@ Bu dosya, Shop-GO projesinin mobil uygulamasının mevcut durumunu, kalan işler
     * [ ] Çoklu dil desteği (isteğe bağlı).
 
 ## 📷 Demo Fotoğraflar
-
-
+![1](https://github.com/user-attachments/assets/12ace158-1f94-42b3-a242-992b66fefd4b)
+![2](https://github.com/user-attachments/assets/35073ffa-6fe0-4d51-9ca2-13f3b8929b13)
+![3](https://github.com/user-attachments/assets/d2bd9630-0009-4807-ae06-3f7aeef1131b)
+![4](https://github.com/user-attachments/assets/5726410e-dda6-4082-830e-968ddb80c5f3)
 
 
 ## 📄 Notlar
