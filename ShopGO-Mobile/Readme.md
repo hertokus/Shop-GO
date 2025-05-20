@@ -67,5 +67,6 @@ MOBİL UYGULAMA NASIL ÇALIŞTIRILIR!
 | `cd` ile `Backend` klasörüne git | Flask `app.py` burada olmalı           |
 | Virtualenv'i aktif et            | `venv\Scripts\activate`                |
 | Flask başlat                     | `flask run --host=0.0.0.0 --port=5000` |
-| IP üzerinden eriş                | `http://192.168.1.7:5000/api/products` |
+| Expo Go dan başlat               | npm start                              |
+
 
