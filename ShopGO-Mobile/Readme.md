@@ -68,5 +68,6 @@ MOBİL UYGULAMA NASIL ÇALIŞTIRILIR!
 | Virtualenv'i aktif et            | `venv\Scripts\activate`                |
 | Flask başlat                     | `flask run --host=0.0.0.0 --port=5000` |
 | Expo Go dan başlat               | npm start                              |
-
-
+IP ADRESI FARKLI ISE:
+💡	ipconfig ile bak
+🧠 React Native IP'yi güncelle	fetch("http://YENİ-IP:5000/...")!!
