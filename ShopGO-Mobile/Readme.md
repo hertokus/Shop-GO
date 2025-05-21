@@ -56,15 +56,16 @@ Bu dosya, Shop-GO projesinin mobil uygulamasının mevcut durumunu, kalan işler
 ![3](https://github.com/user-attachments/assets/d2bd9630-0009-4807-ae06-3f7aeef1131b)
 ![4](https://github.com/user-attachments/assets/5726410e-dda6-4082-830e-968ddb80c5f3)
 
-✅ Adım Adım Geliştirme Planı
-Aşama	Açıklama	Durum
-1	Web login ekranının UI yapısını mobilde oluştur	🔜 Şimdi başlıyoruz
-2	Renkler, yazı tipleri, buton görünümü birebir	🔜 Sonra
-3	Google login butonunu görsel olarak web'e benzet	🔜
-4	Layout'u responsive yap	🔜
-5	Giriş başarılıysa HomeScreen yönlendirmesi	✅ Hazır
-6	AsyncStorage üzerinden login kontrolü	✅ Hazır
-7	Logout ve session kontrolü	🔜 Sonradan
+| Aşama | Açıklama                                         | Durum               |
+| ----- | ------------------------------------------------ | ------------------- |
+| 1     | Web login ekranının UI yapısını mobilde oluştur  | 🔜 Şimdi başlıyoruz |
+| 2     | Renkler, yazı tipleri, buton görünümü birebir    | 🔜 Sonra            |
+| 3     | Google login butonunu görsel olarak web'e benzet | 🔜                  |
+| 4     | Layout'u responsive yap                          | 🔜                  |
+| 5     | Giriş başarılıysa HomeScreen yönlendirmesi       | ✅ Hazır             |
+| 6     | AsyncStorage üzerinden login kontrolü            | ✅ Hazır             |
+| 7     | Logout ve session kontrolü                       | 🔜 Sonradan         |
+
 
 
 ## 📄 Notlar
