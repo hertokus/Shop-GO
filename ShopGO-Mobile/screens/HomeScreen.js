@@ -7,7 +7,7 @@ export default function HomeScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://192.168.1.7:5000/api/products')
+    fetch('http://192.168.1.15:5000/api/products')
       .then(res => res.json())
       .then(data => {
         setProducts(data);

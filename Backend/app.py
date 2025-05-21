@@ -1,4 +1,4 @@
-# app.py - Tam Hali (JWT Subject ve ID İşleme Güncellendi)
+
 import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy

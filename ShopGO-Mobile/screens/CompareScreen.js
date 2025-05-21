@@ -10,7 +10,7 @@ export default function CompareScreen({ route }) {
   const longitude = "35.310083720241444";
 
   useEffect(() => {
-    fetch('http://192.168.1.7:5000/api/calculate-list-prices', {
+    fetch('http://192.168.1.15:5000/api/calculate-list-prices', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
