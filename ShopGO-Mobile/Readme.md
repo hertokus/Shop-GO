@@ -72,7 +72,7 @@ Bu dosya, Shop-GO projesinin mobil uygulamasının mevcut durumunu, kalan işler
 ## 📄 Notlar
 *DOLDURULACAK*
 
-MOBİL UYGULAMA NASIL ÇALIŞTIRILIR!
+## 📱 MOBİL UYGULAMA NASIL ÇALIŞTIRILIR! 
 | Adımlar                          | Açıklama                               |
 | -------------------------------- | -------------------------------------- |
 | VSCode ya da CMD aç              | Flask projenin olduğu klasörde         |
