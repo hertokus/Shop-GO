@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View, Text, FlatList, StyleSheet,
+  ActivityIndicator, TouchableOpacity, Linking
+} from 'react-native';
 
 export default function CompareScreen({ route }) {
   const { cartItems } = route.params;
@@ -25,7 +28,7 @@ export default function CompareScreen({ route }) {
       .then(res => res.json())
       .then(data => {
         console.log("Market verileri:", data);
-        setMarketResults(data); // ❗️Doğrudan data
+        setMarketResults(data);
         setLoading(false);
       })
       .catch(error => {
@@ -33,6 +36,11 @@ export default function CompareScreen({ route }) {
         setLoading(false);
       });
   }, []);
+
+  const openInGoogleMaps = (lat, lon, label = "Market") => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}&query_place_id=${label}`;
+    Linking.openURL(url).catch(err => console.error("Google Maps açılamadı:", err));
+  };
 
   return (
     <View style={styles.container}>
@@ -57,6 +65,13 @@ export default function CompareScreen({ route }) {
                     Eksik Ürün: {item.unavailable_items_count}
                   </Text>
                 )}
+
+                <TouchableOpacity
+                  style={styles.mapButton}
+                  onPress={() => openInGoogleMaps(item.latitude, item.longitude, item.market_name)}
+                >
+                  <Text style={styles.mapButtonText}>Yol Tarifi Al</Text>
+                </TouchableOpacity>
               </View>
             )}
           />
@@ -75,5 +90,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     borderRadius: 10
   },
-  marketName: { fontSize: 16, fontWeight: 'bold' }
+  marketName: { fontSize: 16, fontWeight: 'bold' },
+  mapButton: {
+    backgroundColor: '#2D9CDB',
+    padding: 10,
+    borderRadius: 6,
+    marginTop: 10,
+    alignItems: 'center'
+  },
+  mapButtonText: {
+    color: '#fff',
+    fontWeight: 'bold'
+  }
 });
