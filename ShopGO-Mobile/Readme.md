@@ -1,9 +1,8 @@
-# Shop-GO Mobil Uygulaması
+# 📱Shop-GO Mobil Uygulaması
 
 Bu dosya, Shop-GO projesinin mobil uygulamasının mevcut durumunu, kalan işleri ve nasıl çalıştırılacağını açıklamaktadır.
 
 ## 📝 Genel Bakış
-
 Shop-GO, kullanıcıların alışveriş listelerine göre en uygun fiyatlı ve en yakın marketi seçmelerine yardımcı olan yenilikçi bir alışveriş planlama uygulamasıdır. Web versiyonunun ardından mobil uygulama geliştirme süreci başlamış ve temel işlevler başarıyla mobil tarafa taşınmıştır.
 ---
 
