@@ -50,7 +50,6 @@ Shop-GO, kullanıcıların alışveriş listelerine göre en uygun fiyatlı ve e
     * [ ] Çoklu dil desteği (isteğe bağlı).
 
 ## 📷 Demo Fotoğraflar
-![login](https://github.com/user-attachments/assets/9dad6219-a317-4ee0-b897-b2b8fb6daac1)
 ![ürünler](https://github.com/user-attachments/assets/8aa58ce4-4bd4-44cf-9711-c29ea9e09787)
 ![profil](https://github.com/user-attachments/assets/a9d8aaa2-fd66-44bc-b57c-820fcc325327)
 ![sepet](https://github.com/user-attachments/assets/0ba66ede-010c-4263-ac2a-8a33bd876822)
