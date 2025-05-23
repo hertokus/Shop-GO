@@ -10,6 +10,7 @@ import HomeScreen from './screens/HomeScreen';
 import CartScreen from './screens/CartScreen';
 import CompareScreen from './screens/CompareScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import SignUpScreen from './screens/SignUpScreen'; // <-- SignUpScreen'i import et
 
 const Stack = createNativeStackNavigator();
 const NEW_YELLOW_COLOR = '#ffe643';
@@ -20,7 +21,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="Login" // Giriş ekranını LoginScreen'in name'i ile eşleştirin
         screenOptions={{
           headerStyle: {
             backgroundColor: NEW_YELLOW_COLOR,
@@ -34,22 +35,26 @@ export default function App() {
         }}
       >
         <Stack.Screen
-          name="Login"
+          name="Login" // LoginScreen'in name'i "Login" olarak kalmalı
           component={LoginScreen}
           options={{ headerShown: false }}
+        />
+        {/* SignUpScreen'i buraya ekliyoruz */}
+        <Stack.Screen
+          name="SignUpScreen" // LoginScreen'de navigate ettiğimiz isimle aynı olmalı
+          component={SignUpScreen}
+          options={{ title: 'Kayıt Ol' }} // Başlığı ayarlayabilirsiniz
         />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          // HomeScreen'in cartItems'ını route.params aracılığıyla almak için options'a route ekliyoruz
           options={({ navigation, route }) => ({
             title: 'Shop&GO',
             headerRight: () => (
               <View style={styles.headerIconsContainer}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Cart', { 
-                    // HomeScreen'in setParams ile güncellediği cartItems'ı alıyoruz
-                    cartItems: route.params?.cartItemsForHeader || [] 
+                  onPress={() => navigation.navigate('Cart', {
+                    cartItems: route.params?.cartItemsForHeader || []
                   })}
                   style={styles.headerIconTouchable}
                 >
@@ -58,12 +63,6 @@ export default function App() {
                     size={Platform.OS === 'ios' ? 28 : 26}
                     color={ICON_COLOR}
                   />
-                  {/* İsteğe bağlı: Sepetteki ürün sayısını gösteren bir badge eklenebilir */}
-                  {/* {route.params?.cartItemsForHeader && route.params.cartItemsForHeader.length > 0 && (
-                    <View style={styles.badgeContainer}>
-                      <Text style={styles.badgeText}>{route.params.cartItemsForHeader.reduce((sum, item) => sum + item.quantity, 0)}</Text>
-                    </View>
-                  )} */}
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('Profile')}
@@ -108,24 +107,6 @@ const styles = StyleSheet.create({
   headerIconTouchable: {
     paddingHorizontal: Platform.OS === 'ios' ? 8 : 10,
     paddingVertical: 5,
-    position: 'relative', // Badge için
+    position: 'relative',
   },
-  // Opsiyonel Badge Stilleri
-  // badgeContainer: {
-  //   position: 'absolute',
-  //   right: 5,
-  //   top: 0,
-  //   backgroundColor: 'red',
-  //   borderRadius: 9,
-  //   width: 18,
-  //   height: 18,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   zIndex: 1,
-  // },
-  // badgeText: {
-  //   color: 'white',
-  //   fontSize: 10,
-  //   fontWeight: 'bold',
-  // },
 });

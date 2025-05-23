@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const YOUR_NEW_YELLOW_COLOR = '#ffe643'; // Sizin yeni sarı tonunuz
+const YOUR_NEW_YELLOW_COLOR = '#ffe643';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -14,8 +14,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     try {
-      // API IP adresinizi kontrol edin ve gerekiyorsa güncelleyin
-      const res = await fetch('http://192.168.105.194:5000/api/login', {
+      const res = await fetch('http://192.168.105.205:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -26,7 +25,7 @@ export default function LoginScreen({ navigation }) {
         await AsyncStorage.setItem('accessToken', data.access_token);
         await AsyncStorage.setItem('user', JSON.stringify({
           username: data.username,
-          fullName: data.fullName // Backend'den fullName geliyorsa
+          fullName: data.fullName
         }));
         navigation.replace("Home");
       } else {
@@ -39,14 +38,11 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.leftPanel}>
-        {/* Logo dosya yolunuzu kontrol edin: '../assets/logo shopandgo.png' */}
+      <View style={styles.topPanel}>
         <Image source={require('../assets/logo shopandgo.png')} style={styles.logo} />
-        <Text style={styles.leftTitle}>Tekrar Hoş Geldiniz!</Text>
-        <Text style={styles.leftSubtitle}>Uygun alışverişin adresi...</Text>
       </View>
 
-      <View style={styles.rightPanel}>
+      <View style={styles.bottomPanel}>
         <Text style={styles.formTitle}>Giriş Yap</Text>
 
         <TextInput
@@ -83,64 +79,53 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row', // Yatay düzen için
+    flexDirection: 'column',
     backgroundColor: '#fff'
   },
-  leftPanel: {
-    flex: 1, // Sol panel ekranın yarısını kaplar
-    backgroundColor: YOUR_NEW_YELLOW_COLOR, // Güncellenmiş sarı renk
+  topPanel: {
+    flex: 0.4,
+    backgroundColor: YOUR_NEW_YELLOW_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20
   },
   logo: {
-    width: 120,
-    height: 120,
+    width: 220, // Daha da büyük logo
+    height: 220, // Daha da büyük logo
     resizeMode: 'contain',
-    marginBottom: 20
   },
-  leftTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333', // Sarı arka plan üzerinde koyu renk daha iyi okunur
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  leftSubtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#444' // Sarı arka plan üzerinde koyu renk
-  },
-  rightPanel: {
-    flex: 1, // Sağ panel ekranın yarısını kaplar
-    justifyContent: 'center',
-    padding: 30,
-    backgroundColor: '#fff' // Sağ panel beyaz kalabilir veya farklı bir renk olabilir
+  bottomPanel: {
+    flex: 0.6,
+    justifyContent: 'flex-start',
+    paddingHorizontal: 30,
+    paddingTop: 40,
+    paddingBottom: 20,
+    backgroundColor: '#fff'
   },
   formTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 25, // Biraz daha boşluk
+    marginBottom: 25,
     color: '#222',
-    textAlign: 'center', // Başlığı ortala
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd', // Daha yumuşak bir border rengi
+    borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: 15, // İçten yatay boşluk
-    paddingVertical: 12, // İçten dikey boşluk
-    marginBottom: 18, // Inputlar arası boşluk
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    marginBottom: 18,
     fontSize: 16,
-    backgroundColor: '#f9f9f9' // Hafif bir arka plan rengi (opsiyonel)
+    backgroundColor: '#f9f9f9'
   },
   loginButton: {
-    backgroundColor: YOUR_NEW_YELLOW_COLOR, // Güncellenmiş sarı renk
-    paddingVertical: 15, // Dikey padding'i artır
+    backgroundColor: YOUR_NEW_YELLOW_COLOR,
+    paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 15, // Buton altı boşluk
-    shadowColor: "#000", // Hafif gölge (opsiyonel)
+    marginBottom: 15,
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -152,32 +137,32 @@ const styles = StyleSheet.create({
   loginButtonText: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#333' // Sarı buton üzerinde koyu renk yazı
+    color: '#333'
   },
   separator: {
     textAlign: 'center',
-    marginVertical: 15, // Ayırıcı için dikey boşluk
+    marginVertical: 15,
     color: '#aaa',
     fontWeight: '500',
   },
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center', // İçeriği ortala
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    paddingVertical: 12, // Dikey padding
+    paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: '#fff' // Google butonu genellikle beyazdır
+    backgroundColor: '#fff'
   },
   googleIcon: {
-    width: 22, // Biraz daha küçük ikon
+    width: 22,
     height: 22,
-    marginRight: 12, // İkon ve yazı arası boşluk
+    marginRight: 12,
   },
   googleText: {
     fontSize: 16,
-    color: '#555', // Google butonu yazı rengi
+    color: '#555',
     fontWeight: '500',
   }
 });
