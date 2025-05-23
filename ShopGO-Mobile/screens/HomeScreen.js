@@ -26,7 +26,7 @@ export default function HomeScreen({ navigation }) { // navigation prop'u burada
   }, [cartItems, navigation]);
 
   useEffect(() => {
-    fetch('http://192.168.1.11:5000/api/products') // KENDİ IP ADRESİNİZİ KULLANIN
+    fetch('http://192.168.105.194:5000/api/products') // KENDİ IP ADRESİNİZİ KULLANIN
       .then(res => {
         if (!res.ok) {
           return res.json().then(errData => {

@@ -15,7 +15,7 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     try {
       // API IP adresinizi kontrol edin ve gerekiyorsa güncelleyin
-      const res = await fetch('http://192.168.1.11:5000/api/login', {
+      const res = await fetch('http://192.168.105.194:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
