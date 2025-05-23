@@ -54,7 +54,7 @@ Shop-GO, kullanıcıların alışveriş listelerine göre en uygun fiyatlı ve e
 ![profil](https://github.com/user-attachments/assets/a9d8aaa2-fd66-44bc-b57c-820fcc325327)
 ![sepet](https://github.com/user-attachments/assets/0ba66ede-010c-4263-ac2a-8a33bd876822)
 ![ekleme](https://github.com/user-attachments/assets/430cb88b-83f9-4ebd-be70-7b4341919335)
-![market](https://github.com/user-attachments/assets/5bd6e6e7-6dde-422a-b0e7-4ad3cc22ec43)
+
 
 
 
