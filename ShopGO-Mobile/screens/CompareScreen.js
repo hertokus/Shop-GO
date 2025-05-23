@@ -15,80 +15,35 @@ export default function CompareScreen({ route }) {
   const longitude = "35.310083720241444";
 
   useEffect(() => {
-    if (!cartItems || cartItems.length === 0) {
-      Alert.alert("Uyarı", "Karşılaştırılacak ürün bulunamadı. Lütfen sepetinize ürün ekleyin.");
-      setLoading(false);
-      setMarketResults([]);
-      return;
-    }
-
-    setLoading(true); // İstek öncesi yükleme durumunu başlat
-    fetch('http://192.168.105.205:5000/api/calculate-list-prices', { // "http://" eklendi
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        latitude,
-        longitude,
-        shopping_list: cartItems.map(item => ({
-          productId: item.id,
-          quantity: item.quantity
-        }))
+      fetch('http://192.168.105.194:5000/api/calculate-list-prices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          latitude,
+          longitude,
+          shopping_list: cartItems.map(item => ({
+            productId: item.id,
+            quantity: item.quantity
+          }))
+        })
       })
-    })
-    .then(res => {
-      if (!res.ok) {
-        // Sunucudan JSON formatında hata mesajı gelmişse onu kullan
-        return res.json().then(errData => {
-          throw new Error(errData.message || `Sunucu hatası: ${res.status}`);
-        }).catch(() => {
-          // .json() parse edilemezse veya errData.message yoksa genel hata
-          throw new Error(`Sunucuya ulaşılamadı veya geçersiz yanıt: ${res.status}`);
+        .then(res => res.json())
+        .then(data => {
+          console.log("Market verileri:", data);
+          setMarketResults(data);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("API hatası:", error);
+          setLoading(false);
         });
-      }
-      return res.json();
-    })
-    .then(data => {
-      console.log("Market karşılaştırma verileri:", data);
-      if (Array.isArray(data)) {
-        setMarketResults(data);
-      } else {
-        console.error("API'dan beklenen formatta array gelmedi (Market Karşılaştırma):", data);
-        Alert.alert("Hata", "Market verileri alınırken beklenmedik bir formatla karşılaşıldı.");
-        setMarketResults([]); // Hata durumunda market sonuçlarını temizle
-      }
-      setLoading(false);
-    })
-    .catch(error => {
-      console.error("Market Karşılaştırma API Hatası:", error);
-      Alert.alert("API Hatası", `Market fiyatları hesaplanırken bir sorun oluştu: ${error.message}`);
-      setMarketResults([]); // Hata durumunda market sonuçlarını temizle
-      setLoading(false);
-    });
-  }, [cartItems]); // cartItems değiştiğinde verileri yeniden çekmek için bağımlılık olarak eklendi.
-
-  const openInGoogleMaps = (marketLat, marketLon) => {
-    const scheme = Platform.OS === 'ios' ? 'maps://0,0?q=' : 'geo:0,0?q=';
-    const latLng = `${marketLat},${marketLon}`;
-    const label = 'Market Konumu';
-    const url = Platform.OS === 'ios' ? `${scheme}${label}@${latLng}` : `${scheme}${latLng}(${label})`;
-    const webUrl = `https://maps.google.com/?q=${marketLat},${marketLon}`; // Web fallback için
-
-    Linking.canOpenURL(url)
-      .then(supported => {
-        if (supported) {
-          return Linking.openURL(url);
-        } else {
-          console.log("Harita uygulaması URL'si desteklenmiyor, web URL'si deneniyor:", webUrl);
-          return Linking.openURL(webUrl);
-        }
-      })
-      .catch(err => {
-        console.error("Google Maps açılamadı:", err);
-        Alert.alert("Hata", "Harita uygulaması açılamadı.");
-        // Son çare olarak web URL'sini tekrar dene
-        Linking.openURL(webUrl).catch(webErr => console.error("Web harita URL'si de açılamadı:", webErr));
-      });
-  };
+    }, []);
+  
+    // ✅ Koordinatla yol tarifi açma
+    const openInGoogleMaps = (lat, lon) => {
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+      Linking.openURL(url).catch(err => console.error("Google Maps açılamadı:", err));
+    };
 
   if (loading) {
     return (
