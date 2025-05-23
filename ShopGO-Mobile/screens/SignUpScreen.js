@@ -30,7 +30,7 @@ export default function SignUpScreen({ navigation }) {
       return;
     }
     try {
-      const API_ENDPOINT = 'http://192.168.105.205:5000/api/register'; // IP adresinizi kontrol edin
+      const API_ENDPOINT = 'http://192.168.105.194:5000/api/register'; // IP adresinizi kontrol edin
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {

@@ -4,7 +4,7 @@ import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native'; // 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-
+import LocationPickerScreen from './screens/LocationPickerScreen';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import CartScreen from './screens/CartScreen';
@@ -39,6 +39,9 @@ export default function App() {
           component={LoginScreen}
           options={{ headerShown: false }}
         />
+
+        <Stack.Screen name="LocationPicker" component={LocationPickerScreen} />
+        
         <Stack.Screen
           name="SignUpScreen" // LoginScreen'de navigate ettiğimiz isimle aynı olmalı
           component={SignUpScreen}

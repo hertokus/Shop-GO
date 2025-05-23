@@ -14,7 +14,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch('http://192.168.105.205:5000/api/login', { // IP adresinizi kontrol edin
+      const res = await fetch('http://192.168.105.194:5000/api/login', { // IP adresinizi kontrol edin
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

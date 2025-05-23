@@ -2,48 +2,177 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet,
-  ActivityIndicator, TouchableOpacity, Linking, Alert, Platform // Platform ve Alert import edildi
+  ActivityIndicator, TouchableOpacity, Linking, Alert, Platform
 } from 'react-native';
 
 export default function CompareScreen({ route }) {
-  const { cartItems } = route.params;
+  const { cartItems, location: userPickedLocation } = route.params;
   const [marketResults, setMarketResults] = useState([]);
-  const [loading, setLoading] = useState(true); // Başlangıçta true olmalı
-
-  // Sabit enlem ve boylam (gerekirse dinamik hale getirilebilir)
-  const latitude = "36.96190930911481";
-  const longitude = "35.310083720241444";
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-      fetch('http://192.168.105.194:5000/api/calculate-list-prices', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          latitude,
-          longitude,
-          shopping_list: cartItems.map(item => ({
-            productId: item.id,
-            quantity: item.quantity
-          }))
-        })
+    if (!userPickedLocation || typeof userPickedLocation.latitude === 'undefined' || typeof userPickedLocation.longitude === 'undefined') {
+      Alert.alert("Konum Hatası", "Geçerli bir başlangıç konumu alınamadı. Lütfen Ana Sayfa'dan konum seçin.");
+      setLoading(false);
+      setMarketResults([]);
+      return;
+    }
+
+    if (!cartItems || cartItems.length === 0) {
+        Alert.alert("Sepet Boş", "Karşılaştırılacak ürün bulunmamaktadır.");
+        setLoading(false);
+        setMarketResults([]);
+        return;
+    }
+
+    fetch('http://192.168.105.194:5000/api/calculate-list-prices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        latitude: userPickedLocation.latitude,
+        longitude: userPickedLocation.longitude,
+        shopping_list: cartItems.map(item => ({
+          productId: item.id,
+          quantity: item.quantity
+        }))
       })
-        .then(res => res.json())
-        .then(data => {
-          console.log("Market verileri:", data);
-          setMarketResults(data);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error("API hatası:", error);
-          setLoading(false);
+    })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(errData => {
+            throw new Error(errData.message || `Sunucu hatası: ${res.status}`);
+          }).catch(() => {
+            throw new Error(`Sunucuya ulaşılamadı veya geçersiz yanıt: ${res.status}`);
+          });
+        }
+        return res.json();
+      })
+      .then(data => {
+        setMarketResults(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("API hatası (CompareScreen):", error);
+        Alert.alert("API Hatası", `Market fiyatları yüklenirken bir sorun oluştu: ${error.message}`);
+        setMarketResults([]);
+        setLoading(false);
+      });
+  }, [cartItems, userPickedLocation]);
+
+  const openDirectionsInMapApp = async (startLat, startLon, destLat, destLon, marketName) => {
+    if (destLat == null || destLon == null) {
+        Alert.alert("Market Konum Bilgisi Eksik", "Bu market için harita açılamıyor.");
+        return;
+    }
+    if (startLat == null || startLon == null) {
+        Alert.alert("Başlangıç Konum Bilgisi Eksik", "Yol tarifi için başlangıç konumu alınamadı.");
+        return;
+    }
+
+    const origin = `${startLat},${startLon}`;
+    const destination = `${destLat},${destLon}`;
+    const encodedMarketName = encodeURIComponent(marketName);
+
+    const availableApps = [];
+
+    // URL Şemaları ve Kontrolleri
+    const appsToCheck = [
+      {
+        name: 'Google Maps',
+        iosScheme: `comgooglemaps://?saddr=${origin}&daddr=${destination}&directionsmode=driving`,
+        androidScheme: `google.navigation:q=${destination}&mode=d`,
+        checkScheme_iOS: 'comgooglemaps://',
+        checkScheme_Android: 'google.navigation:q=' // Bu tam bir scheme değil, ama intent için bir gösterge
+      },
+      {
+        name: 'Apple Maps (iOS)',
+        iosScheme: `maps://?saddr=${origin}&daddr=${destination}&dirflg=d`,
+        isIOSOnly: true,
+        checkScheme_iOS: 'maps://'
+      },
+      {
+        name: 'Waze',
+        genericScheme: `waze://?ll=${destination}&navigate=yes`, // Waze başlangıç noktasını kendi belirler genelde
+        checkScheme_iOS: 'waze://',
+        checkScheme_Android: 'waze://'
+      }
+    ];
+
+    for (const app of appsToCheck) {
+      if (Platform.OS === 'ios' && app.checkScheme_iOS) {
+        if (app.isIOSOnly === false && !app.checkScheme_iOS) continue; // Android'e özel değilse ve iOS şeması yoksa atla
+        const supported = await Linking.canOpenURL(app.checkScheme_iOS);
+        if (supported) {
+          availableApps.push({ name: app.name, url: app.iosScheme });
+        }
+      } else if (Platform.OS === 'android' && app.checkScheme_Android) {
+        if (app.isIOSOnly) continue; // iOS'a özel uygulamayı Android'de kontrol etme
+         // Android'de canOpenURL her zaman doğru çalışmayabilir intentler için,
+         // bu yüzden Google Maps'i varsayılan olarak ekleyebiliriz veya daha karmaşık bir kontrol gerekebilir.
+         // Şimdilik, Google Maps'i Android için her zaman bir seçenek olarak sunalım,
+         // Waze için kontrol edelim.
+        if (app.name === 'Google Maps') {
+             availableApps.push({ name: app.name, url: app.androidScheme });
+        } else if (app.checkScheme_Android) {
+            const supported = await Linking.canOpenURL(app.checkScheme_Android);
+            if (supported) {
+                availableApps.push({ name: app.name, url: app.genericScheme || app.androidScheme });
+            }
+        }
+      }
+    }
+
+    const openUrl = (url) => {
+        Linking.openURL(url).catch(err => {
+            console.error(`Harita uygulaması (${url}) açılamadı:`, err);
+            Alert.alert("Hata", `${url.split(':')[0]} uygulaması açılamadı.`);
         });
-    }, []);
-  
-    // ✅ Koordinatla yol tarifi açma
-    const openInGoogleMaps = (lat, lon) => {
-      const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
-      Linking.openURL(url).catch(err => console.error("Google Maps açılamadı:", err));
     };
+
+    const webUrl = `https://support.google.com/maps/thread/179675524/yanl%C4%B1%C5%9F-adres-bildirimi?hl=tr{origin}&daddr=${destination}&query=${encodedMarketName}`;
+
+    if (availableApps.length === 0) {
+      Alert.alert(
+        "Harita Uygulaması Bulunamadı",
+        "Cihazınızda yol tarifi alabileceğiniz bir harita uygulaması bulunamadı. Web'de açmak ister misiniz?",
+        [
+          { text: "Vazgeç", style: "cancel" },
+          { text: "Web'de Aç", onPress: () => openUrl(webUrl) }
+        ]
+      );
+    } else if (availableApps.length === 1) {
+      // Tek uygulama varsa direkt onu aç
+      Alert.alert(
+        "Yol Tarifi",
+        `${availableApps[0].name} ile yol tarifi almak istiyor musunuz?`,
+        [
+          {text: "Vazgeç", style: "cancel"},
+          {text: `Evet, ${availableApps[0].name} Kullan`, onPress: () => openUrl(availableApps[0].url)}
+        ]
+      )
+    } else {
+      // Birden fazla uygulama varsa kullanıcıya sor
+      const alertButtons = availableApps.map(app => ({
+        text: app.name,
+        onPress: () => openUrl(app.url),
+      }));
+      alertButtons.push({
+        text: "Web'de Aç (Google Maps)",
+        onPress: () => openUrl(webUrl),
+      });
+      alertButtons.push({
+        text: "Vazgeç",
+        style: "cancel",
+      });
+
+      Alert.alert(
+        "Harita Uygulaması Seçin",
+        "Yol tarifi için bir uygulama seçin:",
+        alertButtons,
+        { cancelable: true }
+      );
+    }
+  };
 
   if (loading) {
     return (
@@ -64,10 +193,10 @@ export default function CompareScreen({ route }) {
           renderItem={({ item }) => (
             <View style={styles.card}>
               <Text style={styles.marketName}>{item.market_name || 'Bilinmeyen Market'}</Text>
-              <Text style={styles.infoText}>Mesafe: {item.distance != null ? item.distance.toFixed(2) : 'N/A'} km</Text>
-              <Text style={styles.priceText}>Toplam Fiyat: {item.total_list_price != null ? item.total_list_price.toFixed(2) : 'N/A'} {item.currency || 'TL'}</Text>
+              <Text style={styles.infoText}>Mesafe: {item.distance != null ? `${item.distance.toFixed(2)} km` : 'N/A'}</Text>
+              <Text style={styles.priceText}>Toplam Fiyat: {item.total_list_price != null ? `${item.total_list_price.toFixed(2)} ${item.currency || 'TL'}` : 'N/A'}</Text>
               {item.unavailable_items_count > 0 && (
-                <View>
+                <View style={styles.unavailableContainer}>
                   <Text style={styles.unavailableText}>
                     Eksik Ürün Sayısı: {item.unavailable_items_count}
                   </Text>
@@ -78,22 +207,29 @@ export default function CompareScreen({ route }) {
                   )}
                 </View>
               )}
-              {(item.latitude != null && item.longitude != null) && (
+              {(item.latitude != null && item.longitude != null && userPickedLocation) && (
                 <TouchableOpacity
                   style={styles.mapButton}
-                  onPress={() => openInGoogleMaps(item.latitude, item.longitude)}
+                  onPress={() => openDirectionsInMapApp( // Fonksiyon adı güncellendi
+                      userPickedLocation.latitude,
+                      userPickedLocation.longitude,
+                      item.latitude,
+                      item.longitude,
+                      item.market_name
+                    )}
                 >
                   <Text style={styles.mapButtonText}>Yol Tarifi Al</Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       ) : (
         <Text style={styles.noResultsText}>
           {(!cartItems || cartItems.length === 0)
             ? "Karşılaştırma yapmak için lütfen sepetinize ürün ekleyin."
-            : "Bu sepet için uygun market bulunamadı veya tüm marketlerde ürünler eksik."}
+            : "Bu konum ve sepet için uygun market bulunamadı veya tüm marketlerde ürünler eksik."}
         </Text>
       )}
     </View>
@@ -118,68 +254,77 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 20,
     color: '#333',
     textAlign: 'center',
   },
   card: {
-    padding: 15,
-    marginBottom: 12,
+    padding: 18,
+    marginBottom: 15,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 12,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 }, // Daha ince gölge
-    shadowOpacity: 0.08, // Daha hafif gölge
-    shadowRadius: 3, // Daha yumuşak gölge
-    elevation: 2, // Android için hafif gölge
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   marketName: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: 'bold',
     color: '#005800',
-    marginBottom: 5,
+    marginBottom: 8,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#555',
-    marginBottom: 3,
+    marginBottom: 5,
   },
   priceText: {
-    fontSize: 16, // Fiyat punto boyutu biraz artırıldı
-    color: '#111', // Daha koyu fiyat rengi
-    fontWeight: '700', // Fiyatı daha belirgin yap
-    marginBottom: 8,
+    fontSize: 17,
+    color: '#111',
+    fontWeight: '700',
+    marginBottom: 10,
+  },
+  unavailableContainer: {
+    marginTop: 5,
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: '#fff0f0',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#fdd'
   },
   unavailableText: {
     fontSize: 14,
-    color: 'red',
-    fontStyle: 'italic',
-    marginBottom: 4, // Detaylar için boşluk
+    color: '#c00',
+    fontWeight: '600',
+    marginBottom: 5,
   },
   unavailableDetailText: {
     fontSize: 13,
-    color: '#404040', // Detaylar için biraz daha açık renk
-    marginLeft: 10, // İçeri girinti
+    color: '#500',
+    marginLeft: 10,
     fontStyle: 'italic',
   },
   mapButton: {
     backgroundColor: '#005800',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 6,
-    marginTop: 12, // Diğer bilgilerle arasında boşluk
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+    marginTop: 15,
     alignItems: 'center',
   },
   mapButtonText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: 16,
   },
   noResultsText: {
     textAlign: 'center',
-    marginTop: 40,
+    marginTop: 50,
     fontSize: 16,
     color: '#6c757d',
-    paddingHorizontal: 20, // Uzun mesajların taşmaması için
+    paddingHorizontal: 20,
   },
 });
