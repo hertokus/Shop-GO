@@ -51,13 +51,11 @@ Shop-GO, kullanıcıların alışveriş listelerine göre en uygun fiyatlı ve e
 
 ## 📷 Demo Fotoğraflar
 ![login](https://github.com/user-attachments/assets/9dad6219-a317-4ee0-b897-b2b8fb6daac1)
-![2](https://github.com/user-attachments/assets/35073ffa-6fe0-4d51-9ca2-13f3b8929b13)
-![ekleme](https://github.com/user-attachments/assets/0267248c-98f6-480e-b603-70718683770d)
-![ekleme 2](https://github.com/user-attachments/assets/4aaa2b29-3506-4b94-8e1b-935854ed7905)
-![3](https://github.com/user-attachments/assets/d2bd9630-0009-4807-ae06-3f7aeef1131b)
-![marketler](https://github.com/user-attachments/assets/d13c982d-8177-4b4e-82a8-54f95bd5d6f4)
-![çıkış yap](https://github.com/user-attachments/assets/767ef581-af2d-466a-9387-1bb95152b01c)
-![çıkış mesajı](https://github.com/user-attachments/assets/573a7a66-ad94-4cd5-acd1-0beb3acf3fd8)
+![ürünler](https://github.com/user-attachments/assets/8aa58ce4-4bd4-44cf-9711-c29ea9e09787)
+![profil](https://github.com/user-attachments/assets/a9d8aaa2-fd66-44bc-b57c-820fcc325327)
+![sepet](https://github.com/user-attachments/assets/0ba66ede-010c-4263-ac2a-8a33bd876822)
+![ekleme](https://github.com/user-attachments/assets/430cb88b-83f9-4ebd-be70-7b4341919335)
+![market](https://github.com/user-attachments/assets/5bd6e6e7-6dde-422a-b0e7-4ad3cc22ec43)
 
 
 
