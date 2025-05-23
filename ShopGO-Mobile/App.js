@@ -1,6 +1,6 @@
 // App.js
 import React from 'react';
-import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native'; // StyleSheet'i import etmeyi unutmayın
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,7 +10,7 @@ import HomeScreen from './screens/HomeScreen';
 import CartScreen from './screens/CartScreen';
 import CompareScreen from './screens/CompareScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import SignUpScreen from './screens/SignUpScreen'; // <-- SignUpScreen'i import et
+import SignUpScreen from './screens/SignUpScreen'; // SignUpScreen'i import et
 
 const Stack = createNativeStackNavigator();
 const NEW_YELLOW_COLOR = '#ffe643';
@@ -21,7 +21,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login" // Giriş ekranını LoginScreen'in name'i ile eşleştirin
+        initialRouteName="Login"
         screenOptions={{
           headerStyle: {
             backgroundColor: NEW_YELLOW_COLOR,
@@ -35,11 +35,10 @@ export default function App() {
         }}
       >
         <Stack.Screen
-          name="Login" // LoginScreen'in name'i "Login" olarak kalmalı
+          name="Login"
           component={LoginScreen}
           options={{ headerShown: false }}
         />
-        {/* SignUpScreen'i buraya ekliyoruz */}
         <Stack.Screen
           name="SignUpScreen" // LoginScreen'de navigate ettiğimiz isimle aynı olmalı
           component={SignUpScreen}
@@ -98,6 +97,7 @@ export default function App() {
   );
 }
 
+// App.js için stiller (eğer daha önce yoksa veya eksikse)
 const styles = StyleSheet.create({
   headerIconsContainer: {
     flexDirection: 'row',

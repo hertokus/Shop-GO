@@ -11,9 +11,8 @@ import {
   Image // Google ikonu için Image eklendi
 } from 'react-native';
 
-// Giriş ekranınızdakiyle aynı sarı renk
-const YOUR_APP_COLOR = '#ffe643';
-const GOOGLE_SIGNUP_LINK_COLOR = '#005800'; // Yeni yeşil renk
+const YOUR_APP_COLOR = '#ffe643'; // LoginScreen'deki sarı renginiz
+const LOGIN_LINK_GREEN_COLOR = '#005800'; // İstediğiniz yeşil renk
 
 export default function SignUpScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -31,14 +30,14 @@ export default function SignUpScreen({ navigation }) {
       return;
     }
     try {
-      const API_ENDPOINT = 'http://192.168.105.205:5000/api/register';
+      const API_ENDPOINT = 'http://192.168.105.205:5000/api/register'; // IP adresinizi kontrol edin
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: fullName,
+          username: fullName, // fullName backend'e username olarak gidiyor
           email: email,
           password: password,
         }),
@@ -46,7 +45,7 @@ export default function SignUpScreen({ navigation }) {
       const data = await response.json();
       if (response.ok) {
         Alert.alert('Başarılı', data.message || 'Kayıt işlemi başarıyla tamamlandı!');
-        navigation.navigate('Login');
+        navigation.navigate('Login'); // Başarılı kayıt sonrası Login ekranına yönlendir
       } else {
         Alert.alert('Kayıt Hatası', data.message || 'Kayıt sırasında bir hata oluştu.');
       }
@@ -56,17 +55,11 @@ export default function SignUpScreen({ navigation }) {
     }
   };
 
-  // Google ile Kayıt Ol fonksiyonu (şimdilik placeholder)
   const handleGoogleSignUp = () => {
     Alert.alert(
       'Google ile Kayıt Ol',
-      'Google ile kayıt olma özelliği henüz entegre edilmemiştir. Bu özellik için ek kurulum ve kodlama gereklidir.'
+      'Google ile kayıt olma özelliği henüz entegre edilmemiştir.'
     );
-    // Gerçek entegrasyon için:
-    // 1. @react-native-google-signin/google-signin gibi bir kütüphane kurun.
-    // 2. Google Cloud Console'da projenizi ve OAuth istemci kimliklerinizi ayarlayın.
-    // 3. Kütüphanenin kurulum adımlarını (Android ve iOS için ayrı ayrı) takip edin.
-    // 4. Kullanıcıdan Google hesabını seçmesini isteyin, token alın ve backend'inize gönderin.
   };
 
   return (
@@ -143,7 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 25, // Boşluk ayarlandı
+    marginBottom: 25,
     textAlign: 'center',
   },
   input: {
@@ -163,7 +156,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    // marginBottom: 20, // Ayırıcı için boşluk ayarlandı
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -178,42 +170,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  separator: { // LoginScreen'deki gibi bir ayırıcı
+  separator: {
     textAlign: 'center',
-    marginVertical: 20, // Boşluklar ayarlandı
+    marginVertical: 20,
     color: '#aaa',
     fontWeight: '500',
     width: '100%',
   },
-  googleSignUpButton: { // LoginScreen'deki googleButton'a benzer
+  googleSignUpButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
     paddingVertical: 12,
-    paddingHorizontal: 20, // İçeriğin sıkışmaması için
+    paddingHorizontal: 20,
     borderRadius: 8,
     backgroundColor: '#fff',
     width: '100%',
-    marginBottom: 20, // "Giriş Yap" linki ile arasında boşluk
+    marginBottom: 20,
   },
-  googleIcon: { // LoginScreen'deki googleIcon ile aynı
+  googleIcon: {
     width: 22,
     height: 22,
     marginRight: 12,
   },
-  googleSignUpButtonText: { // LoginScreen'deki googleText'e benzer
+  googleSignUpButtonText: {
     fontSize: 16,
     color: '#555',
     fontWeight: '500',
   },
   loginLinkContainer: {
-    marginTop: 5, // Google butonu eklendiği için boşluk ayarlandı
+    marginTop: 5,
   },
   loginLinkText: {
     fontSize: 14,
-    color: GOOGLE_SIGNUP_LINK_COLOR, // İstenen yeşil renk (#005800)
+    color: LOGIN_LINK_GREEN_COLOR, // İstenen yeşil renk
     fontWeight: 'bold',
   },
 });

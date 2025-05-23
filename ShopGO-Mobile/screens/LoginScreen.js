@@ -14,7 +14,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch('http://192.168.105.205:5000/api/login', {
+      const res = await fetch('http://192.168.105.205:5000/api/login', { // IP adresinizi kontrol edin
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -25,7 +25,7 @@ export default function LoginScreen({ navigation }) {
         await AsyncStorage.setItem('accessToken', data.access_token);
         await AsyncStorage.setItem('user', JSON.stringify({
           username: data.username,
-          fullName: data.fullName
+          fullName: data.fullName // Backend'den fullName geliyorsa veya username'i kullanıyorsanız
         }));
         navigation.replace("Home");
       } else {
@@ -36,12 +36,18 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  const handleSignUpNavigation = () => {
+    navigation.navigate('SignUpScreen');
+  };
+
   return (
     <View style={styles.container}>
+      {/* Üst Panel: Sadece Logo */}
       <View style={styles.topPanel}>
         <Image source={require('../assets/logo shopandgo.png')} style={styles.logo} />
       </View>
 
+      {/* Alt Panel: Giriş Formu */}
       <View style={styles.bottomPanel}>
         <Text style={styles.formTitle}>Giriş Yap</Text>
 
@@ -65,6 +71,14 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.loginButtonText}>GİRİŞ YAP</Text>
         </TouchableOpacity>
 
+        {/* Hesabınız yok mu? Kayıt Ol bölümü */}
+        <View style={styles.signUpContainer}>
+          <Text style={styles.noAccountText}>Hesabınız yok mu? </Text>
+          <TouchableOpacity onPress={handleSignUpNavigation}>
+            <Text style={styles.signUpLink}>Kayıt Ol</Text>
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.separator}>VEYA</Text>
 
         <TouchableOpacity style={styles.googleButton}>
@@ -83,22 +97,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   topPanel: {
-    flex: 0.4,
+    flex: 0.4, // Yüksekliği ayarlayabilirsiniz
     backgroundColor: YOUR_NEW_YELLOW_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20
   },
   logo: {
-    width: 220, // Daha da büyük logo
-    height: 220, // Daha da büyük logo
+    width: 220, // Logo boyutu
+    height: 220, // Logo boyutu
     resizeMode: 'contain',
   },
   bottomPanel: {
-    flex: 0.6,
-    justifyContent: 'flex-start',
+    flex: 0.6, // Yüksekliği ayarlayabilirsiniz
+    justifyContent: 'flex-start', // Formu yukarıya daha yakın başlatır
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 40, // Formun panelin üstünden ne kadar aşağıda başlayacağı
     paddingBottom: 20,
     backgroundColor: '#fff'
   },
@@ -124,7 +138,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 15,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -138,6 +151,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     color: '#333'
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 15,
+  },
+  noAccountText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  signUpLink: {
+    fontSize: 14,
+    color: YOUR_NEW_YELLOW_COLOR,
+    fontWeight: 'bold',
   },
   separator: {
     textAlign: 'center',
