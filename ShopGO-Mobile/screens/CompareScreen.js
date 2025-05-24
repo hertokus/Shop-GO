@@ -4,85 +4,92 @@ import {
   View, Text, FlatList, StyleSheet,
   ActivityIndicator, TouchableOpacity, Linking, Alert, Platform
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CompareScreen({ route }) {
-  const { cartItems, location: userPickedLocation } = route.params;
+  const { cartItems } = route.params;
   const [marketResults, setMarketResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState(null); // Kullanıcı konumu state'i
 
   useEffect(() => {
-    if (!userPickedLocation || typeof userPickedLocation.latitude === 'undefined' || typeof userPickedLocation.longitude === 'undefined') {
-      Alert.alert("Konum Hatası", "Geçerli bir başlangıç konumu alınamadı. Lütfen Ana Sayfa'dan konum seçin.");
-      setLoading(false);
-      setMarketResults([]);
-      return;
-    }
-
-    if (!cartItems || cartItems.length === 0) {
-        Alert.alert("Sepet Boş", "Karşılaştırılacak ürün bulunmamaktadır.");
-        setLoading(false);
-        setMarketResults([]);
-        return;
-    }
-
-    fetch('http://192.168.105.194:5000/api/calculate-list-prices', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        latitude: userPickedLocation.latitude,
-        longitude: userPickedLocation.longitude,
-        shopping_list: cartItems.map(item => ({
-          productId: item.id,
-          quantity: item.quantity
-        }))
-      })
-    })
-      .then(res => {
-        if (!res.ok) {
-          return res.json().then(errData => {
-            throw new Error(errData.message || `Sunucu hatası: ${res.status}`);
-          }).catch(() => {
-            throw new Error(`Sunucuya ulaşılamadı veya geçersiz yanıt: ${res.status}`);
-          });
+    const fetchLocationAndCompare = async () => {
+      try {
+        // AsyncStorage'dan kaydedilmiş konumu al
+        const storedLocation = await AsyncStorage.getItem('selectedLocation');
+        if (!storedLocation) {
+          Alert.alert("Konum Hatası", "Geçerli bir başlangıç konumu alınamadı. Lütfen Ana Sayfa'dan konum seçin.");
+          setLoading(false);
+          return;
         }
-        return res.json();
-      })
-      .then(data => {
+
+        const location = JSON.parse(storedLocation);
+        setUserLocation(location); // userLocation state'ini güncelle
+
+        if (!cartItems || cartItems.length === 0) {
+          Alert.alert("Sepet Boş", "Karşılaştırılacak ürün bulunmamaktadır.");
+          setLoading(false);
+          return;
+        }
+
+        // API isteği için kullanıcının konumunu kullan
+        const response = await fetch('http://192.168.1.14:5000/api/calculate-list-prices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            latitude: location.latitude, // API için doğru konum bilgisi
+            longitude: location.longitude, // API için doğru konum bilgisi
+            shopping_list: cartItems.map(item => ({
+              productId: item.id,
+              quantity: item.quantity
+            }))
+          })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'Sunucudan geçerli bir JSON yanıtı alınamadı.' }));
+            throw new Error(errorData.message || `Sunucu hatası: ${response.status}`);
+        }
+
+        const data = await response.json();
         setMarketResults(data);
-        setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error("API hatası (CompareScreen):", error);
         Alert.alert("API Hatası", `Market fiyatları yüklenirken bir sorun oluştu: ${error.message}`);
-        setMarketResults([]);
+      } finally {
         setLoading(false);
-      });
-  }, [cartItems, userPickedLocation]);
+      }
+    };
+
+    fetchLocationAndCompare();
+  }, [cartItems]); // cartItems değiştiğinde useEffect'i tekrar çalıştır
 
   const openDirectionsInMapApp = async (startLat, startLon, destLat, destLon, marketName) => {
     if (destLat == null || destLon == null) {
         Alert.alert("Market Konum Bilgisi Eksik", "Bu market için harita açılamıyor.");
         return;
     }
-    if (startLat == null || startLon == null) {
-        Alert.alert("Başlangıç Konum Bilgisi Eksik", "Yol tarifi için başlangıç konumu alınamadı.");
+    // Başlangıç konumu kontrolü: userLocation state'i üzerinden yapılmalı
+    if (!userLocation || userLocation.latitude == null || userLocation.longitude == null) {
+        Alert.alert("Başlangıç Konum Bilgisi Eksik", "Yol tarifi için başlangıç konumu alınamadı. Lütfen Ana Sayfa'dan konum seçin.");
         return;
     }
 
+    // Fonksiyon parametrelerinden gelen startLat ve startLon kullanılacak.
+    // Bunlar userLocation.latitude ve userLocation.longitude olmalı.
     const origin = `${startLat},${startLon}`;
     const destination = `${destLat},${destLon}`;
     const encodedMarketName = encodeURIComponent(marketName);
 
     const availableApps = [];
 
-    // URL Şemaları ve Kontrolleri
     const appsToCheck = [
       {
         name: 'Google Maps',
         iosScheme: `comgooglemaps://?saddr=${origin}&daddr=${destination}&directionsmode=driving`,
         androidScheme: `google.navigation:q=${destination}&mode=d`,
         checkScheme_iOS: 'comgooglemaps://',
-        checkScheme_Android: 'google.navigation:q=' // Bu tam bir scheme değil, ama intent için bir gösterge
+        checkScheme_Android: 'google.navigation:q='
       },
       {
         name: 'Apple Maps (iOS)',
@@ -92,7 +99,7 @@ export default function CompareScreen({ route }) {
       },
       {
         name: 'Waze',
-        genericScheme: `waze://?ll=${destination}&navigate=yes`, // Waze başlangıç noktasını kendi belirler genelde
+        genericScheme: `waze://?ll=${destination}&navigate=yes`,
         checkScheme_iOS: 'waze://',
         checkScheme_Android: 'waze://'
       }
@@ -100,17 +107,13 @@ export default function CompareScreen({ route }) {
 
     for (const app of appsToCheck) {
       if (Platform.OS === 'ios' && app.checkScheme_iOS) {
-        if (app.isIOSOnly === false && !app.checkScheme_iOS) continue; // Android'e özel değilse ve iOS şeması yoksa atla
+        if (app.isIOSOnly === false && !app.checkScheme_iOS) continue;
         const supported = await Linking.canOpenURL(app.checkScheme_iOS);
         if (supported) {
           availableApps.push({ name: app.name, url: app.iosScheme });
         }
       } else if (Platform.OS === 'android' && app.checkScheme_Android) {
-        if (app.isIOSOnly) continue; // iOS'a özel uygulamayı Android'de kontrol etme
-         // Android'de canOpenURL her zaman doğru çalışmayabilir intentler için,
-         // bu yüzden Google Maps'i varsayılan olarak ekleyebiliriz veya daha karmaşık bir kontrol gerekebilir.
-         // Şimdilik, Google Maps'i Android için her zaman bir seçenek olarak sunalım,
-         // Waze için kontrol edelim.
+        if (app.isIOSOnly) continue;
         if (app.name === 'Google Maps') {
              availableApps.push({ name: app.name, url: app.androidScheme });
         } else if (app.checkScheme_Android) {
@@ -124,12 +127,14 @@ export default function CompareScreen({ route }) {
 
     const openUrl = (url) => {
         Linking.openURL(url).catch(err => {
-            console.error(`Harita uygulaması (${url}) açılamadı:`, err);
+            console.error(`Harita uygulaması (${url.split(':')[0]}) açılamadı:`, err);
             Alert.alert("Hata", `${url.split(':')[0]} uygulaması açılamadı.`);
         });
     };
+    
+    // Web URL'i için origin (başlangıç noktası) bilgisini de ekleyelim.
+    const webUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&query=${encodedMarketName}`;
 
-    const webUrl = `https://support.google.com/maps/thread/179675524/yanl%C4%B1%C5%9F-adres-bildirimi?hl=tr{origin}&daddr=${destination}&query=${encodedMarketName}`;
 
     if (availableApps.length === 0) {
       Alert.alert(
@@ -141,7 +146,6 @@ export default function CompareScreen({ route }) {
         ]
       );
     } else if (availableApps.length === 1) {
-      // Tek uygulama varsa direkt onu aç
       Alert.alert(
         "Yol Tarifi",
         `${availableApps[0].name} ile yol tarifi almak istiyor musunuz?`,
@@ -151,7 +155,6 @@ export default function CompareScreen({ route }) {
         ]
       )
     } else {
-      // Birden fazla uygulama varsa kullanıcıya sor
       const alertButtons = availableApps.map(app => ({
         text: app.name,
         onPress: () => openUrl(app.url),
@@ -207,12 +210,13 @@ export default function CompareScreen({ route }) {
                   )}
                 </View>
               )}
-              {(item.latitude != null && item.longitude != null && userPickedLocation) && (
+              {/* Butonun render koşulunda userLocation'ın varlığını ve içinde latitude/longitude olup olmadığını kontrol et */}
+              {(item.latitude != null && item.longitude != null && userLocation && userLocation.latitude != null && userLocation.longitude != null) && (
                 <TouchableOpacity
                   style={styles.mapButton}
-                  onPress={() => openDirectionsInMapApp( // Fonksiyon adı güncellendi
-                      userPickedLocation.latitude,
-                      userPickedLocation.longitude,
+                  onPress={() => openDirectionsInMapApp( 
+                      userLocation.latitude,  // DÜZELTİLDİ: userPickedLocation -> userLocation
+                      userLocation.longitude, // DÜZELTİLDİ: userPickedLocation -> userLocation
                       item.latitude,
                       item.longitude,
                       item.market_name

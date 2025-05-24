@@ -46,7 +46,7 @@ export default function HomeScreen({ navigation, route }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://192.168.105.194:5000/api/products')
+    fetch('http://192.168.1.14:5000/api/products')
       .then(res => {
         if (!res.ok) {
           return res.json().then(errData => {

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, Button, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LocationPickerScreen({ navigation }) {
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -96,25 +97,33 @@ export default function LocationPickerScreen({ navigation }) {
     await getAddressFromCoordinates(latitude, longitude);
   };
 
-  const handleConfirmLocation = () => {
-    if (!selectedLocation) {
-      Alert.alert('Konum Seçilmedi', 'Lütfen haritadan bir konum seçin veya varsayılan konumu kullanın.');
-      return;
-    }
+  const handleConfirmLocation = async () => {
+  if (!selectedLocation) {
+    Alert.alert('Konum Seçilmedi', 'Lütfen haritadan bir konum seçin veya varsayılan konumu kullanın.');
+    return;
+  }
 
-    const locationInfoToSend = {
-        latitude: selectedLocation.latitude,
-        longitude: selectedLocation.longitude,
-        address: selectedAddress || 'Adres belirtilmedi'
-    };
-
-    // HomeScreen'e gönderilecek veriyi konsola yazdır
-    console.log('LocationPickerScreen - Navigating to Home with selectedLocationInfo:', locationInfoToSend);
-
-    navigation.navigate('Home', {
-        selectedLocationInfo: locationInfoToSend
-    });
+  const locationInfoToSend = {
+    latitude: selectedLocation.latitude,
+    longitude: selectedLocation.longitude,
+    address: selectedAddress || 'Adres belirtilmedi'
   };
+
+  try {
+    // ✅ AsyncStorage'a kaydet
+    await AsyncStorage.setItem('selectedLocation', JSON.stringify(locationInfoToSend));
+    console.log('Konum başarıyla AsyncStorage\'a kaydedildi:', locationInfoToSend);
+
+    // ✅ Home ekranına yönlendir
+    navigation.navigate('Home', {
+      selectedLocationInfo: locationInfoToSend
+    });
+  } catch (error) {
+    console.error('Konum kaydedilirken hata:', error);
+    Alert.alert('Hata', 'Konum kaydedilemedi, lütfen tekrar deneyin.');
+  }
+};
+
 
   return (
     <View style={styles.container}>
