@@ -1,18 +1,30 @@
 // screens/HomeScreen.js
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  View, Text, FlatList, StyleSheet, Image, Alert, TouchableOpacity, TextInput, ActivityIndicator, Platform, Button
+  View, Text, FlatList, StyleSheet, Image, Alert, TouchableOpacity, TextInput, ActivityIndicator, Platform,
+  LayoutAnimation, // LayoutAnimation importu
+  UIManager        // UIManager importu (Android için gerekli)
 } from 'react-native';
 import { BackHandler } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const CUSTOM_GREEN_COLOR = '#005800';
+const YOUR_YELLOW_COLOR = '#ffe643';
+const TEXT_COLOR_DARK = '#333333';
+const WHITE_COLOR = '#ffffff';
 
-// Varsayılan konum ve adres (kullanıcı konum seçmezse veya izin vermezse kullanılabilir)
-const DEFAULT_LAT = 37.00; // Adana merkezi enlem (örnek)
-const DEFAULT_LON = 35.3213; // Adana merkezi boylam (örnek)
+const DEFAULT_LAT = 37.00;
+const DEFAULT_LON = 35.3213;
 const DEFAULT_ADDRESS = "Adana Merkezi (Varsayılan)";
 
+// Android'de LayoutAnimation'ı etkinleştir
+// Bu kod bloğu, HomeScreen fonksiyonundan ÖNCE, dosyanın üst kısımlarında olmalı.
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 
 export default function HomeScreen({ navigation, route }) {
   const [products, setProducts] = useState([]);
@@ -21,32 +33,25 @@ export default function HomeScreen({ navigation, route }) {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  // selectedLocationInfo artık { latitude, longitude, address } içerecek
   const [selectedLocationInfo, setSelectedLocationInfo] = useState(null);
+  const [footerHeight, setFooterHeight] = useState(0);
 
   useEffect(() => {
     navigation.setParams({ cartItemsForHeader: cartItems });
   }, [cartItems, navigation]);
 
-  // LocationPickerScreen'den gelen seçili konumu ve adresi almak için useEffect
   useEffect(() => {
-    // Gelen parametreyi konsola yazdır
-    console.log('HomeScreen - route.params:', route.params);
-
     if (route.params?.selectedLocationInfo) {
       const { latitude, longitude, address } = route.params.selectedLocationInfo;
-      console.log('HomeScreen - Received selectedLocationInfo:', { latitude, longitude, address });
-      setSelectedLocationInfo({ latitude, longitude, address }); // Tüm bilgiyi state'e kaydet
+      setSelectedLocationInfo({ latitude, longitude, address });
       Alert.alert("Konum Güncellendi", address || `Enlem: ${latitude.toFixed(4)}, Boylam: ${longitude.toFixed(4)}`);
-      // Parametreyi temizle, böylece ekran her odaklandığında tekrar alert göstermez
       navigation.setParams({ selectedLocationInfo: undefined });
     }
   }, [route.params?.selectedLocationInfo, navigation]);
 
-
   useEffect(() => {
     setLoading(true);
-    fetch('http://192.168.1.14:5000/api/products')
+    fetch('http://192.168.1.11:5000/api/products')
       .then(res => {
         if (!res.ok) {
           return res.json().then(errData => {
@@ -121,6 +126,22 @@ export default function HomeScreen({ navigation, route }) {
     <TouchableOpacity
       style={[styles.categoryButton, selectedCategory === item && styles.categoryButtonSelected]}
       onPress={() => {
+        // Özel "fade" animasyonu yapılandırması
+        LayoutAnimation.configureNext({
+          duration: 300,
+          create: {
+            type: LayoutAnimation.Types.easeInEaseOut,
+            property: LayoutAnimation.Properties.opacity,
+          },
+          update: { // Update animasyonu da ekleyelim, özellikle filtreleme değiştiğinde bazı elemanlar kalıyorsa
+            type: LayoutAnimation.Types.easeInEaseOut,
+            // property: LayoutAnimation.Properties.opacity, // İsteğe bağlı
+          },
+          delete: {
+            type: LayoutAnimation.Types.easeInEaseOut,
+            property: LayoutAnimation.Properties.opacity,
+          }
+        });
         setSelectedCategory(item === selectedCategory ? null : item);
       }}
     >
@@ -171,28 +192,22 @@ export default function HomeScreen({ navigation, route }) {
       )
     : filteredByCategory;
 
-  // CompareScreen'e giderken seçili konumu (sadece koordinatları) gönder
   const navigateToCompareScreen = () => {
     if (cartItems.length === 0) {
       Alert.alert("Sepet Boş", "Karşılaştırma yapmak için lütfen önce sepetinize ürün ekleyin.");
       return;
     }
-    
     const locationForCompare = selectedLocationInfo
-        ? { latitude: selectedLocationInfo.latitude, longitude: selectedLocationInfo.longitude }
-        : { latitude: DEFAULT_LAT, longitude: DEFAULT_LON }; // Varsayılan koordinatlar
-
-     if (!selectedLocationInfo) {
-        Alert.alert("Konum Seçilmedi", `Varsayılan konum (${DEFAULT_ADDRESS}) kullanılacaktır. Daha doğru sonuçlar için konum seçebilirsiniz.`);
+      ? { latitude: selectedLocationInfo.latitude, longitude: selectedLocationInfo.longitude }
+      : { latitude: DEFAULT_LAT, longitude: DEFAULT_LON };
+    if (!selectedLocationInfo) {
+      Alert.alert("Konum Seçilmedi", `Varsayılan konum (${DEFAULT_ADDRESS}) kullanılacaktır. Daha doğru sonuçlar için konum seçebilirsiniz.`);
     }
-
-    console.log('HomeScreen - Navigating to Compare with location:', locationForCompare);
     navigation.navigate("Compare", {
       cartItems,
-      location: locationForCompare // CompareScreen sadece koordinatlara ihtiyaç duyar
+      location: locationForCompare
     });
   };
-
 
   return (
     <View style={styles.container}>
@@ -206,18 +221,18 @@ export default function HomeScreen({ navigation, route }) {
         />
       </View>
 
-      {/* Konum Seç Butonu */}
-      <View style={styles.locationButtonContainer}>
+      <View style={styles.locationSectionContainer}>
         <TouchableOpacity
-            style={styles.locationPickerButton}
-            onPress={() => navigation.navigate("LocationPicker")}
+          style={styles.locationChipButton}
+          onPress={() => navigation.navigate("LocationPicker")}
         >
-            <Text style={styles.locationPickerButtonText} numberOfLines={1} ellipsizeMode="tail">
-                📍 {selectedLocationInfo?.address ? (selectedLocationInfo.address) : "Konum Seçin"}
-            </Text>
+          <Ionicons name="location-outline" size={20} color={CUSTOM_GREEN_COLOR} style={styles.locationChipIcon} />
+          <Text style={styles.locationChipText} numberOfLines={1} ellipsizeMode="tail">
+            {selectedLocationInfo?.address ? selectedLocationInfo.address : "Konum Seçin"}
+          </Text>
+          <Ionicons name="chevron-down-outline" size={20} color={CUSTOM_GREEN_COLOR} style={styles.locationChipIcon} />
         </TouchableOpacity>
       </View>
-
 
       {!loading && categories.length > 0 && (
         <View style={styles.categoryContainer}>
@@ -240,7 +255,9 @@ export default function HomeScreen({ navigation, route }) {
           numColumns={2}
           renderItem={renderProductCard}
           columnWrapperStyle={styles.row}
-          contentContainerStyle={{ paddingBottom: cartItems.length > 0 ? 80 : 20 }} // Sepet varken butona yer aç
+          contentContainerStyle={{
+            paddingBottom: cartItems.length > 0 ? (footerHeight > 0 ? footerHeight + 10 : 90) : 20
+          }}
         />
       ) : (
         <Text style={styles.noProductsText}>
@@ -252,9 +269,16 @@ export default function HomeScreen({ navigation, route }) {
         </Text>
       )}
 
-      {/* Sepet doluysa Market Fiyatlarını Göster butonu */}
       {cartItems.length > 0 && (
-        <View style={styles.footer}>
+        <View
+          style={styles.footer}
+          onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
+            if (height > 0 && height !== footerHeight) {
+                setFooterHeight(height);
+            }
+          }}
+        >
           <TouchableOpacity
             style={styles.compareButton}
             onPress={navigateToCompareScreen}
@@ -267,13 +291,14 @@ export default function HomeScreen({ navigation, route }) {
   );
 }
 
+// Stillerin tamamı burada yer alacak (bir önceki mesajdaki gibi)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
   searchContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: WHITE_COLOR,
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderBottomWidth: 1,
@@ -285,33 +310,47 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: Platform.OS === 'ios' ? 12 : 10,
     fontSize: 16,
-    color: '#333',
+    color: TEXT_COLOR_DARK,
   },
-  locationButtonContainer: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  locationPickerButton: { // Standart Button yerine TouchableOpacity kullandık
-    backgroundColor: CUSTOM_GREEN_COLOR,
+  locationSectionContainer: {
     paddingVertical: 12,
+    backgroundColor: WHITE_COLOR,
     paddingHorizontal: 15,
-    borderRadius: 8,
-    alignItems: 'center', // Metni ortalamak için
-    justifyContent: 'center', // Metni ortalamak için
   },
-  locationPickerButtonText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: 'bold',
-    textAlign: 'center', // Metnin kendisini de ortala
+  locationChipButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: WHITE_COLOR,
+    borderColor: CUSTOM_GREEN_COLOR,
+    borderWidth: 1.5,
+    borderRadius: 25,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.20,
+    shadowRadius: 1.41,
+    elevation: 2,
+    width: '100%',
+  },
+  locationChipIcon: {
+    marginHorizontal: 4,
+  },
+  locationChipText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: CUSTOM_GREEN_COLOR,
+    textAlign: 'center',
+    marginHorizontal: 8,
+    flex: 1,
   },
   categoryContainer: {
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    backgroundColor: WHITE_COLOR,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
@@ -333,7 +372,7 @@ const styles = StyleSheet.create({
     color: '#495057',
   },
   categoryButtonTextSelected: {
-    color: '#fff',
+    color: WHITE_COLOR,
     fontWeight: 'bold',
   },
   loadingIndicator: {
@@ -355,7 +394,7 @@ const styles = StyleSheet.create({
   productCard: {
     flex: 1,
     maxWidth: '48%',
-    backgroundColor: '#fff',
+    backgroundColor: WHITE_COLOR,
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
@@ -394,7 +433,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   productCardButtonText: {
-    color: '#fff',
+    color: WHITE_COLOR,
     fontWeight: 'bold',
     fontSize: 14,
   },
@@ -414,7 +453,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   adjustButtonText: {
-    color: '#fff',
+    color: WHITE_COLOR,
     fontSize: 20,
     fontWeight: 'bold',
     lineHeight: Platform.OS === 'ios' ? 22 : 24,
@@ -422,7 +461,7 @@ const styles = StyleSheet.create({
   quantityDisplay: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: TEXT_COLOR_DARK,
     minWidth: 30,
     textAlign: 'center',
   },
@@ -432,7 +471,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: WHITE_COLOR,
     borderTopWidth: 1,
     borderTopColor: '#eee',
   },
@@ -444,7 +483,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   compareButtonText: {
-    color: '#fff',
+    color: WHITE_COLOR,
     fontSize: 16,
     fontWeight: 'bold',
   }
