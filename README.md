@@ -12,10 +12,10 @@ Bu proje, alışveriş yapan bireylerin **zaman ve bütçe tasarrufu** sağlamas
 
 ## 👥 Ekip
 
-| İsim       | Rol                | Teknolojiler                        |
-|------------|--------------------|-------------------------------------|
-| Ahmetcan Selek | Backend & Mobile Developer | Python, Flask, PostgreSQL, React Native |
-| Hasan Ertokuş   | Frontend Developer        | React.js, HTML, CSS, JS             |
+| İsim       | Rol                                                      | Teknolojiler                            |
+|------------|--------------------                                      |-------------------------------------    |
+| Ahmetcan Selek | Frontend Developer, Backend & Mobile Developer       | Python, Flask, PostgreSQL, React Native |
+| Hasan Ertokuş   | Frontend Developer,Backend & Mobile Developer       | React.js, HTML, CSS, JS                 |
 
 ---
 
