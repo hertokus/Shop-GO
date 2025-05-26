@@ -3,21 +3,21 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, Image, Alert,
-  KeyboardAvoidingView, // Eklendi
-  ScrollView,         // Eklendi
-  Platform            // Eklendi
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const YOUR_NEW_YELLOW_COLOR = '#ffe643';
+const CUSTOM_GREEN_COLOR = '#005800';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
+  const handleLogin = async () => { // Bu fonksiyon aynı kalacak
     try {
-      // IP adresinizi güncellediğinizden emin olun: '192.168.1.11:5000' yerine kendi IP'niz
       const res = await fetch('http://192.168.1.11:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -44,22 +44,25 @@ export default function LoginScreen({ navigation }) {
     navigation.navigate('SignUpScreen');
   };
 
+  // YENİ: Şifremi Unuttum ekranına yönlendirme fonksiyonu
+  const handleForgotPasswordNavigation = () => {
+    navigation.navigate('ForgotPasswordScreen');
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.keyboardAvoidingContainer}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      // keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20} // Gerekirse header yüksekliği kadar offset eklenebilir
     >
       <View style={styles.topPanel}>
         <Image source={require('../assets/splash_logo.png')} style={styles.logo} />
       </View>
 
-      {/* Alt Panel: Giriş Formu artık ScrollView içinde */}
       <View style={styles.bottomPanelContainer}>
         <ScrollView
           contentContainerStyle={styles.bottomPanelContentContainer}
-          keyboardShouldPersistTaps="handled" // Klavye açıkken butonlara tıklanabilmesi için
-          showsVerticalScrollIndicator={false} // Kaydırma çubuğunu gizle (isteğe bağlı)
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           <Text style={styles.formTitle}>Giriş Yap</Text>
 
@@ -78,6 +81,11 @@ export default function LoginScreen({ navigation }) {
             onChangeText={setPassword}
             secureTextEntry
           />
+
+          {/* ŞİFREMİ UNUTTUM LİNKİ */}
+          <TouchableOpacity onPress={handleForgotPasswordNavigation} style={styles.forgotPasswordContainer}>
+            <Text style={styles.forgotPasswordText}>Şifremi Unuttum?</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>GİRİŞ YAP</Text>
@@ -103,11 +111,10 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  // Eski 'container' stili KeyboardAvoidingView'e uygulandı ve adı değişti
   keyboardAvoidingContainer: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#fff' // Arka plan rengini koru
+    backgroundColor: '#fff'
   },
   topPanel: {
     flex: 0.4,
@@ -121,17 +128,14 @@ const styles = StyleSheet.create({
     height: 220,
     resizeMode: 'contain',
   },
-  // bottomPanel artık ScrollView için bir container görevi görüyor
   bottomPanelContainer: {
-    flex: 0.6, // Yüksekliği ayarlayabilirsiniz
-    backgroundColor: '#fff', // Arka plan rengini koru
+    flex: 0.6,
+    backgroundColor: '#fff',
   },
-  // ScrollView'in içeriği için padding ve diğer ayarlar
   bottomPanelContentContainer: {
     paddingHorizontal: 30,
     paddingTop: 40,
-    paddingBottom: 20, // ScrollView sonunda boşluk olması için
-    // alignItems: 'center', // Eğer içerik (form elemanları) ortalanacaksa. Mevcut durumda inputlar zaten %100 genişlikte.
+    paddingBottom: 20,
   },
   formTitle: {
     fontSize: 22,
@@ -141,18 +145,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    // width: '100%', // Zaten paddingHorizontal ile ayarlanıyor
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    marginBottom: 18,
+    marginBottom: 10, // Şifremi unuttum linki için boşluk ayarlandı
     fontSize: 16,
     backgroundColor: '#f9f9f9'
   },
+  // YENİ STİLLER (Şifremi Unuttum için)
+  forgotPasswordContainer: {
+    alignItems: 'flex-end', // Sağa yasla
+    marginBottom: 15, // Giriş yap butonu ile arasında boşluk
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    color: CUSTOM_GREEN_COLOR, // Veya başka bir link rengi
+    fontWeight: '600',
+  },
   loginButton: {
-    // width: '100%', // Gerekirse eklenebilir, genellikle container'a göre hizalanır
     backgroundColor: YOUR_NEW_YELLOW_COLOR,
     paddingVertical: 15,
     borderRadius: 8,
@@ -184,7 +196,7 @@ const styles = StyleSheet.create({
   },
   signUpLink: {
     fontSize: 14,
-    color: YOUR_NEW_YELLOW_COLOR,
+    color: CUSTOM_GREEN_COLOR,
     fontWeight: 'bold',
   },
   separator: {
@@ -202,7 +214,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     backgroundColor: '#fff'
-    // marginBottom: 20, // ScrollView'in paddingBottom'u ile ayarlanabilir
   },
   googleIcon: {
     width: 22,
